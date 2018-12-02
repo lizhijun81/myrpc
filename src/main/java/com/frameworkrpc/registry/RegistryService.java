@@ -14,9 +14,9 @@ public interface RegistryService {
 
 	void unRegisterConsumer(URL url);
 
-	void subscribeService(URL url, ServiceListener serviceListener);
+	void subscribeService(URL url);
 
-	void unSubscribeService(URL url, ServiceListener serviceListener);
+	void unSubscribeService(URL url);
 
 	List<URL> discoverService(URL url);
 }

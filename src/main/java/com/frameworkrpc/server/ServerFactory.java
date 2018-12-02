@@ -11,7 +11,7 @@ public class ServerFactory {
 	private final static ConcurrentHashMap<String, Server> serverMap = new ConcurrentHashMap<>();
 
 	public static Server createServer(URL url) {
-		ServerEnum serverEnum = ServerEnum.getServerEnum(url.getParameter(RpcConstant.SERVER));
+		ServerEnum serverEnum = ServerEnum.getServerEnum(url.getParameter(RpcConstant.TRANSPORTER));
 		if (!serverMap.containsKey(url.toFullStr())) {
 			serverMap.put(url.toFullStr(), createServer(url, serverEnum));
 		}

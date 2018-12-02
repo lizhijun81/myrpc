@@ -71,7 +71,7 @@ public class NettyServer extends AbstractServer implements Server {
 						//								.addLast("handler", nettyServerHandler);
 					}
 				});
-		ChannelFuture channelFuture = bootstrap.bind(NetUtils.getAvailablePort());
+		ChannelFuture channelFuture = bootstrap.bind(url.getIntParameter(RpcConstant.PORT));
 		channelFuture.syncUninterruptibly();
 		serverChannel = channelFuture.channel();
 		logger.info("Netty RPC Server start success!port:{}", NetUtils.getAvailablePort());

@@ -56,7 +56,6 @@ public class RegistryConfig extends AbstractConfig {
 		this.sessiontimeout = sessiontimeout;
 	}
 
-	@Override
 	public URL getURL() {
 		if (url == null) {
 			try {

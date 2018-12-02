@@ -1,18 +1,16 @@
 package com.frameworkrpc.config;
 
 import com.frameworkrpc.common.NetUtils;
-import com.frameworkrpc.common.RpcConstant;
-import com.frameworkrpc.model.URL;
 import org.springframework.util.StringUtils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ProtocolConfig extends AbstractConfig {
 	private static final long serialVersionUID = -8054840397576456746L;
 	private String id;
-	private String servername;
+	private String name;
+	private String host;
+	private int port;
 	private String serialization;
+	private String transporter;
 	private int heartbeat;
 
 	public String getId() {
@@ -23,12 +21,34 @@ public class ProtocolConfig extends AbstractConfig {
 		this.id = id;
 	}
 
-	public String getServername() {
-		return servername;
+	public String getName() {
+		return name;
 	}
 
-	public void setServername(String servername) {
-		this.servername = servername;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public synchronized String getHost() {
+		if (StringUtils.isEmpty(this.host)) {
+			this.host = NetUtils.getAvailablInetAddress().getHostAddress();
+		}
+		return this.host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public synchronized int getPort() {
+		if (this.port <= 0) {
+			this.port = NetUtils.getAvailablePort();
+		}
+		return this.port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 	public String getSerialization() {
@@ -39,6 +59,14 @@ public class ProtocolConfig extends AbstractConfig {
 		this.serialization = seralization;
 	}
 
+	public String getTransporter() {
+		return transporter;
+	}
+
+	public void setTransporter(String transporter) {
+		this.transporter = transporter;
+	}
+
 	public int getHeartbeat() {
 		return heartbeat;
 	}
@@ -47,25 +75,4 @@ public class ProtocolConfig extends AbstractConfig {
 		this.heartbeat = heartbeat;
 	}
 
-	@Override
-	public URL getURL() {
-		if (url == null) {
-			try {
-				reentrantLock.lock();
-				Map<String, String> parameters = new HashMap<>();
-				parameters.put("id", getId());
-				parameters.put("serialization", !StringUtils.isEmpty(getSerialization()) ? getSerialization() : RpcConstant.DEFAULT_SERIALIZATION);
-				parameters.put("heartbeat", String.valueOf(getHeartbeat()));
-				StringBuilder stringBuilder = new StringBuilder();
-				stringBuilder.append(String.format("%s://%s:%s?", RpcConstant.PROTOCOLSCHEME, NetUtils.getAvailablInetAddress().getHostAddress(),
-						NetUtils.getAvailablePort()));
-				stringBuilder.append(NetUtils.getUrlParamsByMap(parameters));
-
-				url = new URL(stringBuilder.toString());
-			} finally {
-				reentrantLock.unlock();
-			}
-		}
-		return url;
-	}
 }

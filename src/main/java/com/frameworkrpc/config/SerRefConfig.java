@@ -145,10 +145,31 @@ public class SerRefConfig<T> extends AbstractConfig {
 			parameters.put("timeout", getTimeout() > 0 ? String.valueOf(getTimeout()) : String.valueOf(RpcConstant.DEFAULT_TMEOUT));
 			parameters.put("retries", getRetries() > 0 ? String.valueOf(getRetries()) : String.valueOf(RpcConstant.DEFAULT_RRETRIES));
 
+			parameters.put("application", getApplication().getName());
+			parameters.put("application.version",
+					!StringUtils.isEmpty(getApplication().getVersion()) ? getApplication().getVersion() : RpcConstant.DEFAULT_VERSION);
+
+			parameters.put("protocol", !StringUtils.isEmpty(getProtocol().getName()) ? getProtocol().getName() : RpcConstant.DEFAULT_PROTOCOL);
+			parameters.put("host", getProtocol().getHost());
+			parameters.put("port", String.valueOf(getProtocol().getPort()));
+			parameters.put("transporter",
+					!StringUtils.isEmpty(getProtocol().getTransporter()) ? getProtocol().getTransporter() : RpcConstant.DEFAULT_TRANSPORTER);
+			parameters.put("serialization",
+					!StringUtils.isEmpty(getProtocol().getSerialization()) ? getProtocol().getSerialization() : RpcConstant.DEFAULT_SERIALIZATION);
+			parameters.put("heartbeat", String.valueOf(getProtocol().getHeartbeat()));
+
+
+			parameters.put("registryname", getRegistry().getRegistryname());
+			parameters.put("address", getRegistry().getAddress());
+			parameters.put("registry.timeout",
+					getTimeout() > 0 ? String.valueOf(getRegistry().getTimeout()) : String.valueOf(RpcConstant.DEFAULT_REGISTRY_TIMEOUT));
+			parameters.put("registry.sessiontimeout", getRegistry().getSessiontimeout() > 0 ?
+					String.valueOf(getRegistry().getSessiontimeout()) :
+					String.valueOf(RpcConstant.DEFAULT_REGISTRY_SESSIONTIMEOUT));
+
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append(String
-					.format("%s://%s:%s/%s?", scheme, NetUtils.getAvailablInetAddress().getHostAddress(), NetUtils.getAvailablePort(),
-							getInterface()));
+					.format("%s://%s:%s/%s?", scheme, getProtocol().getHost(), String.valueOf(getProtocol().getPort()), getInterface()));
 			stringBuilder.append(NetUtils.getUrlParamsByMap(parameters));
 
 			url = new URL(stringBuilder.toString());
@@ -157,8 +178,4 @@ public class SerRefConfig<T> extends AbstractConfig {
 		}
 	}
 
-	@Override
-	URL getURL() {
-		return url;
-	}
 }

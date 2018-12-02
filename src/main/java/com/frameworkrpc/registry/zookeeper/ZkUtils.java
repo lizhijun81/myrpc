@@ -1,9 +1,13 @@
 package com.frameworkrpc.registry.zookeeper;
 
 import com.frameworkrpc.common.RpcConstant;
+import com.frameworkrpc.exception.CommonRpcException;
 import com.frameworkrpc.model.URL;
 
-public class ZKUtils {
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+public class ZkUtils {
 
 	public static String toGroupPath(URL url) {
 		return String.format("%s%s%s", RpcConstant.ZK_REGISTRY_PATH, RpcConstant.PATH_SEPARATOR, url.getParameter(RpcConstant.GROUP));
@@ -19,6 +23,11 @@ public class ZKUtils {
 	}
 
 	public static String toNodePath(URL url, ZkNodeType nodeType) {
-		return String.format("%s%s%s", toNodeTypePath(url, nodeType), RpcConstant.PATH_SEPARATOR, url.getServerPortStr());
+		try {
+			return String.format("%s%s%s", toNodeTypePath(url, nodeType), RpcConstant.PATH_SEPARATOR,
+					URLEncoder.encode(url.toFullStr(), RpcConstant.CHARSET));
+		} catch (UnsupportedEncodingException e) {
+			throw new CommonRpcException(e.getMessage(), e);
+		}
 	}
 }

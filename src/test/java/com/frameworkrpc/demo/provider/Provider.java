@@ -33,6 +33,7 @@ public class Provider {
 		service.setRef(demoService);
 		service.setVersion("1.0.0");
 
+
 		// 暴露及注册服务
 		service.export();
 

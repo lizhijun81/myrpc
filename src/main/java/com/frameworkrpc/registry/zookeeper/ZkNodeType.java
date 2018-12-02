@@ -2,7 +2,7 @@ package com.frameworkrpc.registry.zookeeper;
 
 public enum ZkNodeType {
 
-	SERVER("server"),
+	PROVIDER("provider"),
 	CONSUMER("consumer");
 
 	private String value;

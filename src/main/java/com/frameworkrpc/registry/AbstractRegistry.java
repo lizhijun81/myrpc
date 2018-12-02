@@ -12,4 +12,5 @@ public class AbstractRegistry {
 	protected final ConcurrentHashMap<String, List<URL>> serviceDiscoveUrls = new ConcurrentHashMap<>();
 	protected final Set<URL> registeredServiceUrls = newConcurrentHashSet();
 	protected final Set<URL> registerConsumersUrls = newConcurrentHashSet();
+
 }
