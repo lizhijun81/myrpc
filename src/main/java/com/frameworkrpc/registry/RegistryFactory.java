@@ -8,6 +8,7 @@ import com.frameworkrpc.registry.zookeeper.ZookeeperRegistry;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RegistryFactory {
+
 	private final static ConcurrentHashMap<String, RegistryService> registryServiceMap = new ConcurrentHashMap<>();
 
 	public static RegistryService createRegistry(URL url) {

@@ -1,9 +1,10 @@
 package com.frameworkrpc.config;
 
 import com.frameworkrpc.common.NetUtils;
-import org.springframework.util.StringUtils;
+import com.frameworkrpc.common.StringUtils;
 
 public class ProtocolConfig extends AbstractConfig {
+
 	private static final long serialVersionUID = -8054840397576456746L;
 	private String id;
 	private String name;

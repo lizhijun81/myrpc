@@ -1,6 +1,7 @@
 package com.frameworkrpc.config;
 
 public class RegistryConfig extends AbstractConfig {
+
 	private static final long serialVersionUID = -8315812157243230679L;
 	private String id;
 	private String registryname;

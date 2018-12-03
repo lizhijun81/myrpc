@@ -1,11 +1,10 @@
 package com.frameworkrpc.config;
 
-import com.frameworkrpc.registry.RegistryFactory;
-import com.frameworkrpc.registry.RegistryService;
-import com.frameworkrpc.server.Server;
-import com.frameworkrpc.server.ServerFactory;
+import com.frameworkrpc.exporter.RpcExporter;
+import com.frameworkrpc.rpc.netty.NettyRpcInstanceFatoryImpl;
 
 public class ServiceConfig<T> extends SerRefConfig {
+
 	private static final long serialVersionUID = 4186914879813709242L;
 	private T ref;
 
@@ -19,14 +18,8 @@ public class ServiceConfig<T> extends SerRefConfig {
 
 	public void export() {
 		checkRef();
-
-		Server server = ServerFactory.createServer(getProtocolURL());
-		if (!server.isOpen()) {
-			server.doOpen();
-		}
-
-		RegistryService registryService = RegistryFactory.createRegistry(getRegistryURL());
-		registryService.registerService(getURL());
+		rpcExporter = new RpcExporter(getURL()).openServer().exporter();
+		NettyRpcInstanceFatoryImpl.getInstance().setRpcInstance(getInterface(), getRef());
 	}
 
 	private void checkRef() {
@@ -35,9 +28,7 @@ public class ServiceConfig<T> extends SerRefConfig {
 			throw new IllegalStateException("ref not allow null!");
 		}
 		if (!getInterfaceClass().isInstance(ref)) {
-			throw new IllegalStateException("The class "
-					+ ref.getClass().getName() + " unimplemented interface "
-					+ getInterfaceClass() + "!");
+			throw new IllegalStateException("The class " + ref.getClass().getName() + " unimplemented interface " + getInterfaceClass() + "!");
 		}
 	}
 

@@ -2,6 +2,7 @@ package com.frameworkrpc.server;
 
 import com.frameworkrpc.common.RpcConstant;
 import com.frameworkrpc.model.URL;
+import com.frameworkrpc.rpc.netty.NettyRpcInstanceFatoryImpl;
 import com.frameworkrpc.server.netty.NettyServer;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,9 +23,9 @@ public class ServerFactory {
 	private static Server createServer(URL url, ServerEnum serverEnum) {
 		switch (serverEnum) {
 			case Netty:
-				return new NettyServer(url);
+				return new NettyServer(url, NettyRpcInstanceFatoryImpl.getInstance());
 			default:
-				return new NettyServer(url);
+				return new NettyServer(url, NettyRpcInstanceFatoryImpl.getInstance());
 		}
 	}
 }

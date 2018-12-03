@@ -3,7 +3,7 @@ package com.frameworkrpc.common;
 import com.frameworkrpc.exception.CommonRpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
+import com.frameworkrpc.common.StringUtils;
 
 import java.io.IOException;
 import java.net.InetAddress;

@@ -1,6 +1,7 @@
 package com.frameworkrpc.config;
 
 public class ApplicationConfig extends AbstractConfig {
+
 	private static final long serialVersionUID = -1844587035484060730L;
 	private String name;
 	private String version;
