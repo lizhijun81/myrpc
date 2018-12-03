@@ -26,7 +26,8 @@ public class ZookeeperRegistry extends AbstractRegistry implements RegistryServi
 
 	private final ConcurrentHashMap<String, IZkChildListener> subscribeListeners = new ConcurrentHashMap<>();
 
-	private final ReentrantLock registryLock = new ReentrantLock();
+	private final ReentrantLock providerLock = new ReentrantLock();
+	private final ReentrantLock consumerLock = new ReentrantLock();
 
 	public ZookeeperRegistry(URL url, ServiceListener serviceListener) {
 		zkClient = new ZkClient(url.getParameter(RpcConstant.ADDRESS), url.getIntParameter(RpcConstant.REGISTRY_SESSIONTIMEOUT),
@@ -57,13 +58,13 @@ public class ZookeeperRegistry extends AbstractRegistry implements RegistryServi
 	@Override
 	public void registerService(URL url) {
 		createNode(url, ZkNodeType.PROVIDER);
-		registeredServiceUrls.add(url);
+		super.registerService(url);
 	}
 
 	@Override
 	public void unRegisterService(URL url) {
 		removeNode(url, ZkNodeType.PROVIDER);
-		registeredServiceUrls.remove(url);
+		super.unRegisterService(url);
 	}
 
 	private void createNode(URL url, ZkNodeType nodeType) {
@@ -71,7 +72,10 @@ public class ZookeeperRegistry extends AbstractRegistry implements RegistryServi
 		if (!zkClient.exists(nodeTypePath)) {
 			zkClient.createPersistent(nodeTypePath, true);
 		}
-		zkClient.createEphemeral(ZkUtils.toNodePath(url, nodeType), url.toFullStr());
+		String nodePrth = ZkUtils.toNodePath(url, nodeType);
+		if (!zkClient.exists(nodePrth)) {
+			zkClient.createEphemeral(nodePrth, url.toFullStr());
+		}
 	}
 
 	private void removeNode(URL url, ZkNodeType nodeType) {
@@ -84,25 +88,25 @@ public class ZookeeperRegistry extends AbstractRegistry implements RegistryServi
 	@Override
 	public void registerConsumer(URL url) {
 		createNode(url, ZkNodeType.CONSUMER);
-		registerConsumersUrls.add(url);
+		super.registerConsumer(url);
 	}
 
 	@Override
 	public void unRegisterConsumer(URL url) {
 		removeNode(url, ZkNodeType.CONSUMER);
-		registerConsumersUrls.remove(url);
+		super.unRegisterConsumer(url);
 	}
 
 	private void reconnectService() {
 		if (!registeredServiceUrls.isEmpty()) {
 			try {
-				registryLock.lock();
+				providerLock.lock();
 				for (URL url : registeredServiceUrls) {
 					createNode(url, ZkNodeType.PROVIDER);
 				}
-				logger.warn("reconnectService {}", registeredServiceUrls);
+				logger.warn("reconnectService : {}", registeredServiceUrls);
 			} finally {
-				registryLock.unlock();
+				providerLock.unlock();
 			}
 		}
 	}
@@ -110,13 +114,13 @@ public class ZookeeperRegistry extends AbstractRegistry implements RegistryServi
 	private void reconnectConsumer() {
 		if (!registerConsumersUrls.isEmpty()) {
 			try {
-				registryLock.lock();
+				consumerLock.lock();
 				for (URL url : registerConsumersUrls) {
 					createNode(url, ZkNodeType.CONSUMER);
 				}
-				logger.warn("reconnectConsumer {}", registerConsumersUrls);
+				logger.warn("reconnectConsumer : {}", registerConsumersUrls);
 			} finally {
-				registryLock.unlock();
+				consumerLock.unlock();
 			}
 		}
 	}
@@ -127,17 +131,21 @@ public class ZookeeperRegistry extends AbstractRegistry implements RegistryServi
 		if (subscribeListeners.containsKey(parentPath))
 			return;
 		try {
-			registryLock.lock();
+			consumerLock.lock();
+			if (subscribeListeners.containsKey(parentPath))
+				return;
 			IZkChildListener zkChildListener = new IZkChildListener() {
 				@Override
 				public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
+					logger.info("subscribeService currentChilds : {}", currentChilds);
 					serviceListener.handleNodeChildChange(parentPath, currentChilds, serviceDiscoveUrls);
 				}
 			};
 			zkClient.subscribeChildChanges(parentPath, zkChildListener);
 			subscribeListeners.put(parentPath, zkChildListener);
+			logger.info("subscribeService : {}", url.toFullStr());
 		} finally {
-			registryLock.unlock();
+			consumerLock.unlock();
 		}
 	}
 
@@ -147,12 +155,15 @@ public class ZookeeperRegistry extends AbstractRegistry implements RegistryServi
 		if (!subscribeListeners.containsKey(parentPath))
 			return;
 		try {
-			registryLock.lock();
+			consumerLock.lock();
+			if (!subscribeListeners.containsKey(parentPath))
+				return;
 			IZkChildListener zkChildListener = subscribeListeners.get(parentPath);
 			zkClient.unsubscribeChildChanges(parentPath, zkChildListener);
 			subscribeListeners.remove(parentPath);
+			logger.info("unSubscribeService : {}", url.toFullStr());
 		} finally {
-			registryLock.unlock();
+			consumerLock.unlock();
 		}
 	}
 
@@ -165,6 +176,6 @@ public class ZookeeperRegistry extends AbstractRegistry implements RegistryServi
 			List<String> currentChilds = zkClient.getChildren(parentPath);
 			serviceListener.handleNodeChildChange(parentPath, currentChilds, serviceDiscoveUrls);
 		}
-		return serviceDiscoveUrls.get(parentPath);
+		return super.discoverService(url, serviceDiscoveUrls.get(parentPath));
 	}
 }

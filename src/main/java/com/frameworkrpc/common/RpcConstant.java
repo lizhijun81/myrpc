@@ -6,7 +6,7 @@ public class RpcConstant {
 	public static int DEFAULT_NIO_PORT = 2180;
 
 	static {
-		DEFAULT_NIO_THREAD_COUNT = Runtime.getRuntime().availableProcessors() > 1 ? 2 * (Runtime.getRuntime().availableProcessors() - 1) : 2;
+		DEFAULT_NIO_THREAD_COUNT = Math.max(2, Runtime.getRuntime().availableProcessors()) * 2;
 	}
 
 	public final static String ZK_REGISTRY_PATH = "/myrpc";
@@ -45,12 +45,12 @@ public class RpcConstant {
 	public final static String DEFAULT_VERSION = "0.0.1";
 	public final static String DEFAULT_GROUP = "defaultgroup";
 	public final static String DEFAULT_CLUSTER = "failover";
+	public final static String DEFAULT_LOADBALANCE = "random";
 	public final static String DEFAULT_SERIALIZATION = "hessian";
 	public final static int DEFAULT_TMEOUT = 1000;
 	public final static int DEFAULT_RRETRIES = 2;
-	public final static String DEFAULT_LOADBALANCE = "random";
 
-	public final static String DEFAULT_PROTOCOL = "myrpcprotocol";
+	public final static String DEFAULT_PROTOCOL = "defaultprotocol";
 	public final static String DEFAULT_TRANSPORTER = "netty";
 
 	public final static int DEFAULT_REGISTRY_TIMEOUT = 5000;

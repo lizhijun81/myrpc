@@ -14,8 +14,7 @@ public class ZkUtils {
 	}
 
 	public static String toServicePath(URL url) {
-		String path = url.getPath();
-		return String.format("%s%s%s", toGroupPath(url), RpcConstant.PATH_SEPARATOR, path.substring(1, path.length()));
+		return String.format("%s%s%s", toGroupPath(url), RpcConstant.PATH_SEPARATOR, url.getPath());
 	}
 
 	public static String toNodeTypePath(URL url, ZkNodeType nodeType) {

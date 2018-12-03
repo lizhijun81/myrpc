@@ -1,6 +1,7 @@
 package com.frameworkrpc.model;
 
 import com.frameworkrpc.common.NetUtils;
+import com.frameworkrpc.exception.CommonRpcException;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -20,7 +21,7 @@ public class URL implements Serializable {
 			uri = new URI(url);
 			setParameters();
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			throw new CommonRpcException(e.getMessage(), e);
 		}
 	}
 
@@ -37,7 +38,8 @@ public class URL implements Serializable {
 	}
 
 	public String getPath() {
-		return uri.getPath();
+		String path = uri.getPath();
+		return path.substring(1, path.length());
 	}
 
 	public String getServerPortStr() {
@@ -66,8 +68,14 @@ public class URL implements Serializable {
 	}
 
 	public synchronized void setParameters() {
-		if (parameters == null)
-			this.parameters = NetUtils.getUrlParams(uri.getQuery());
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(String.format("%s://%s:%s/%s?", getScheme(), getHost(), getPort(), getPath()));
+		stringBuilder.append(NetUtils.getUrlParamsByMap(parameters));
+		try {
+			this.uri = new URI(stringBuilder.toString());
+		} catch (URISyntaxException e) {
+			throw new CommonRpcException(e.getMessage(), e);
+		}
 	}
 
 	public boolean containsKey(String name) {

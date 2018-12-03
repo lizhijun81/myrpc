@@ -1,7 +1,5 @@
 package com.frameworkrpc.config;
 
-import com.frameworkrpc.common.RpcConstant;
-import com.frameworkrpc.model.URL;
 import com.frameworkrpc.registry.RegistryFactory;
 import com.frameworkrpc.registry.RegistryService;
 import com.frameworkrpc.server.Server;
@@ -20,21 +18,27 @@ public class ServiceConfig<T> extends SerRefConfig {
 	}
 
 	public void export() {
-		Server server = ServerFactory.createServer(getURL());
+		checkRef();
+
+		Server server = ServerFactory.createServer(getProtocolURL());
 		if (!server.isOpen()) {
 			server.doOpen();
 		}
-		URL registryURL = getRegistry().getURL();
-		RegistryService registryService = RegistryFactory.createRegistry(registryURL);
-		registryService.subscribeService(getURL());
+
+		RegistryService registryService = RegistryFactory.createRegistry(getRegistryURL());
 		registryService.registerService(getURL());
 	}
 
-
-	public URL getURL() {
-		if (url == null) {
-			super.getURL(RpcConstant.PROVIDERSCHEME);
+	private void checkRef() {
+		// reference should not be null, and is the implementation of the given interface
+		if (ref == null) {
+			throw new IllegalStateException("ref not allow null!");
 		}
-		return url;
+		if (!getInterfaceClass().isInstance(ref)) {
+			throw new IllegalStateException("The class "
+					+ ref.getClass().getName() + " unimplemented interface "
+					+ getInterfaceClass() + "!");
+		}
 	}
+
 }

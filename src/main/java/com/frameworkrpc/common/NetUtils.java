@@ -107,7 +107,7 @@ public class NetUtils {
 			}
 		}
 		if (inetAddress == null) {
-			throw new CommonRpcException("无法找到可用的InetAddress");
+			throw new CommonRpcException("can not find inetAddress");
 		}
 		return inetAddress;
 	}
@@ -137,7 +137,7 @@ public class NetUtils {
 			}
 		}
 		if (port == 0)
-			throw new CommonRpcException("无法找到可用的port");
+			throw new CommonRpcException("can not find availablePort");
 		return port;
 	}
 

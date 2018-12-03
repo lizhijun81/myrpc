@@ -1,10 +1,10 @@
 package com.frameworkrpc.server.netty;
 
-import com.frameworkrpc.common.RpcConstant;
 import com.frameworkrpc.common.NetUtils;
-import com.frameworkrpc.model.URL;
+import com.frameworkrpc.common.RpcConstant;
 import com.frameworkrpc.model.RpcRequester;
 import com.frameworkrpc.model.RpcResponse;
+import com.frameworkrpc.model.URL;
 import com.frameworkrpc.serialize.MessageDecoder;
 import com.frameworkrpc.serialize.MessageEncoder;
 import com.frameworkrpc.serialize.Serialize;
@@ -53,22 +53,23 @@ public class NettyServer extends AbstractServer implements Server {
 	public void doOpen() {
 
 		bootstrap = new ServerBootstrap();
-
 		bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("NettyServerBoss", true));
 		workerGroup = new NioEventLoopGroup(RpcConstant.DEFAULT_NIO_THREAD_COUNT, new DefaultThreadFactory("NettyServerWorker", true));
 
-		bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-				.childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE).childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+		bootstrap
+				.group(bossGroup, workerGroup)
+				.channel(NioServerSocketChannel.class)
+				.childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+				.childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
+				.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
 				.childHandler(new ChannelInitializer<NioSocketChannel>() {
 					@Override
 					protected void initChannel(NioSocketChannel ch) throws Exception {
 						Serialize serialize = SerializeFactory.createSerialize(getURL().getParameter(RpcConstant.SERIALIZATION));
-						ch.pipeline().addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))
+						ch.pipeline()
+								.addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))
 								.addLast("encoder", new MessageEncoder(serialize, RpcResponse.class));
-						//						ch.pipeline()
-						//								.addLast("decoder", adapter.getDecoder())
-						//								.addLast("encoder", adapter.getEncoder())
-						//								.addLast("handler", nettyServerHandler);
+								//.addLast("handler", new NettyServerHandler());
 					}
 				});
 		ChannelFuture channelFuture = bootstrap.bind(url.getIntParameter(RpcConstant.PORT));
