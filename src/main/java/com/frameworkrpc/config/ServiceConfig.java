@@ -18,7 +18,7 @@ public class ServiceConfig<T> extends SerRefConfig {
 
 	public void export() {
 		checkRef();
-		rpcExporter = new RpcExporter(getURL()).openServer().exporter();
+		exporter = new RpcExporter(getURL()).openServer().exporter();
 		NettyRpcInstanceFatoryImpl.getInstance().setRpcInstance(getInterface(), getRef());
 	}
 

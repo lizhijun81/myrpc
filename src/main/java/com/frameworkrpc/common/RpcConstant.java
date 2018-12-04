@@ -2,13 +2,6 @@ package com.frameworkrpc.common;
 
 public class RpcConstant {
 
-	public static int DEFAULT_NIO_THREAD_COUNT;
-	public static int DEFAULT_NIO_PORT = 2180;
-
-	static {
-		DEFAULT_NIO_THREAD_COUNT = Math.max(2, Runtime.getRuntime().availableProcessors()) * 2;
-	}
-
 	public final static String ZK_REGISTRY_PATH = "/myrpc";
 	public final static String PATH_SEPARATOR = "/";
 
@@ -28,6 +21,9 @@ public class RpcConstant {
 	public final static String REGISTRYNAME = "registryname";
 	public final static String ADDRESS = "address";
 	public final static String RETRIES = "retries";
+	public final static String IOTHREADS = "iothreads";
+	public final static String THREADPOOL = "threadpool";
+	public final static String THREADS = "threads";
 
 
 	public static final String PROTOCOL = "protocol";
@@ -55,4 +51,9 @@ public class RpcConstant {
 
 	public final static int DEFAULT_REGISTRY_TIMEOUT = 5000;
 	public final static int DEFAULT_REGISTRY_SESSIONTIMEOUT = 60000;
+
+	public final static int DEFAULT_IOTHREADS = Math.max(2, Runtime.getRuntime().availableProcessors()) * 2;
+	public final static int DEFAULT_IOPORT = 2180;
+	public final static String DEFAULT_THREADPOOL = "fixed";
+	public final static int DEFAULT_THREADS = 200;
 }

@@ -6,7 +6,7 @@ public class RpcRequester implements Serializable {
 
 	private static final long serialVersionUID = -865929691710728615L;
 	private String requestId;
-	private String className;
+	private String interfaceName;
 	private String methodName;
 	private Class<?>[] parameterTypes;
 	private Object[] parameters;
@@ -19,12 +19,12 @@ public class RpcRequester implements Serializable {
 		this.requestId = requestId;
 	}
 
-	public String getClassName() {
-		return className;
+	public String getInterfaceName() {
+		return interfaceName;
 	}
 
-	public void setClassName(String className) {
-		this.className = className;
+	public void setInterfaceName(String interfaceName) {
+		this.interfaceName = interfaceName;
 	}
 
 	public String getMethodName() {

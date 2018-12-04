@@ -104,7 +104,7 @@ public class ZookeeperRegistry extends AbstractRegistry implements RegistryServi
 				for (URL url : registeredServiceUrls) {
 					createNode(url, ZkNodeType.PROVIDER);
 				}
-				logger.warn("reconnectService : {}", registeredServiceUrls);
+				logger.warn("reconnectService: {}", registeredServiceUrls);
 			} finally {
 				providerLock.unlock();
 			}
@@ -118,7 +118,7 @@ public class ZookeeperRegistry extends AbstractRegistry implements RegistryServi
 				for (URL url : registerConsumersUrls) {
 					createNode(url, ZkNodeType.CONSUMER);
 				}
-				logger.warn("reconnectConsumer : {}", registerConsumersUrls);
+				logger.warn("reconnectConsumer: {}", registerConsumersUrls);
 			} finally {
 				consumerLock.unlock();
 			}
@@ -137,13 +137,13 @@ public class ZookeeperRegistry extends AbstractRegistry implements RegistryServi
 			IZkChildListener zkChildListener = new IZkChildListener() {
 				@Override
 				public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-					logger.info("subscribeService currentChilds : {}", currentChilds);
+					logger.info("subscribeService currentChilds: {}", currentChilds);
 					serviceListener.handleNodeChildChange(parentPath, currentChilds, serviceDiscoveUrls);
 				}
 			};
 			zkClient.subscribeChildChanges(parentPath, zkChildListener);
 			subscribeListeners.put(parentPath, zkChildListener);
-			logger.info("subscribeService : {}", url.toFullStr());
+			logger.info("subscribeService: {}", url.toFullStr());
 		} finally {
 			consumerLock.unlock();
 		}
@@ -161,7 +161,7 @@ public class ZookeeperRegistry extends AbstractRegistry implements RegistryServi
 			IZkChildListener zkChildListener = subscribeListeners.get(parentPath);
 			zkClient.unsubscribeChildChanges(parentPath, zkChildListener);
 			subscribeListeners.remove(parentPath);
-			logger.info("unSubscribeService : {}", url.toFullStr());
+			logger.info("unSubscribeService: {}", url.toFullStr());
 		} finally {
 			consumerLock.unlock();
 		}

@@ -3,7 +3,7 @@ package com.frameworkrpc.config;
 import com.frameworkrpc.common.NetUtils;
 import com.frameworkrpc.common.RpcConstant;
 import com.frameworkrpc.common.StringUtils;
-import com.frameworkrpc.exporter.RpcExporter;
+import com.frameworkrpc.exporter.Exporter;
 import com.frameworkrpc.model.URL;
 
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public class SerRefConfig<T> extends AbstractConfig {
 	protected String cluster;
 	protected long timeout;
 	protected int retries;
-	protected RpcExporter rpcExporter;
+	protected Exporter exporter;
 
 	public void setId(String id) {
 		this.id = id;
@@ -147,11 +147,12 @@ public class SerRefConfig<T> extends AbstractConfig {
 				return url;
 			Map<String, String> parameters = new HashMap<>();
 			parameters.put("id", getId());
+			addServiceParameters(parameters);
+			addAppliactionParameters(parameters);
+			addProtocolParameters(parameters);
+			addRegistryParameters(parameters);
+
 			String scheme = this.getClass().getName().contains("Service") ? RpcConstant.PROVIDERSCHEME : RpcConstant.CONSUMERSCHEME;
-			serviceParameters(parameters);
-			appliactionParameters(parameters);
-			protocolParameters(parameters);
-			registryParameters(parameters);
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append(String
 					.format("%s://%s:%s/%s?", scheme, getProtocol().getHost(), String.valueOf(getProtocol().getPort()), getInterface()));
@@ -162,7 +163,7 @@ public class SerRefConfig<T> extends AbstractConfig {
 		return url;
 	}
 
-	private void serviceParameters(Map<String, String> parameters) {
+	private void addServiceParameters(Map<String, String> parameters) {
 		if (StringUtils.isEmpty(getInterface())) {
 			throw new IllegalStateException("interfaceName can not be empty");
 		}
@@ -175,7 +176,7 @@ public class SerRefConfig<T> extends AbstractConfig {
 		parameters.put("retries", getRetries() > 0 ? String.valueOf(getRetries()) : String.valueOf(RpcConstant.DEFAULT_RRETRIES));
 	}
 
-	private void appliactionParameters(Map<String, String> parameters) {
+	private void addAppliactionParameters(Map<String, String> parameters) {
 		if (StringUtils.isEmpty(getApplication().getName())) {
 			throw new IllegalStateException("applicationName can not be empty");
 		}
@@ -184,7 +185,7 @@ public class SerRefConfig<T> extends AbstractConfig {
 				!StringUtils.isEmpty(getApplication().getVersion()) ? getApplication().getVersion() : RpcConstant.DEFAULT_VERSION);
 	}
 
-	private void protocolParameters(Map<String, String> parameters) {
+	private void addProtocolParameters(Map<String, String> parameters) {
 		parameters.put("protocol", !StringUtils.isEmpty(getProtocol().getName()) ? getProtocol().getName() : RpcConstant.DEFAULT_PROTOCOL);
 		parameters.put("host", getProtocol().getHost());
 		parameters.put("port", String.valueOf(getProtocol().getPort()));
@@ -193,9 +194,16 @@ public class SerRefConfig<T> extends AbstractConfig {
 		parameters.put("serialization",
 				!StringUtils.isEmpty(getProtocol().getSerialization()) ? getProtocol().getSerialization() : RpcConstant.DEFAULT_SERIALIZATION);
 		parameters.put("heartbeat", String.valueOf(getProtocol().getHeartbeat()));
+
+		parameters.put("threadpool",
+				!StringUtils.isEmpty(getProtocol().getThreadpool()) ? getProtocol().getThreadpool() : RpcConstant.DEFAULT_THREADPOOL);
+		parameters.put("threads",
+				getProtocol().getThreads() > 0 ? String.valueOf(getProtocol().getThreads()) : String.valueOf(RpcConstant.DEFAULT_THREADS));
+		parameters.put("iothreads",
+				getProtocol().getIothreads() > 0 ? String.valueOf(getProtocol().getIothreads()) : String.valueOf(RpcConstant.DEFAULT_IOTHREADS));
 	}
 
-	private void registryParameters(Map<String, String> parameters) {
+	private void addRegistryParameters(Map<String, String> parameters) {
 		if (StringUtils.isEmpty(getRegistry().getRegistryname())) {
 			throw new IllegalStateException("registryname can not be empty");
 		}
@@ -205,7 +213,7 @@ public class SerRefConfig<T> extends AbstractConfig {
 		parameters.put("registryname", getRegistry().getRegistryname());
 		parameters.put("address", getRegistry().getAddress());
 		parameters.put("registry.timeout",
-				getTimeout() > 0 ? String.valueOf(getRegistry().getTimeout()) : String.valueOf(RpcConstant.DEFAULT_REGISTRY_TIMEOUT));
+				getRegistry().getTimeout() > 0 ? String.valueOf(getRegistry().getTimeout()) : String.valueOf(RpcConstant.DEFAULT_REGISTRY_TIMEOUT));
 		parameters.put("registry.sessiontimeout", getRegistry().getSessiontimeout() > 0 ?
 				String.valueOf(getRegistry().getSessiontimeout()) :
 				String.valueOf(RpcConstant.DEFAULT_REGISTRY_SESSIONTIMEOUT));

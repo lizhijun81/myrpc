@@ -8,7 +8,7 @@ import com.frameworkrpc.server.ServerFactory;
 
 import java.io.Serializable;
 
-public class RpcExporter implements Serializable {
+public class RpcExporter implements Exporter, Serializable {
 
 	private static final long serialVersionUID = 6568819430920801686L;
 	private URL url;
@@ -21,19 +21,22 @@ public class RpcExporter implements Serializable {
 		this.registryService = RegistryFactory.createRegistry(url);
 	}
 
-	public RpcExporter openServer() {
+	@Override
+	public Exporter openServer() {
 		if (!server.isOpen()) {
 			server.doOpen();
 		}
 		return this;
 	}
 
-	public RpcExporter exporter() {
+	@Override
+	public Exporter exporter() {
 		registryService.registerService(url);
 		return this;
 	}
 
-	public RpcExporter unexport() {
+	@Override
+	public Exporter unexport() {
 		registryService.unRegisterService(url);
 		return this;
 	}

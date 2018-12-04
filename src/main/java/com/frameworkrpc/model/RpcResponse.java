@@ -6,9 +6,9 @@ public class RpcResponse implements Serializable {
 
 	private static final long serialVersionUID = -2638927263470157485L;
 	private String requestId;
-	private String error;
+	private Exception error;
 	private Object result;
-	private boolean returnNotNull;
+	private long processTime;
 
 	public String getRequestId() {
 		return requestId;
@@ -18,11 +18,11 @@ public class RpcResponse implements Serializable {
 		this.requestId = requestId;
 	}
 
-	public String getError() {
+	public Exception getError() {
 		return error;
 	}
 
-	public void setError(String error) {
+	public void setError(Exception error) {
 		this.error = error;
 	}
 
@@ -34,11 +34,12 @@ public class RpcResponse implements Serializable {
 		this.result = result;
 	}
 
-	public boolean isReturnNotNull() {
-		return returnNotNull;
+	public long getProcessTime() {
+		return processTime;
 	}
 
-	public void setReturnNotNull(boolean returnNotNull) {
-		this.returnNotNull = returnNotNull;
+	public void setProcessTime(long processTime) {
+		this.processTime = processTime;
 	}
+
 }
