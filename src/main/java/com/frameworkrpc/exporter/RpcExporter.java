@@ -22,21 +22,19 @@ public class RpcExporter implements Exporter, Serializable {
 	}
 
 	@Override
-	public Exporter openServer() {
+	public Exporter export() {
 		if (!server.isOpen()) {
 			server.doOpen();
 		}
-		return this;
-	}
-
-	@Override
-	public Exporter exporter() {
 		registryService.registerService(url);
 		return this;
 	}
 
 	@Override
 	public Exporter unexport() {
+		if (!server.isClose()) {
+			server.doClose();
+		}
 		registryService.unRegisterService(url);
 		return this;
 	}

@@ -8,6 +8,7 @@ public class ServiceConfig<T> extends SerRefConfig {
 	private static final long serialVersionUID = 4186914879813709242L;
 	private T ref;
 
+
 	public T getRef() {
 		return ref;
 	}
@@ -18,7 +19,7 @@ public class ServiceConfig<T> extends SerRefConfig {
 
 	public void export() {
 		checkRef();
-		exporter = new RpcExporter(getURL()).openServer().exporter();
+		exporter = new RpcExporter(getURL()).export();
 		NettyRpcInstanceFatoryImpl.getInstance().setRpcInstance(getInterface(), getRef());
 	}
 

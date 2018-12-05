@@ -22,7 +22,7 @@ public class SerRefConfig<T> extends AbstractConfig {
 	protected String group;
 	protected String loadbalance;
 	protected String cluster;
-	protected long timeout;
+	protected int timeout;
 	protected int retries;
 	protected Exporter exporter;
 
@@ -117,11 +117,11 @@ public class SerRefConfig<T> extends AbstractConfig {
 		this.cluster = cluster;
 	}
 
-	public long getTimeout() {
+	public int getTimeout() {
 		return timeout;
 	}
 
-	public void setTimeout(long timeout) {
+	public void setTimeout(int timeout) {
 		this.timeout = timeout;
 	}
 
@@ -193,8 +193,8 @@ public class SerRefConfig<T> extends AbstractConfig {
 				!StringUtils.isEmpty(getProtocol().getTransporter()) ? getProtocol().getTransporter() : RpcConstant.DEFAULT_TRANSPORTER);
 		parameters.put("serialization",
 				!StringUtils.isEmpty(getProtocol().getSerialization()) ? getProtocol().getSerialization() : RpcConstant.DEFAULT_SERIALIZATION);
-		parameters.put("heartbeat", String.valueOf(getProtocol().getHeartbeat()));
-
+		parameters.put("heartbeat",
+				getProtocol().getHeartbeat() > 0 ? String.valueOf(getProtocol().getHeartbeat()) : String.valueOf(RpcConstant.DEFAULT_HEARTBEAT));
 		parameters.put("threadpool",
 				!StringUtils.isEmpty(getProtocol().getThreadpool()) ? getProtocol().getThreadpool() : RpcConstant.DEFAULT_THREADPOOL);
 		parameters.put("threads",

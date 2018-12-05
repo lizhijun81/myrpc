@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 public class NettyServer extends AbstractServer implements Server {
 
@@ -38,7 +39,7 @@ public class NettyServer extends AbstractServer implements Server {
 	private Channel serverChannel;
 	private NettyRpcInstanceFactory nettyRpcInstanceFactory;
 
-	private volatile static Executor threadPoolExecutor;
+	private volatile static ExecutorService threadPoolExecutor;
 
 	public NettyServer(URL url, NettyRpcInstanceFactory nettyRpcInstanceFactory) {
 		super(url);
@@ -61,7 +62,7 @@ public class NettyServer extends AbstractServer implements Server {
 	}
 
 	@Override
-	public void doOpen() {
+	public synchronized void doOpen() {
 
 		bootstrap = new ServerBootstrap();
 		bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("NettyServerBoss", true));
@@ -75,7 +76,7 @@ public class NettyServer extends AbstractServer implements Server {
 			}
 		}
 
-		IdleStateHandler idleStateHandler = new IdleStateHandler(60, 0, 0) {
+		IdleStateHandler idleStateHandler = new IdleStateHandler(url.getIntParameter(RpcConstant.HEARTBEAT), 0, 0) {
 			@Override
 			public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 				if (evt instanceof IdleStateEvent) {
@@ -95,7 +96,9 @@ public class NettyServer extends AbstractServer implements Server {
 					@Override
 					protected void initChannel(NioSocketChannel ch) throws Exception {
 						Serialize serialize = SerializeFactory.createSerialize(getURL().getParameter(RpcConstant.SERIALIZATION));
-						ch.pipeline().addLast("idlestate", idleStateHandler).addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))
+						ch.pipeline()
+								.addLast("idlestate", idleStateHandler)
+								.addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))
 								.addLast("encoder", new MessageEncoder(serialize, RpcResponse.class))
 								.addLast("handler", new NettyServerHandler(url, nettyRpcInstanceFactory, threadPoolExecutor));
 					}
@@ -108,7 +111,7 @@ public class NettyServer extends AbstractServer implements Server {
 	}
 
 	@Override
-	public void doClose() {
+	public synchronized void doClose() {
 		if (serverChannel != null) {
 			serverChannel.close();
 			bossGroup.shutdownGracefully();

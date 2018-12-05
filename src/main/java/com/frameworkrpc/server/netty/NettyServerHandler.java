@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -27,9 +28,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequester
 
 	private NettyRpcInstanceFactory nettyRpcInstanceFactory;
 
-	private Executor threadPoolExecutor;
+	private ExecutorService threadPoolExecutor;
 
-	public NettyServerHandler(URL url, NettyRpcInstanceFactory nettyRpcInstanceFactory, Executor threadPoolExecutor) {
+	public NettyServerHandler(URL url, NettyRpcInstanceFactory nettyRpcInstanceFactory, ExecutorService threadPoolExecutor) {
 		this.url = url;
 		this.nettyRpcInstanceFactory = nettyRpcInstanceFactory;
 		this.threadPoolExecutor = threadPoolExecutor;

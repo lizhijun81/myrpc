@@ -12,7 +12,7 @@ public class RpcThreadPool {
 
 	private static final Logger logger = LoggerFactory.getLogger(RpcThreadPool.class);
 
-	public static Executor getExecutor(URL url) {
+	public static ExecutorService getExecutor(URL url) {
 		logger.info("ThreadPool Core[threads:" + url.getParameter(RpcConstant.THREADS) + ", threadpool:" + url.getParameter(RpcConstant.THREADPOOL)
 				+ "]");
 		boolean fixedThreadpool = url.getParameter(RpcConstant.THREADPOOL).equals("fixed");
