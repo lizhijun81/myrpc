@@ -6,9 +6,9 @@ public interface ChannelServer {
 
 	URL getUrl();
 
-	boolean isOpen();
+	boolean isOpened();
 
-	boolean isClose();
+	boolean isClosed();
 
 	boolean isBound();
 

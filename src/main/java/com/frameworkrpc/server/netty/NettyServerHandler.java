@@ -14,7 +14,6 @@ import net.sf.cglib.reflect.FastMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -22,13 +21,23 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequester> {
 
-	private static final Logger logger = LoggerFactory.getLogger(RpcRequester.class);
+	private static final Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
 
 	private URL url;
-
 	private NettyRpcInstanceFactory nettyRpcInstanceFactory;
-
 	private ExecutorService threadPoolExecutor;
+
+	public URL getUrl() {
+		return url;
+	}
+
+	public NettyRpcInstanceFactory getNettyRpcInstanceFactory() {
+		return nettyRpcInstanceFactory;
+	}
+
+	public ExecutorService getThreadPoolExecutor() {
+		return threadPoolExecutor;
+	}
 
 	public NettyServerHandler(URL url, NettyRpcInstanceFactory nettyRpcInstanceFactory, ExecutorService threadPoolExecutor) {
 		this.url = url;
@@ -107,19 +116,17 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequester
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		logger.info("NettyServerHandler channelActive: remote={} local={}", ctx.channel().remoteAddress(), ctx.channel().localAddress());
 		ctx.fireChannelActive();
 	}
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		logger.info("NettyServerHandler channelInactive: remote={} local={}", ctx.channel().remoteAddress(), ctx.channel().localAddress());
 		ctx.fireChannelInactive();
 	}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		logger.error("NettyServerHandler exceptionCaught: remote={} local={} event={}", ctx.channel().remoteAddress(), ctx.channel().localAddress(), cause.getMessage(), cause);
+		logger.error("Server exceptionCaught: remote={} local={} event={}", ctx.channel().remoteAddress(), ctx.channel().localAddress(), cause.getMessage(), cause);
 		ctx.channel().close();
 	}
 }

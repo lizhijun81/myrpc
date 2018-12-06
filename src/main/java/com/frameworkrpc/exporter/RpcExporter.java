@@ -4,7 +4,7 @@ import com.frameworkrpc.model.URL;
 import com.frameworkrpc.registry.RegistryFactory;
 import com.frameworkrpc.registry.RegistryService;
 import com.frameworkrpc.server.ChannelServer;
-import com.frameworkrpc.server.ServerFactory;
+import com.frameworkrpc.server.ChannelServerFactory;
 
 import java.io.Serializable;
 
@@ -17,13 +17,13 @@ public class RpcExporter implements Exporter, Serializable {
 
 	public RpcExporter(URL url) {
 		this.url = url;
-		this.server = ServerFactory.createServer(url);
+		this.server = ChannelServerFactory.createServer(url);
 		this.registryService = RegistryFactory.createRegistry(url);
 	}
 
 	@Override
 	public Exporter export() {
-		if (!server.isOpen()) {
+		if (!server.isOpened()) {
 			server.doOpen();
 		}
 		registryService.registerService(url);
@@ -32,7 +32,7 @@ public class RpcExporter implements Exporter, Serializable {
 
 	@Override
 	public Exporter unexport() {
-		if (!server.isClose()) {
+		if (!server.isClosed()) {
 			server.doClose();
 		}
 		registryService.unRegisterService(url);

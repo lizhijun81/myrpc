@@ -1,6 +1,6 @@
 package com.frameworkrpc.server;
 
-public enum ServerEnum {
+public enum ChannelServerEnum {
 
 	Netty("netty");
 
@@ -14,12 +14,12 @@ public enum ServerEnum {
 		this.servername = servername;
 	}
 
-	ServerEnum(String servername) {
+	ChannelServerEnum(String servername) {
 		this.servername = servername;
 	}
 
-	public static ServerEnum getServerEnum(String servername) {
-		for (ServerEnum serverEnum : ServerEnum.values()) {
+	public static ChannelServerEnum getServerEnum(String servername) {
+		for (ChannelServerEnum serverEnum : ChannelServerEnum.values()) {
 			if (serverEnum.getServername().equals(servername)) {
 				return serverEnum;
 			}

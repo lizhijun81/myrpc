@@ -7,7 +7,7 @@ import java.net.InetSocketAddress;
 
 public class AbstractClient {
 
-	protected volatile boolean isOpen;
+	protected volatile boolean isOpened;
 	protected volatile boolean isClosed;
 	protected volatile boolean isConnected;
 	protected URL url;

@@ -37,7 +37,6 @@ public class NettyServer extends AbstractServer implements ChannelServer {
 	private EventLoopGroup workerGroup;
 	private Channel serverChannel;
 	private NettyRpcInstanceFactory nettyRpcInstanceFactory;
-
 	private volatile static ExecutorService threadPoolExecutor;
 
 	public NettyServer(URL url, NettyRpcInstanceFactory nettyRpcInstanceFactory) {
@@ -46,13 +45,13 @@ public class NettyServer extends AbstractServer implements ChannelServer {
 	}
 
 	@Override
-	public boolean isOpen() {
-		return isOpen;
+	public boolean isOpened() {
+		return isOpened;
 	}
 
 	@Override
-	public boolean isClose() {
-		return isClose;
+	public boolean isClosed() {
+		return isClosed;
 	}
 
 	@Override
@@ -66,6 +65,7 @@ public class NettyServer extends AbstractServer implements ChannelServer {
 		bootstrap = new ServerBootstrap();
 		bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("NettyServerBoss", true));
 		workerGroup = new NioEventLoopGroup(url.getIntParameter(RpcConstant.IOTHREADS), new DefaultThreadFactory("NettyServerWorker", true));
+
 
 		if (threadPoolExecutor == null) {
 			synchronized (NettyServer.class) {
@@ -94,7 +94,7 @@ public class NettyServer extends AbstractServer implements ChannelServer {
 				.childHandler(new ChannelInitializer<NioSocketChannel>() {
 					@Override
 					protected void initChannel(NioSocketChannel ch) throws Exception {
-						Serialize serialize = SerializeFactory.createSerialize(getUrl().getParameter(RpcConstant.SERIALIZATION));
+						Serialize serialize = SerializeFactory.createSerialize(url.getParameter(RpcConstant.SERIALIZATION));
 						ch.pipeline()
 								.addLast("idlestate", idleStateHandler)
 								.addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))
@@ -106,7 +106,7 @@ public class NettyServer extends AbstractServer implements ChannelServer {
 		channelFuture.syncUninterruptibly();
 		serverChannel = channelFuture.channel();
 		logger.info("Netty RPC Server start success!port:{}", NetUtils.getAvailablePort());
-		isOpen = true;
+		isOpened = true;
 	}
 
 	@Override
@@ -119,6 +119,6 @@ public class NettyServer extends AbstractServer implements ChannelServer {
 			workerGroup = null;
 		}
 		logger.info("Netty RPC Server shutdown success!port:{}", NetUtils.getAvailablePort());
-		isClose = true;
+		isClosed = true;
 	}
 }

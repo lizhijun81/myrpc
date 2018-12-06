@@ -7,20 +7,20 @@ import com.frameworkrpc.server.netty.NettyServer;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ServerFactory {
+public class ChannelServerFactory {
 
-	private final static ConcurrentHashMap<String, ChannelServer> serverMap = new ConcurrentHashMap<>();
+	private final static ConcurrentHashMap<String, ChannelServer> channelServerMap = new ConcurrentHashMap<>();
 
 	public static ChannelServer createServer(URL url) {
 		String key = String.format("%s", url.getServerPortStr());
-		ServerEnum serverEnum = ServerEnum.getServerEnum(url.getParameter(RpcConstant.TRANSPORTER));
-		if (!serverMap.containsKey(key)) {
-			serverMap.put(key, createServer(url, serverEnum));
+		ChannelServerEnum serverEnum = ChannelServerEnum.getServerEnum(url.getParameter(RpcConstant.TRANSPORTER));
+		if (!channelServerMap.containsKey(key)) {
+			channelServerMap.put(key, createServer(url, serverEnum));
 		}
-		return serverMap.get(key);
+		return channelServerMap.get(key);
 	}
 
-	private static ChannelServer createServer(URL url, ServerEnum serverEnum) {
+	private static ChannelServer createServer(URL url, ChannelServerEnum serverEnum) {
 		switch (serverEnum) {
 			case Netty:
 				return new NettyServer(url, NettyRpcInstanceFatoryImpl.getInstance());

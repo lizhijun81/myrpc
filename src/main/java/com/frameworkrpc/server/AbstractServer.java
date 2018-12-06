@@ -4,8 +4,8 @@ import com.frameworkrpc.model.URL;
 
 public class AbstractServer {
 
-	protected volatile boolean isOpen;
-	protected volatile boolean isClose;
+	protected volatile boolean isOpened;
+	protected volatile boolean isClosed;
 	protected URL url;
 
 	public AbstractServer(URL url) {
