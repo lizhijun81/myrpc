@@ -12,7 +12,7 @@ import com.frameworkrpc.serialize.MessageEncoder;
 import com.frameworkrpc.serialize.Serialize;
 import com.frameworkrpc.serialize.SerializeFactory;
 import com.frameworkrpc.server.AbstractServer;
-import com.frameworkrpc.server.Server;
+import com.frameworkrpc.server.ChannelServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
@@ -26,10 +26,9 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 
-public class NettyServer extends AbstractServer implements Server {
+public class NettyServer extends AbstractServer implements ChannelServer {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
 
@@ -95,7 +94,7 @@ public class NettyServer extends AbstractServer implements Server {
 				.childHandler(new ChannelInitializer<NioSocketChannel>() {
 					@Override
 					protected void initChannel(NioSocketChannel ch) throws Exception {
-						Serialize serialize = SerializeFactory.createSerialize(getURL().getParameter(RpcConstant.SERIALIZATION));
+						Serialize serialize = SerializeFactory.createSerialize(getUrl().getParameter(RpcConstant.SERIALIZATION));
 						ch.pipeline()
 								.addLast("idlestate", idleStateHandler)
 								.addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))

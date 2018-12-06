@@ -9,10 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerFactory {
 
-	private final static ConcurrentHashMap<String, Server> serverMap = new ConcurrentHashMap<>();
+	private final static ConcurrentHashMap<String, ChannelServer> serverMap = new ConcurrentHashMap<>();
 
-	public static Server createServer(URL url) {
-		String key = String.format("%s:%s", url.getServerPortStr(), url.getParameter(RpcConstant.TRANSPORTER));
+	public static ChannelServer createServer(URL url) {
+		String key = String.format("%s", url.getServerPortStr());
 		ServerEnum serverEnum = ServerEnum.getServerEnum(url.getParameter(RpcConstant.TRANSPORTER));
 		if (!serverMap.containsKey(key)) {
 			serverMap.put(key, createServer(url, serverEnum));
@@ -20,7 +20,7 @@ public class ServerFactory {
 		return serverMap.get(key);
 	}
 
-	private static Server createServer(URL url, ServerEnum serverEnum) {
+	private static ChannelServer createServer(URL url, ServerEnum serverEnum) {
 		switch (serverEnum) {
 			case Netty:
 				return new NettyServer(url, NettyRpcInstanceFatoryImpl.getInstance());

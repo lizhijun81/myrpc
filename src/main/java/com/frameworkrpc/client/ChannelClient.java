@@ -2,22 +2,23 @@ package com.frameworkrpc.client;
 
 import com.frameworkrpc.model.URL;
 
-public interface Client {
+public interface ChannelClient {
 
-	URL getURL();
+	URL getUrl();
 
 	boolean isOpen();
 
-	boolean isClose();
+	boolean isClosed();
+
 
 	void doOpen();
 
 	void doClose();
 
-	void doconnect();
+	void doConnect();
 
-	void disconnect();
+	void disConnect();
 
-	void reconnect();
+
 
 }

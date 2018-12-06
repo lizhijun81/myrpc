@@ -2,9 +2,9 @@ package com.frameworkrpc.server;
 
 import com.frameworkrpc.model.URL;
 
-public interface Server {
+public interface ChannelServer {
 
-	URL getURL();
+	URL getUrl();
 
 	boolean isOpen();
 

@@ -14,9 +14,9 @@ import java.util.stream.Stream;
 
 public class ZkServiceListener implements ServiceListener {
 	@Override
-	public void handleNodeChildChange(String parentPath, List<String> currentChilds, ConcurrentHashMap<String, List<URL>> serviceDiscoveUrls) {
+	public void handleNodeChildChange(String parentPath, List<String> currentChilds, ConcurrentHashMap<String, List<URL>> availableServiceUrls) {
 		if (currentChilds.size() <= 0) {
-			serviceDiscoveUrls.remove(parentPath);
+			availableServiceUrls.remove(parentPath);
 			return;
 		}
 
@@ -28,11 +28,11 @@ public class ZkServiceListener implements ServiceListener {
 			}
 		});
 
-		serviceDiscoveUrls.put(parentPath, currentChildsStream.collect(Collectors.toList()));
+		availableServiceUrls.put(parentPath, currentChildsStream.collect(Collectors.toList()));
 	}
 
 	@Override
-	public void handleNodeDataDeleted(String parentPath, String currentNode, ConcurrentHashMap<String, List<URL>> serviceDiscoveUrls) {
+	public void handleNodeDataDeleted(String parentPath, String currentNode, ConcurrentHashMap<String, List<URL>> availableServiceUrls) {
 
 	}
 }

@@ -138,7 +138,7 @@ public class ZookeeperRegistry extends AbstractRegistry implements RegistryServi
 				@Override
 				public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
 					logger.info("subscribeService currentChilds: {}", currentChilds);
-					serviceListener.handleNodeChildChange(parentPath, currentChilds, serviceDiscoveUrls);
+					serviceListener.handleNodeChildChange(parentPath, currentChilds, availableServiceUrls);
 				}
 			};
 			zkClient.subscribeChildChanges(parentPath, zkChildListener);
@@ -170,12 +170,12 @@ public class ZookeeperRegistry extends AbstractRegistry implements RegistryServi
 	@Override
 	public List<URL> discoverService(URL url) {
 		String parentPath = ZkUtils.toNodeTypePath(url, ZkNodeType.PROVIDER);
-		if (serviceDiscoveUrls.containsKey(parentPath))
-			return serviceDiscoveUrls.get(parentPath);
+		if (availableServiceUrls.containsKey(parentPath))
+			return availableServiceUrls.get(parentPath);
 		if (zkClient.exists(parentPath)) {
 			List<String> currentChilds = zkClient.getChildren(parentPath);
-			serviceListener.handleNodeChildChange(parentPath, currentChilds, serviceDiscoveUrls);
+			serviceListener.handleNodeChildChange(parentPath, currentChilds, availableServiceUrls);
 		}
-		return super.discoverService(url, serviceDiscoveUrls.get(parentPath));
+		return super.discoverService(url, availableServiceUrls.get(parentPath));
 	}
 }

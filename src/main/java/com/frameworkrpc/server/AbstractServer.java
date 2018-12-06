@@ -12,7 +12,7 @@ public class AbstractServer {
 		this.url = url;
 	}
 
-	public URL getURL() {
+	public URL getUrl() {
 		return url;
 	}
 

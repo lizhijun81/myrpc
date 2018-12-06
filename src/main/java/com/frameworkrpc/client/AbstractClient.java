@@ -8,14 +8,15 @@ import java.net.InetSocketAddress;
 public class AbstractClient {
 
 	protected volatile boolean isOpen;
-	protected volatile boolean isClose;
+	protected volatile boolean isClosed;
+	protected volatile boolean isConnected;
 	protected URL url;
 
 	public AbstractClient(URL url) {
 		this.url = url;
 	}
 
-	public URL getURL() {
+	public URL getUrl() {
 		return url;
 	}
 
@@ -26,4 +27,6 @@ public class AbstractClient {
 	protected int getConnectTimeout() {
 		return url.getIntParameter(RpcConstant.CONNECTTIMEOUT);
 	}
+
+
 }

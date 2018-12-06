@@ -9,7 +9,7 @@ import com.frameworkrpc.model.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SerRefConfig<T> extends AbstractConfig {
+public class ExporterConfig<T> extends AbstractConfig {
 
 	private static final long serialVersionUID = 5369377538761488535L;
 	protected String id;
@@ -135,11 +135,7 @@ public class SerRefConfig<T> extends AbstractConfig {
 
 	private volatile URL url;
 
-	private volatile URL registryURL;
-
-	private volatile URL protocolURL;
-
-	protected URL getURL() {
+	protected URL getUrl() {
 		if (url != null)
 			return url;
 		synchronized (this) {

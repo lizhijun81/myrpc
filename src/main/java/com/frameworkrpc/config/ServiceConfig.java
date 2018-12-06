@@ -3,7 +3,7 @@ package com.frameworkrpc.config;
 import com.frameworkrpc.exporter.RpcExporter;
 import com.frameworkrpc.rpc.netty.NettyRpcInstanceFatoryImpl;
 
-public class ServiceConfig<T> extends SerRefConfig {
+public class ServiceConfig<T> extends ExporterConfig {
 
 	private static final long serialVersionUID = 4186914879813709242L;
 	private T ref;
@@ -19,7 +19,7 @@ public class ServiceConfig<T> extends SerRefConfig {
 
 	public void export() {
 		checkRef();
-		exporter = new RpcExporter(getURL()).export();
+		exporter = new RpcExporter(getUrl()).export();
 		NettyRpcInstanceFatoryImpl.getInstance().setRpcInstance(getInterface(), getRef());
 	}
 

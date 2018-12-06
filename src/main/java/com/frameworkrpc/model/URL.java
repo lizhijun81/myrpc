@@ -67,7 +67,7 @@ public class URL implements Serializable {
 		return this.uri.toString();
 	}
 
-	public synchronized void addParameters(String name, String value) {
+	public synchronized URL addParameters(String name, String value) {
 		parameters.put(name, value);
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(String.format("%s://%s:%s/%s?", getScheme(), getHost(), getPort(), getPath()));
@@ -77,6 +77,7 @@ public class URL implements Serializable {
 		} catch (URISyntaxException e) {
 			throw new CommonRpcException(e.getMessage(), e);
 		}
+		return this;
 	}
 
 	public synchronized void setParameters() {

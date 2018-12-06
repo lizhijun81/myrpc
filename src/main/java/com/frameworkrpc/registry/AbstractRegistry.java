@@ -15,7 +15,7 @@ import static com.google.common.collect.Sets.newConcurrentHashSet;
 public class AbstractRegistry {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractRegistry.class);
-	protected final ConcurrentHashMap<String, List<URL>> serviceDiscoveUrls = new ConcurrentHashMap<>();
+	protected final ConcurrentHashMap<String, List<URL>> availableServiceUrls = new ConcurrentHashMap<>();
 	protected final Set<URL> registeredServiceUrls = newConcurrentHashSet();
 	protected final Set<URL> registerConsumersUrls = newConcurrentHashSet();
 
