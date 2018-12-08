@@ -1,18 +1,20 @@
 package com.frameworkrpc.client.netty;
 
+import com.frameworkrpc.annotation.RpcComponent;
 import com.frameworkrpc.client.AbstractClient;
-import com.frameworkrpc.client.ChannelClient;
+import com.frameworkrpc.client.Client;
 import com.frameworkrpc.common.NetUtils;
 import com.frameworkrpc.common.RpcConstant;
 import com.frameworkrpc.concurrent.RpcThreadPool;
+import com.frameworkrpc.enums.Scope;
 import com.frameworkrpc.exception.RemotingException;
+import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.model.RpcRequester;
 import com.frameworkrpc.model.RpcResponse;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.serialize.MessageDecoder;
 import com.frameworkrpc.serialize.MessageEncoder;
 import com.frameworkrpc.serialize.Serialize;
-import com.frameworkrpc.serialize.SerializeFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -27,12 +29,10 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-;
-
-public class NettyClient extends AbstractClient implements ChannelClient {
+@RpcComponent(name = "netty")
+public class NettyClient extends AbstractClient implements Client {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
-
 	private Bootstrap bootstrap;
 	private static final NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup(RpcConstant.DEFAULT_IOTHREADS,
 			new DefaultThreadFactory("NettyClientBoss", true));
@@ -84,7 +84,8 @@ public class NettyClient extends AbstractClient implements ChannelClient {
 		bootstrap.group(nioEventLoopGroup).channel(NioSocketChannel.class).handler(new ChannelInitializer<NioSocketChannel>() {
 			@Override
 			protected void initChannel(NioSocketChannel ch) throws Exception {
-				Serialize serialize = SerializeFactory.createSerialize(getUrl().getParameter(RpcConstant.SERIALIZATION));
+				Serialize serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
+						.getExtension(url.getParameter(RpcConstant.SERIALIZATION), Scope.SINGLETON);
 				ch.pipeline().addLast("decoder", new MessageDecoder(serialize, RpcResponse.class))
 						.addLast("encoder", new MessageEncoder(serialize, RpcRequester.class))
 						.addLast("handler", new NettyClientHandler(url, threadPoolExecutor));
@@ -157,11 +158,6 @@ public class NettyClient extends AbstractClient implements ChannelClient {
 			channel.close();
 			isConnected = false;
 		}
-	}
-
-	@Override
-	public RpcResponse call(RpcRequester request) {
-		return null;
 	}
 
 }

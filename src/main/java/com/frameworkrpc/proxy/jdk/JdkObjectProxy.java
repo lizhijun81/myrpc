@@ -1,17 +1,17 @@
 package com.frameworkrpc.proxy.jdk;
 
-import com.frameworkrpc.client.ChannelClient;
-import com.frameworkrpc.client.ChannelClientFactory;
+import com.frameworkrpc.annotation.RpcComponent;
 import com.frameworkrpc.model.RpcRequester;
 import com.frameworkrpc.model.URL;
-import com.frameworkrpc.proxy.RpcProxy;
+import com.frameworkrpc.proxy.ObjectProxy;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.UUID;
 
-public class JdkRpcProxy implements RpcProxy {
+@RpcComponent(name = "jdk")
+public class JdkObjectProxy implements ObjectProxy {
 
 	@Override
 	public <T> T getInstance(Class<T> inf, URL url) {
@@ -40,12 +40,7 @@ public class JdkRpcProxy implements RpcProxy {
 				request.setParameterTypes(method.getParameterTypes());
 				request.setParameters(args);
 
-				ChannelClient channelClient = ChannelClientFactory.createClient(url);
-				if (!channelClient.isOpened())
-					channelClient.doClose();
-				if (!channelClient.isConnected())
-					channelClient.doClose();
-				return channelClient.call(request);
+				return null;
 			}
 		});
 	}

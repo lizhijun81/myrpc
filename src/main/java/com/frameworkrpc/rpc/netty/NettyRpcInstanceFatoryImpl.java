@@ -1,7 +1,8 @@
 package com.frameworkrpc.rpc.netty;
 
+import com.frameworkrpc.annotation.RpcComponent;
 import com.frameworkrpc.exception.RpcException;
-import com.frameworkrpc.rpc.NettyRpcInstanceFactory;
+import com.frameworkrpc.rpc.RpcInstanceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,17 +10,10 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NettyRpcInstanceFatoryImpl implements NettyRpcInstanceFactory {
+@RpcComponent(name = "netty")
+public class NettyRpcInstanceFatoryImpl implements RpcInstanceFactory {
 
 	private final static Logger logger = LoggerFactory.getLogger(NettyRpcInstanceFatoryImpl.class);
-
-	private static class NettyRpcInstanceFatoryHolder {
-		private static final NettyRpcInstanceFactory INSTANCE = new NettyRpcInstanceFatoryImpl();
-	}
-
-	public static NettyRpcInstanceFactory getInstance() {
-		return NettyRpcInstanceFatoryHolder.INSTANCE;
-	}
 
 	private Map<String, Object> instances = new HashMap<String, Object>();
 

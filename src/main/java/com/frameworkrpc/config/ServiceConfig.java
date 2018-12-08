@@ -1,7 +1,10 @@
 package com.frameworkrpc.config;
 
-import com.frameworkrpc.exporter.RpcExporter;
-import com.frameworkrpc.rpc.netty.NettyRpcInstanceFatoryImpl;
+import com.frameworkrpc.common.RpcConstant;
+import com.frameworkrpc.enums.Scope;
+import com.frameworkrpc.exporter.Exporter;
+import com.frameworkrpc.extension.ExtensionLoader;
+import com.frameworkrpc.rpc.RpcInstanceFactory;
 
 public class ServiceConfig<T> extends ExporterConfig {
 
@@ -19,8 +22,14 @@ public class ServiceConfig<T> extends ExporterConfig {
 
 	public void export() {
 		checkRef();
-		exporter = new RpcExporter(getUrl()).export();
-		NettyRpcInstanceFatoryImpl.getInstance().setRpcInstance(getInterface(), getRef());
+		RpcInstanceFactory rpcInstanceFactory = ExtensionLoader.getExtensionLoader(RpcInstanceFactory.class)
+				.getExtension(getUrl().getParameter(RpcConstant.TRANSPORTER), Scope.SINGLETON);
+		rpcInstanceFactory.setRpcInstance(getInterface(), getRef());
+		exporter = ExtensionLoader.getExtensionLoader(Exporter.class).getExtension("default");
+		exporter.setUrl(getUrl());
+		exporter.initExporter();
+		exporter.exportServer();
+		exporter.exportUrl();
 	}
 
 	private void checkRef() {

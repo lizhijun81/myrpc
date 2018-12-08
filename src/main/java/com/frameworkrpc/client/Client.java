@@ -1,10 +1,8 @@
 package com.frameworkrpc.client;
 
-import com.frameworkrpc.model.RpcRequester;
-import com.frameworkrpc.model.RpcResponse;
 import com.frameworkrpc.model.URL;
 
-public interface ChannelClient {
+public interface Client {
 
 	URL getUrl();
 
@@ -21,7 +19,5 @@ public interface ChannelClient {
 	void doConnect();
 
 	void disConnect();
-
-	RpcResponse call(RpcRequester request);
 
 }

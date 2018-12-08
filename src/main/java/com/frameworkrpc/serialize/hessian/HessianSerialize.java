@@ -2,6 +2,7 @@ package com.frameworkrpc.serialize.hessian;
 
 import com.caucho.hessian.io.HessianInput;
 import com.caucho.hessian.io.HessianOutput;
+import com.frameworkrpc.annotation.RpcComponent;
 import com.frameworkrpc.exception.SerializeException;
 import com.frameworkrpc.serialize.Serialize;
 
@@ -9,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+@RpcComponent(name = "hessian")
 public class HessianSerialize implements Serialize {
 
 	@Override

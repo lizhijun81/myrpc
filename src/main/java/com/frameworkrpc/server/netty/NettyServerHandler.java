@@ -4,7 +4,7 @@ import com.frameworkrpc.exception.RpcException;
 import com.frameworkrpc.model.RpcRequester;
 import com.frameworkrpc.model.RpcResponse;
 import com.frameworkrpc.model.URL;
-import com.frameworkrpc.rpc.NettyRpcInstanceFactory;
+import com.frameworkrpc.rpc.RpcInstanceFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.concurrent.Future;
@@ -24,14 +24,14 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequester
 	private static final Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
 
 	private URL url;
-	private NettyRpcInstanceFactory nettyRpcInstanceFactory;
+	private RpcInstanceFactory nettyRpcInstanceFactory;
 	private ExecutorService threadPoolExecutor;
 
 	public URL getUrl() {
 		return url;
 	}
 
-	public NettyRpcInstanceFactory getNettyRpcInstanceFactory() {
+	public RpcInstanceFactory getNettyRpcInstanceFactory() {
 		return nettyRpcInstanceFactory;
 	}
 
@@ -39,7 +39,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequester
 		return threadPoolExecutor;
 	}
 
-	public NettyServerHandler(URL url, NettyRpcInstanceFactory nettyRpcInstanceFactory, ExecutorService threadPoolExecutor) {
+	public NettyServerHandler(URL url, RpcInstanceFactory nettyRpcInstanceFactory, ExecutorService threadPoolExecutor) {
 		this.url = url;
 		this.nettyRpcInstanceFactory = nettyRpcInstanceFactory;
 		this.threadPoolExecutor = threadPoolExecutor;

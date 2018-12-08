@@ -4,7 +4,7 @@ import com.frameworkrpc.exception.RpcException;
 
 import java.lang.reflect.Method;
 
-public interface NettyRpcInstanceFactory {
+public interface RpcInstanceFactory {
 
 	void setRpcInstance(String infName, Object obj);
 

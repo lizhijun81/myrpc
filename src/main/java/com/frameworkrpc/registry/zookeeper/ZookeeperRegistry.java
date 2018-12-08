@@ -3,7 +3,7 @@ package com.frameworkrpc.registry.zookeeper;
 import com.frameworkrpc.common.RpcConstant;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.registry.AbstractRegistry;
-import com.frameworkrpc.registry.RegistryService;
+import com.frameworkrpc.registry.Registry;
 import com.frameworkrpc.registry.ServiceListener;
 import org.I0Itec.zkclient.IZkChildListener;
 import org.I0Itec.zkclient.IZkStateListener;
@@ -16,16 +16,14 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ZookeeperRegistry extends AbstractRegistry implements RegistryService {
+public class ZookeeperRegistry extends AbstractRegistry implements Registry {
 
 	private static final Logger logger = LoggerFactory.getLogger(ZookeeperRegistry.class);
 
 	private ZkClient zkClient;
-
 	private ServiceListener serviceListener;
 
 	private final ConcurrentHashMap<String, IZkChildListener> subscribeListeners = new ConcurrentHashMap<>();
-
 	private final ReentrantLock providerLock = new ReentrantLock();
 	private final ReentrantLock consumerLock = new ReentrantLock();
 

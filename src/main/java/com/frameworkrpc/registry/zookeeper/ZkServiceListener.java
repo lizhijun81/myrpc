@@ -1,7 +1,7 @@
 package com.frameworkrpc.registry.zookeeper;
 
 import com.frameworkrpc.common.RpcConstant;
-import com.frameworkrpc.exception.CommonRpcException;
+import com.frameworkrpc.exception.RpcException;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.registry.ServiceListener;
 
@@ -24,7 +24,7 @@ public class ZkServiceListener implements ServiceListener {
 			try {
 				return new URL(URLDecoder.decode(url, RpcConstant.CHARSET));
 			} catch (UnsupportedEncodingException e) {
-				throw new CommonRpcException(e.getMessage(), e);
+				throw new RpcException(e.getMessage(), e);
 			}
 		});
 

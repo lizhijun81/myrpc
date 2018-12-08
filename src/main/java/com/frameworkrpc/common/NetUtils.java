@@ -1,9 +1,8 @@
 package com.frameworkrpc.common;
 
-import com.frameworkrpc.exception.CommonRpcException;
+import com.frameworkrpc.exception.RpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.frameworkrpc.common.StringUtils;
 
 import java.io.IOException;
 import java.net.*;
@@ -65,7 +64,7 @@ public class NetUtils {
 			}
 		}
 		if (inetAddress == null) {
-			throw new CommonRpcException("can not find inetAddress");
+			throw new RpcException("can not find inetAddress");
 		}
 		return inetAddress;
 	}
@@ -95,7 +94,7 @@ public class NetUtils {
 			}
 		}
 		if (port == 0)
-			throw new CommonRpcException("can not find availablePort");
+			throw new RpcException("can not find availablePort");
 		return port;
 	}
 

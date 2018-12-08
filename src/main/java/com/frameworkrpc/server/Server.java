@@ -2,15 +2,13 @@ package com.frameworkrpc.server;
 
 import com.frameworkrpc.model.URL;
 
-public interface ChannelServer {
+public interface Server {
 
 	URL getUrl();
 
 	boolean isOpened();
 
 	boolean isClosed();
-
-	boolean isBound();
 
 	void doOpen();
 

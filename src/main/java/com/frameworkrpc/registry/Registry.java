@@ -4,7 +4,7 @@ import com.frameworkrpc.model.URL;
 
 import java.util.List;
 
-public interface RegistryService {
+public interface Registry {
 
 	void registerService(URL url);
 

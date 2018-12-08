@@ -16,5 +16,4 @@ public class AbstractServer {
 		return url;
 	}
 
-
 }

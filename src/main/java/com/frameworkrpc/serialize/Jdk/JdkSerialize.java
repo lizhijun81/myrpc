@@ -1,10 +1,12 @@
 package com.frameworkrpc.serialize.Jdk;
 
+import com.frameworkrpc.annotation.RpcComponent;
 import com.frameworkrpc.exception.SerializeException;
 import com.frameworkrpc.serialize.Serialize;
 
 import java.io.*;
 
+@RpcComponent(name = "jdk")
 public class JdkSerialize implements Serialize {
 
 	@Override

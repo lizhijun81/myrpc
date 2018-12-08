@@ -1,7 +1,7 @@
 package com.frameworkrpc.registry.zookeeper;
 
 import com.frameworkrpc.common.RpcConstant;
-import com.frameworkrpc.exception.CommonRpcException;
+import com.frameworkrpc.exception.RpcException;
 import com.frameworkrpc.model.URL;
 
 import java.io.UnsupportedEncodingException;
@@ -26,7 +26,7 @@ public class ZkUtils {
 			return String.format("%s%s%s", toNodeTypePath(url, nodeType), RpcConstant.PATH_SEPARATOR,
 					URLEncoder.encode(url.toFullStr(), RpcConstant.CHARSET));
 		} catch (UnsupportedEncodingException e) {
-			throw new CommonRpcException(e.getMessage(), e);
+			throw new RpcException(e.getMessage(), e);
 		}
 	}
 }

@@ -3,16 +3,17 @@ package com.frameworkrpc.server.netty;
 import com.frameworkrpc.common.NetUtils;
 import com.frameworkrpc.common.RpcConstant;
 import com.frameworkrpc.concurrent.RpcThreadPool;
+import com.frameworkrpc.enums.Scope;
+import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.model.RpcRequester;
 import com.frameworkrpc.model.RpcResponse;
 import com.frameworkrpc.model.URL;
-import com.frameworkrpc.rpc.NettyRpcInstanceFactory;
+import com.frameworkrpc.rpc.RpcInstanceFactory;
 import com.frameworkrpc.serialize.MessageDecoder;
 import com.frameworkrpc.serialize.MessageEncoder;
 import com.frameworkrpc.serialize.Serialize;
-import com.frameworkrpc.serialize.SerializeFactory;
 import com.frameworkrpc.server.AbstractServer;
-import com.frameworkrpc.server.ChannelServer;
+import com.frameworkrpc.server.Server;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
@@ -28,20 +29,19 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutorService;
 
-public class NettyServer extends AbstractServer implements ChannelServer {
+public class NettyServer extends AbstractServer implements Server {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
-
 	private ServerBootstrap bootstrap;
 	private EventLoopGroup bossGroup;
 	private EventLoopGroup workerGroup;
 	private Channel serverChannel;
-	private NettyRpcInstanceFactory nettyRpcInstanceFactory;
+	protected RpcInstanceFactory rpcInstanceFactory;
 	private volatile static ExecutorService threadPoolExecutor;
 
-	public NettyServer(URL url, NettyRpcInstanceFactory nettyRpcInstanceFactory) {
+	public NettyServer(URL url, RpcInstanceFactory rpcInstanceFactory) {
 		super(url);
-		this.nettyRpcInstanceFactory = nettyRpcInstanceFactory;
+		this.rpcInstanceFactory = rpcInstanceFactory;
 	}
 
 	@Override
@@ -54,10 +54,6 @@ public class NettyServer extends AbstractServer implements ChannelServer {
 		return isClosed;
 	}
 
-	@Override
-	public boolean isBound() {
-		return serverChannel != null && serverChannel.isActive();
-	}
 
 	@Override
 	public synchronized void doOpen() {
@@ -94,12 +90,11 @@ public class NettyServer extends AbstractServer implements ChannelServer {
 				.childHandler(new ChannelInitializer<NioSocketChannel>() {
 					@Override
 					protected void initChannel(NioSocketChannel ch) throws Exception {
-						Serialize serialize = SerializeFactory.createSerialize(url.getParameter(RpcConstant.SERIALIZATION));
-						ch.pipeline()
-								.addLast("idlestate", idleStateHandler)
-								.addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))
+						Serialize serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
+								.getExtension(url.getParameter(RpcConstant.SERIALIZATION), Scope.SINGLETON);
+						ch.pipeline().addLast("idlestate", idleStateHandler).addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))
 								.addLast("encoder", new MessageEncoder(serialize, RpcResponse.class))
-								.addLast("handler", new NettyServerHandler(url, nettyRpcInstanceFactory, threadPoolExecutor));
+								.addLast("handler", new NettyServerHandler(url, rpcInstanceFactory, threadPoolExecutor));
 					}
 				});
 		ChannelFuture channelFuture = bootstrap.bind(url.getIntParameter(RpcConstant.PORT));

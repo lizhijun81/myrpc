@@ -1,7 +1,7 @@
 package com.frameworkrpc.model;
 
 import com.frameworkrpc.common.NetUtils;
-import com.frameworkrpc.exception.CommonRpcException;
+import com.frameworkrpc.exception.RpcException;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -21,7 +21,7 @@ public class URL implements Serializable {
 			uri = new URI(url);
 			setParameters();
 		} catch (URISyntaxException e) {
-			throw new CommonRpcException(e.getMessage(), e);
+			throw new RpcException(e.getMessage(), e);
 		}
 	}
 
@@ -75,7 +75,7 @@ public class URL implements Serializable {
 		try {
 			this.uri = new URI(stringBuilder.toString());
 		} catch (URISyntaxException e) {
-			throw new CommonRpcException(e.getMessage(), e);
+			throw new RpcException(e.getMessage(), e);
 		}
 		return this;
 	}
