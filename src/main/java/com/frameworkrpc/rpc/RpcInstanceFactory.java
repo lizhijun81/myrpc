@@ -1,14 +1,12 @@
 package com.frameworkrpc.rpc;
 
-import com.frameworkrpc.exception.RpcException;
-
 import java.lang.reflect.Method;
 
 public interface RpcInstanceFactory {
 
 	void setRpcInstance(String infName, Object obj);
 
-	Object getRpcInstance(String infName) throws RpcException;
+	Object getRpcInstance(String infName);
 
 	Method getMethod(String infName, String methodName);
 }

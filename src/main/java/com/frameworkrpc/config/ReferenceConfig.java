@@ -1,7 +1,9 @@
 package com.frameworkrpc.config;
 
 import com.frameworkrpc.common.RpcConstant;
+import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.model.URL;
+import com.frameworkrpc.proxy.ProxyFactory;
 
 public class ReferenceConfig<T> extends ExporterConfig {
 
@@ -24,8 +26,9 @@ public class ReferenceConfig<T> extends ExporterConfig {
 	}
 
 	public T get() {
-		return null;
+		ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getExtension("jdk");
+		proxyFactory.initProxy(getUrl());
+		return proxyFactory.getInstance((Class<T>) interfaceClass, getUrl());
 	}
 
-	;
 }

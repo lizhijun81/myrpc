@@ -1,30 +1,27 @@
 package com.frameworkrpc.client.netty;
 
+import com.frameworkrpc.model.RpcRequester;
 import com.frameworkrpc.model.RpcResponse;
 import com.frameworkrpc.model.URL;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import com.frameworkrpc.proxy.RPCFuture;
+import io.netty.channel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.SocketAddress;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 
 public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyClientHandler.class);
+	private ConcurrentHashMap<String, RPCFuture> pendingRPC = new ConcurrentHashMap<>();
 	private URL url;
-	private ExecutorService threadPoolExecutor;
 	private Channel channel;
 	private SocketAddress remotePeer;
 
 	public URL getUrl() {
 		return url;
-	}
-
-	public ExecutorService getThreadPoolExecutor() {
-		return threadPoolExecutor;
 	}
 
 	public Channel getChannel() {
@@ -35,9 +32,8 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
 		return remotePeer;
 	}
 
-	public NettyClientHandler(URL url, ExecutorService threadPoolExecutor) {
+	public NettyClientHandler(URL url) {
 		this.url = url;
-		this.threadPoolExecutor = threadPoolExecutor;
 	}
 
 	@Override
@@ -53,8 +49,13 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
 	}
 
 	@Override
-	protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcResponse rpcResponse) throws Exception {
-
+	protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcResponse response) throws Exception {
+		String requestId = response.getRequestId();
+		RPCFuture rpcFuture = pendingRPC.get(requestId);
+		if (rpcFuture != null) {
+			pendingRPC.remove(requestId);
+			rpcFuture.done(response);
+		}
 	}
 
 	@Override
@@ -63,5 +64,22 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
 				cause.getMessage(), cause);
 		ctx.close();
 	}
+	public RPCFuture sendRequest(RpcRequester request) {
+		final CountDownLatch latch = new CountDownLatch(1);
+		RPCFuture rpcFuture = new RPCFuture(request);
+		pendingRPC.put(request.getRequestId(), rpcFuture);
+		channel.writeAndFlush(request).addListener(new ChannelFutureListener() {
+			@Override
+			public void operationComplete(ChannelFuture future) {
+				latch.countDown();
+			}
+		});
+		try {
+			latch.await();
+		} catch (InterruptedException e) {
+			logger.error(e.getMessage());
+		}
 
+		return rpcFuture;
+	}
 }

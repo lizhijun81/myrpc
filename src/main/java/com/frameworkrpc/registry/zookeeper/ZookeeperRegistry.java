@@ -38,7 +38,7 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
 			}
 
 			@Override
-			public void handleNewSession() throws Exception {
+			public void handleNewSession() {
 				logger.info("zkRegistry get new session notify.");
 				reconnectService();
 				reconnectConsumer();
@@ -86,13 +86,13 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
 
 
 	private void reconnectService() {
-		if (!registeredProviderUrls.isEmpty()) {
+		if (!registeredServiceUrls.isEmpty()) {
 			try {
 				providerLock.lock();
-				for (URL url : registeredProviderUrls) {
+				for (URL url : registeredServiceUrls) {
 					createNode(url, RegistrySide.PROVIDER);
 				}
-				logger.warn("reconnectService: {}", registeredProviderUrls);
+				logger.warn("reconnectService: {}", registeredServiceUrls);
 			} finally {
 				providerLock.unlock();
 			}
@@ -100,13 +100,13 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
 	}
 
 	private void reconnectConsumer() {
-		if (!registerConsumerUrls.isEmpty()) {
+		if (!registeredConsumerUrls.isEmpty()) {
 			try {
 				consumerLock.lock();
-				for (URL url : registerConsumerUrls) {
+				for (URL url : registeredConsumerUrls) {
 					createNode(url, RegistrySide.CONSUMER);
 				}
-				logger.warn("reconnectConsumer: {}", registerConsumerUrls);
+				logger.warn("reconnectConsumer: {}", registeredConsumerUrls);
 			} finally {
 				consumerLock.unlock();
 			}
@@ -125,18 +125,21 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
 			IZkChildListener zkChildListener = new IZkChildListener() {
 				@Override
 				public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-					List<URL> registryUrls = currentChilds.stream().map(url -> {
-						return new URL(url);
-					}).collect(Collectors.toList());
+					List<URL> registryUrls = currentChilds.stream().map(url -> new URL(url)).collect(Collectors.toList());
 					logger.info("subscribe:{} registryUrls:{}", parentPath, registryUrls);
-					List<URL> urls = subscribeUrls.getOrDefault(registrySide.getName(), new ConcurrentHashMap<>())
-							.getOrDefault(parentPath, new ArrayList<>());
+					List<URL> urls = subscribeUrls.get(registrySide.getName()).get(parentPath);
+					if (urls == null) {
+						synchronized (subscribeUrls) {
+							urls = new ArrayList<>();
+							subscribeUrls.get(registrySide.getName()).put(parentPath, urls);
+						}
+					}
 					registryListener.notifyRegistryUrl(registryUrls, urls);
 				}
 			};
 			zkClient.subscribeChildChanges(parentPath, zkChildListener);
 			subscribeListeners.put(parentPath, zkChildListener);
-			logger.info("subscribeService: {}", url.toFullStr());
+			logger.info("subscribeService: {}", parentPath);
 		} finally {
 			consumerLock.unlock();
 		}
@@ -154,7 +157,7 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
 			IZkChildListener zkChildListener = subscribeListeners.get(parentPath);
 			zkClient.unsubscribeChildChanges(parentPath, zkChildListener);
 			subscribeListeners.remove(parentPath);
-			logger.info("unSubscribeService: {}", url.toFullStr());
+			logger.info("unSubscribeService: {}", parentPath);
 		} finally {
 			consumerLock.unlock();
 		}
@@ -167,11 +170,14 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
 			return subscribeUrls.get(registrySide.getName()).get(parentPath);
 		if (zkClient.exists(parentPath)) {
 			List<String> currentChilds = zkClient.getChildren(parentPath);
-			List<URL> registryUrls = currentChilds.stream().map(url1 -> {
-				return new URL(url1);
-			}).collect(Collectors.toList());
-			List<URL> urls = subscribeUrls.getOrDefault(registrySide.getName(), new ConcurrentHashMap<>())
-					.getOrDefault(parentPath, new ArrayList<>());
+			List<URL> registryUrls = currentChilds.stream().map(_url -> new URL(_url)).collect(Collectors.toList());
+			List<URL> urls = subscribeUrls.get(registrySide.getName()).get(parentPath);
+			if (urls == null) {
+				synchronized (subscribeUrls) {
+					urls = new ArrayList<>();
+					subscribeUrls.get(registrySide.getName()).put(parentPath, urls);
+				}
+			}
 			registryListener.notifyRegistryUrl(registryUrls, urls);
 		}
 		return subscribeUrls.get(registrySide.getName()).get(parentPath);

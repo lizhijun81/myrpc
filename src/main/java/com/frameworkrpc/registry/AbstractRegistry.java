@@ -14,24 +14,34 @@ import static com.google.common.collect.Sets.newConcurrentHashSet;
 public class AbstractRegistry {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractRegistry.class);
-	protected final Map<String, ConcurrentHashMap<String, List<URL>>> subscribeUrls = new ConcurrentHashMap<>();
-	protected final Set<URL> providerUrls = newConcurrentHashSet();
-	protected final Set<URL> consumerUrls = newConcurrentHashSet();
+	protected final Map<String, ConcurrentHashMap<String, List<URL>>> subscribeUrls = new ConcurrentHashMap<String, ConcurrentHashMap<String, List<URL>>>() {
+		{
+			put(RegistrySide.PROVIDER.getName(), new ConcurrentHashMap<>());
+			put(RegistrySide.CONSUMER.getName(), new ConcurrentHashMap<>());
+		}
+	};
+	protected final Set<URL> registeredServiceUrls = newConcurrentHashSet();
+	protected final Set<URL> registeredConsumerUrls = newConcurrentHashSet();
+
 
 	protected void register(URL url, RegistrySide registrySide) {
 		if (registrySide.getName().equals(registrySide.PROVIDER.getName()))
-			providerUrls.add(url);
+			registeredServiceUrls.add(url);
 		else
-			providerUrls.add(url);
+			registeredConsumerUrls.add(url);
 		logger.info("notify {} : {}", registrySide.getName(), url.toFullStr());
 	}
 
 	protected void unregister(URL url, RegistrySide registrySide) {
 		if (registrySide.getName().equals(registrySide.PROVIDER.getName()))
-			consumerUrls.remove(url);
+			registeredServiceUrls.remove(url);
 		else
-			consumerUrls.remove(url);
+			registeredConsumerUrls.remove(url);
 		logger.info("remove {} : {}", registrySide.getName(), url.toFullStr());
+	}
+
+	public Set<URL> getRegisteredServiceUrls() {
+		return this.registeredServiceUrls;
 	}
 
 }

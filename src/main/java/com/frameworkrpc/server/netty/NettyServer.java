@@ -87,14 +87,20 @@ public class NettyServer extends AbstractServer implements Server {
 			}
 		};
 
-		bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-				.childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE).childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+		bootstrap
+				.group(bossGroup, workerGroup)
+				.channel(NioServerSocketChannel.class)
+				.childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+				.childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
+				.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
 				.childHandler(new ChannelInitializer<NioSocketChannel>() {
 					@Override
 					protected void initChannel(NioSocketChannel ch) throws Exception {
 						Serialize serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
 								.getExtension(url.getParameter(RpcConstant.SERIALIZATION), Scope.SINGLETON);
-						ch.pipeline().addLast("idlestate", idleStateHandler).addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))
+						ch.pipeline()
+								.addLast("idlestate", idleStateHandler)
+								.addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))
 								.addLast("encoder", new MessageEncoder(serialize, RpcResponse.class))
 								.addLast("handler", new NettyServerHandler(url, rpcInstanceFactory, threadPoolExecutor));
 					}
