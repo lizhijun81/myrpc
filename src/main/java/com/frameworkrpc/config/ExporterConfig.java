@@ -5,6 +5,7 @@ import com.frameworkrpc.common.RpcConstant;
 import com.frameworkrpc.common.StringUtils;
 import com.frameworkrpc.exporter.Exporter;
 import com.frameworkrpc.model.URL;
+import com.frameworkrpc.registry.RegistrySide;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -148,10 +149,14 @@ public class ExporterConfig<T> extends AbstractConfig {
 			addProtocolParameters(parameters);
 			addRegistryParameters(parameters);
 
-			String scheme = this.getClass().getName().contains("Service") ? RpcConstant.PROVIDERSCHEME : RpcConstant.CONSUMERSCHEME;
+			String protocol = this.getClass().getName().contains("Service") ? RpcConstant.PROVIDERSCHEME : RpcConstant.CONSUMERSCHEME;
+			if (protocol.equals(RpcConstant.PROVIDERSCHEME))
+				parameters.put("side", RegistrySide.PROVIDER.getName());
+			else
+				parameters.put("side", RegistrySide.CONSUMER.getName());
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append(String
-					.format("%s://%s:%s/%s?", scheme, getProtocol().getHost(), String.valueOf(getProtocol().getPort()), getInterface()));
+					.format("%s://%s:%s/%s?", protocol, getProtocol().getHost(), String.valueOf(getProtocol().getPort()), getInterface()));
 			stringBuilder.append(NetUtils.getUrlParamsByMap(parameters));
 
 			url = new URL(stringBuilder.toString());
@@ -200,13 +205,13 @@ public class ExporterConfig<T> extends AbstractConfig {
 	}
 
 	private void addRegistryParameters(Map<String, String> parameters) {
-		if (StringUtils.isEmpty(getRegistry().getRegistryname())) {
-			throw new IllegalStateException("registryname can not be empty");
+		if (StringUtils.isEmpty(getRegistry().getName())) {
+			throw new IllegalStateException("registry.name can not be empty");
 		}
 		if (StringUtils.isEmpty(getRegistry().getAddress())) {
-			throw new IllegalStateException("registryaddress can not be empty");
+			throw new IllegalStateException("registry.address can not be empty");
 		}
-		parameters.put("registryname", getRegistry().getRegistryname());
+		parameters.put("registry.name", getRegistry().getName());
 		parameters.put("address", getRegistry().getAddress());
 		parameters.put("registry.timeout",
 				getRegistry().getTimeout() > 0 ? String.valueOf(getRegistry().getTimeout()) : String.valueOf(RpcConstant.DEFAULT_REGISTRY_TIMEOUT));

@@ -1,8 +1,9 @@
 package com.frameworkrpc.exporter.defaults;
 
-import com.frameworkrpc.annotation.RpcComponent;
+import com.frameworkrpc.extension.RpcComponent;
 import com.frameworkrpc.exporter.AbstractExporter;
 import com.frameworkrpc.exporter.Exporter;
+import com.frameworkrpc.registry.RegistrySide;
 
 @RpcComponent(name = "default")
 public class DefaultExporter extends AbstractExporter implements Exporter {
@@ -11,11 +12,6 @@ public class DefaultExporter extends AbstractExporter implements Exporter {
 
 	@Override
 	public void exportServer() {
-		if (!exportedServers.containsKey(url.getServerPortStr())) {
-			exportedServers.put(url.getServerPortStr(), server);
-		} else {
-			server = exportedServers.get(url.getServerPortStr());
-		}
 		if (!server.isOpened()) {
 			server.doOpen();
 		}
@@ -24,7 +20,7 @@ public class DefaultExporter extends AbstractExporter implements Exporter {
 	@Override
 	public void exportUrl() {
 		if (!exportedUrls.contains(url)) {
-			registry.registerService(url);
+			registry.register(url, RegistrySide.PROVIDER);
 			exportedUrls.add(url);
 		}
 	}
@@ -34,16 +30,12 @@ public class DefaultExporter extends AbstractExporter implements Exporter {
 		if (!server.isClosed()) {
 			server.doClose();
 		}
-		if (exportedServers.containsKey(url.getServerPortStr())) {
-			exportedServers.remove(url.getServerPortStr());
-		}
+		exportedServers.remove(url.getServerPortStr());
 	}
 
 	@Override
 	public void unexportUrl() {
-		if (exportedUrls.contains(url)) {
-			registry.unRegisterService(url);
-			exportedUrls.remove(url);
-		}
+		registry.unregister(url, RegistrySide.PROVIDER);
+		exportedUrls.remove(url);
 	}
 }

@@ -6,17 +6,13 @@ import java.util.List;
 
 public interface Registry {
 
-	void registerService(URL url);
+	void register(URL url, RegistrySide registrySide);
 
-	void unRegisterService(URL url);
+	void unregister(URL url, RegistrySide registrySide);
 
-	void registerConsumer(URL url);
+	void subscribe(URL url, RegistrySide registrySide);
 
-	void unRegisterConsumer(URL url);
+	void unsubscribe(URL url, RegistrySide registrySide);
 
-	void subscribeService(URL url);
-
-	void unSubscribeService(URL url);
-
-	List<URL> discoverService(URL url);
+	List<URL> discover(URL url, RegistrySide registrySide);
 }

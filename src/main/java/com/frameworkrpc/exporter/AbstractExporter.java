@@ -1,7 +1,7 @@
 package com.frameworkrpc.exporter;
 
 import com.frameworkrpc.common.RpcConstant;
-import com.frameworkrpc.enums.Scope;
+import com.frameworkrpc.extension.Scope;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.registry.Registry;
@@ -33,9 +33,16 @@ public class AbstractExporter implements Serializable {
 	}
 
 	public void initExporter() {
-		this.server = ExtensionLoader.getExtensionLoader(ServerFactory.class).getExtension(url.getParameter(RpcConstant.TRANSPORTER), Scope.SINGLETON)
-				.getServer(url);
+		if (!exportedServers.containsKey(url.getServerPortStr())) {
+			this.server = ExtensionLoader.getExtensionLoader(ServerFactory.class)
+					.getExtension(url.getParameter(RpcConstant.TRANSPORTER), Scope.SINGLETON).getServer(url);
+			exportedServers.put(url.getServerPortStr(),this.server);
+		}
+		else {
+			this.server = exportedServers.get(url.getServerPortStr());
+		}
+
 		this.registry = ExtensionLoader.getExtensionLoader(RegistryFactory.class)
-				.getExtension(url.getParameter(RpcConstant.REGISTRYNAME), Scope.SINGLETON).getRegistry(url);
+				.getExtension(url.getParameter(RpcConstant.REGISTRY_NAME), Scope.SINGLETON).getRegistry(url);
 	}
 }

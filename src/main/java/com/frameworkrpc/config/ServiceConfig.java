@@ -1,7 +1,7 @@
 package com.frameworkrpc.config;
 
 import com.frameworkrpc.common.RpcConstant;
-import com.frameworkrpc.enums.Scope;
+import com.frameworkrpc.extension.Scope;
 import com.frameworkrpc.exporter.Exporter;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.rpc.RpcInstanceFactory;

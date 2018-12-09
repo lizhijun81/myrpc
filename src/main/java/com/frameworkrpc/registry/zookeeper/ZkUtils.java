@@ -3,6 +3,7 @@ package com.frameworkrpc.registry.zookeeper;
 import com.frameworkrpc.common.RpcConstant;
 import com.frameworkrpc.exception.RpcException;
 import com.frameworkrpc.model.URL;
+import com.frameworkrpc.registry.RegistrySide;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -17,13 +18,13 @@ public class ZkUtils {
 		return String.format("%s%s%s", toGroupPath(url), RpcConstant.PATH_SEPARATOR, url.getPath());
 	}
 
-	public static String toNodeTypePath(URL url, ZkNodeType nodeType) {
-		return String.format("%s%s%s", toServicePath(url), RpcConstant.PATH_SEPARATOR, nodeType.getValue());
+	public static String toRegistryPath(URL url, RegistrySide nodeType) {
+		return String.format("%s%s%s", toServicePath(url), RpcConstant.PATH_SEPARATOR, nodeType.getName());
 	}
 
-	public static String toNodePath(URL url, ZkNodeType nodeType) {
+	public static String toNodePath(URL url, RegistrySide nodeType) {
 		try {
-			return String.format("%s%s%s", toNodeTypePath(url, nodeType), RpcConstant.PATH_SEPARATOR,
+			return String.format("%s%s%s", toRegistryPath(url, nodeType), RpcConstant.PATH_SEPARATOR,
 					URLEncoder.encode(url.toFullStr(), RpcConstant.CHARSET));
 		} catch (UnsupportedEncodingException e) {
 			throw new RpcException(e.getMessage(), e);

@@ -2,7 +2,7 @@ package com.frameworkrpc.serialize.hessian;
 
 import com.caucho.hessian.io.HessianInput;
 import com.caucho.hessian.io.HessianOutput;
-import com.frameworkrpc.annotation.RpcComponent;
+import com.frameworkrpc.extension.RpcComponent;
 import com.frameworkrpc.exception.SerializeException;
 import com.frameworkrpc.serialize.Serialize;
 

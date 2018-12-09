@@ -3,7 +3,7 @@ package com.frameworkrpc.server.netty;
 import com.frameworkrpc.common.NetUtils;
 import com.frameworkrpc.common.RpcConstant;
 import com.frameworkrpc.concurrent.RpcThreadPool;
-import com.frameworkrpc.enums.Scope;
+import com.frameworkrpc.extension.Scope;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.model.RpcRequester;
 import com.frameworkrpc.model.RpcResponse;
@@ -57,6 +57,8 @@ public class NettyServer extends AbstractServer implements Server {
 
 	@Override
 	public synchronized void doOpen() {
+		if(isOpened)
+			return;
 
 		bootstrap = new ServerBootstrap();
 		bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("NettyServerBoss", true));
@@ -106,6 +108,9 @@ public class NettyServer extends AbstractServer implements Server {
 
 	@Override
 	public synchronized void doClose() {
+		if(isClosed)
+			return;
+
 		if (serverChannel != null) {
 			serverChannel.close();
 			bossGroup.shutdownGracefully();

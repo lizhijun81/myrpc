@@ -1,12 +1,12 @@
 package com.frameworkrpc.client.netty;
 
-import com.frameworkrpc.annotation.RpcComponent;
+import com.frameworkrpc.extension.RpcComponent;
 import com.frameworkrpc.client.AbstractClient;
 import com.frameworkrpc.client.Client;
 import com.frameworkrpc.common.NetUtils;
 import com.frameworkrpc.common.RpcConstant;
 import com.frameworkrpc.concurrent.RpcThreadPool;
-import com.frameworkrpc.enums.Scope;
+import com.frameworkrpc.extension.Scope;
 import com.frameworkrpc.exception.RemotingException;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.model.RpcRequester;

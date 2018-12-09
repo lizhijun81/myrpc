@@ -1,4 +1,4 @@
-package com.frameworkrpc.enums;
+package com.frameworkrpc.extension;
 
 public enum Scope {
 

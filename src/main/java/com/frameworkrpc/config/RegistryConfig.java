@@ -4,7 +4,7 @@ public class RegistryConfig extends AbstractConfig {
 
 	private static final long serialVersionUID = -8315812157243230679L;
 	private String id;
-	private String registryname;
+	private String name;
 	private String address;
 	private int timeout;
 	private int sessiontimeout;
@@ -17,12 +17,12 @@ public class RegistryConfig extends AbstractConfig {
 		this.id = id;
 	}
 
-	public String getRegistryname() {
-		return registryname;
+	public String getName() {
+		return name;
 	}
 
-	public void setRegistryname(String registryname) {
-		this.registryname = registryname;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getAddress() {

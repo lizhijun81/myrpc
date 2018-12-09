@@ -1,6 +1,6 @@
 package com.frameworkrpc.rpc.netty;
 
-import com.frameworkrpc.annotation.RpcComponent;
+import com.frameworkrpc.extension.RpcComponent;
 import com.frameworkrpc.exception.RpcException;
 import com.frameworkrpc.rpc.RpcInstanceFactory;
 import org.slf4j.Logger;

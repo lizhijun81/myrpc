@@ -1,6 +1,6 @@
 package com.frameworkrpc.proxy.jdk;
 
-import com.frameworkrpc.annotation.RpcComponent;
+import com.frameworkrpc.extension.RpcComponent;
 import com.frameworkrpc.model.RpcRequester;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.proxy.ObjectProxy;

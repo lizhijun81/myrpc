@@ -1,4 +1,4 @@
-package com.frameworkrpc.annotation;
+package com.frameworkrpc.extension;
 
 import java.lang.annotation.*;
 

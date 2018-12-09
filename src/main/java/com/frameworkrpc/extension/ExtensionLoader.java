@@ -1,8 +1,6 @@
 package com.frameworkrpc.extension;
 
-import com.frameworkrpc.annotation.RpcComponent;
 import com.frameworkrpc.common.MyClassUtil;
-import com.frameworkrpc.enums.Scope;
 import com.frameworkrpc.exception.RpcException;
 
 import java.lang.annotation.Annotation;

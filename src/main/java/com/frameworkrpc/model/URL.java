@@ -1,11 +1,14 @@
 package com.frameworkrpc.model;
 
 import com.frameworkrpc.common.NetUtils;
+import com.frameworkrpc.common.RpcConstant;
 import com.frameworkrpc.exception.RpcException;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,14 +21,16 @@ public class URL implements Serializable {
 
 	public URL(String url) {
 		try {
-			uri = new URI(url);
+			uri = new URI(URLDecoder.decode(url, RpcConstant.CHARSET));
 			setParameters();
 		} catch (URISyntaxException e) {
+			throw new RpcException(e.getMessage(), e);
+		} catch (UnsupportedEncodingException e) {
 			throw new RpcException(e.getMessage(), e);
 		}
 	}
 
-	public String getScheme() {
+	public String getProtocol() {
 		return uri.getScheme();
 	}
 
@@ -70,7 +75,7 @@ public class URL implements Serializable {
 	public synchronized URL addParameters(String name, String value) {
 		parameters.put(name, value);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(String.format("%s://%s:%s/%s?", getScheme(), getHost(), getPort(), getPath()));
+		stringBuilder.append(String.format("%s://%s:%s/%s?", getProtocol(), getHost(), getPort(), getPath()));
 		stringBuilder.append(NetUtils.getUrlParamsByMap(parameters));
 		try {
 			this.uri = new URI(stringBuilder.toString());
@@ -140,7 +145,7 @@ public class URL implements Serializable {
 	}
 
 	private Map<String, Number> getNumbers() {
-		if (numbers == null) { // 允许并发重复创建
+		if (numbers == null) {
 			numbers = new ConcurrentHashMap<String, Number>();
 		}
 		return numbers;

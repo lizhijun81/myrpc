@@ -18,8 +18,9 @@ public class RpcConstant {
 	public final static String CONNECTTIMEOUT = "connecttimeout";
 	public final static String REGISTRY_TIMEOUT = "registry.timeout";
 	public final static String SESSIONTIMEOUT = "sessiontimeout";
+	public final static String REGISTRY_NAME = "registry.name";
 	public final static String REGISTRY_SESSIONTIMEOUT = "registry.sessiontimeout";
-	public final static String REGISTRYNAME = "registryname";
+	public final static String REGISTRY_SIDE = "side";
 	public final static String ADDRESS = "address";
 	public final static String RETRIES = "retries";
 

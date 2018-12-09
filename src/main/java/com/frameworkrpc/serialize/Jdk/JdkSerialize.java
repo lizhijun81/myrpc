@@ -1,6 +1,6 @@
 package com.frameworkrpc.serialize.Jdk;
 
-import com.frameworkrpc.annotation.RpcComponent;
+import com.frameworkrpc.extension.RpcComponent;
 import com.frameworkrpc.exception.SerializeException;
 import com.frameworkrpc.serialize.Serialize;
 
