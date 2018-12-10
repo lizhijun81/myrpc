@@ -1,11 +1,11 @@
 package com.frameworkrpc.registry.zookeeper;
 
-import com.frameworkrpc.common.RpcConstant;
+import com.frameworkrpc.common.RpcConstants;
+import com.frameworkrpc.exception.RpcException;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.registry.AbstractRegistry;
+import com.frameworkrpc.registry.NotifyListener;
 import com.frameworkrpc.registry.Registry;
-import com.frameworkrpc.registry.RegistryListener;
-import com.frameworkrpc.registry.RegistrySide;
 import org.I0Itec.zkclient.IZkChildListener;
 import org.I0Itec.zkclient.IZkStateListener;
 import org.I0Itec.zkclient.ZkClient;
@@ -15,171 +15,154 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentMap;
 
 public class ZookeeperRegistry extends AbstractRegistry implements Registry {
 
 	private static final Logger logger = LoggerFactory.getLogger(ZookeeperRegistry.class);
 	private ZkClient zkClient;
-	private RegistryListener registryListener;
-	private final ConcurrentHashMap<String, IZkChildListener> subscribeListeners = new ConcurrentHashMap<>();
-	private final ReentrantLock providerLock = new ReentrantLock();
-	private final ReentrantLock consumerLock = new ReentrantLock();
+	private NotifyListener registryListener;
+	private final Map<URL, ConcurrentMap<NotifyListener, IZkChildListener>> zkListeners = new ConcurrentHashMap<>();
 
-	public ZookeeperRegistry(URL url, RegistryListener registryListener) {
-		zkClient = new ZkClient(url.getParameter(RpcConstant.ADDRESS), url.getIntParameter(RpcConstant.REGISTRY_SESSIONTIMEOUT),
-				url.getIntParameter(RpcConstant.REGISTRY_TIMEOUT));
+	public ZookeeperRegistry(URL url) {
+		zkClient = new ZkClient(url.getParameter(RpcConstants.ADDRESS), url.getIntParameter(RpcConstants.REGISTRY_SESSIONTIMEOUT),
+				url.getIntParameter(RpcConstants.REGISTRY_TIMEOUT));
 		IZkStateListener zkStateListener = new IZkStateListener() {
 			@Override
-			public void handleStateChanged(Watcher.Event.KeeperState state) throws Exception {
-				// do nothing
+			public void handleStateChanged(Watcher.Event.KeeperState state) {
 			}
 
 			@Override
 			public void handleNewSession() {
 				logger.info("zkRegistry get new session notify.");
-				reconnectService();
-				reconnectConsumer();
+				reconnect();
 			}
 
 			@Override
-			public void handleSessionEstablishmentError(Throwable throwable) throws Exception {
-
+			public void handleSessionEstablishmentError(Throwable throwable) {
 			}
 		};
 		zkClient.subscribeStateChanges(zkStateListener);
-		this.registryListener = registryListener;
-	}
-
-
-	@Override
-	public void register(URL url, RegistrySide registrySide) {
-		createNode(url, registrySide);
-		super.register(url, registrySide);
 	}
 
 	@Override
-	public void unregister(URL url, RegistrySide registrySide) {
-		removeNode(url, registrySide);
-		super.unregister(url, registrySide);
+	public void register(URL url) {
+		createNode(url);
+		super.register(url);
 	}
 
-	private void createNode(URL url, RegistrySide registrySide) {
-		String nodeTypePath = ZkUtils.toRegistryPath(url, registrySide);
+	@Override
+	public void unregister(URL url) {
+		removeNode(url);
+		super.unregister(url);
+	}
+
+	private void createNode(URL url) {
+		String nodeTypePath = ZkUtils.toCategoryPath(url);
 		if (!zkClient.exists(nodeTypePath)) {
 			zkClient.createPersistent(nodeTypePath, true);
 		}
-		String nodePrth = ZkUtils.toNodePath(url, registrySide);
+		String nodePrth = ZkUtils.toNodePath(url);
 		if (!zkClient.exists(nodePrth)) {
 			zkClient.createEphemeral(nodePrth);
 		}
 	}
 
-	private void removeNode(URL url, RegistrySide registrySide) {
-		String nodePath = ZkUtils.toNodePath(url, registrySide);
+	private void removeNode(URL url) {
+		String nodePath = ZkUtils.toNodePath(url);
 		if (zkClient.exists(nodePath)) {
 			zkClient.delete(nodePath);
 		}
 	}
 
 
-	private void reconnectService() {
-		if (!registeredServiceUrls.isEmpty()) {
-			try {
-				providerLock.lock();
-				for (URL url : registeredServiceUrls) {
-					createNode(url, RegistrySide.PROVIDER);
+	private void reconnect() {
+		if (!registered.isEmpty()) {
+			synchronized (this) {
+				for (URL url : registered) {
+					createNode(url);
+					logger.warn("reconnect: {}", url.toFullStr());
 				}
-				logger.warn("reconnectService: {}", registeredServiceUrls);
-			} finally {
-				providerLock.unlock();
 			}
 		}
 	}
 
-	private void reconnectConsumer() {
-		if (!registeredConsumerUrls.isEmpty()) {
-			try {
-				consumerLock.lock();
-				for (URL url : registeredConsumerUrls) {
-					createNode(url, RegistrySide.CONSUMER);
-				}
-				logger.warn("reconnectConsumer: {}", registeredConsumerUrls);
-			} finally {
-				consumerLock.unlock();
-			}
-		}
-	}
 
 	@Override
-	public void subscribe(URL url, RegistrySide registrySide) {
-		String parentPath = ZkUtils.toRegistryPath(url, registrySide);
-		if (subscribeListeners.containsKey(parentPath))
-			return;
-		try {
-			consumerLock.lock();
-			if (subscribeListeners.containsKey(parentPath))
-				return;
-			IZkChildListener zkChildListener = new IZkChildListener() {
-				@Override
-				public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-					List<URL> registryUrls = currentChilds.stream().map(url -> new URL(url)).collect(Collectors.toList());
-					logger.info("subscribe:{} registryUrls:{}", parentPath, registryUrls);
-					List<URL> urls = subscribeUrls.get(registrySide.getName()).get(parentPath);
-					if (urls == null) {
-						synchronized (subscribeUrls) {
-							urls = new ArrayList<>();
-							subscribeUrls.get(registrySide.getName()).put(parentPath, urls);
-						}
+	public void subscribe(final URL url, final NotifyListener listener) {
+		List<URL> urls = new ArrayList<>();
+		for (String path : ZkUtils.toCategoriesPath(url)) {
+			ConcurrentMap<NotifyListener, IZkChildListener> listeners = zkListeners.get(url);
+			if (listeners == null) {
+				zkListeners.putIfAbsent(url, new ConcurrentHashMap<>());
+				listeners = zkListeners.get(url);
+			}
+			IZkChildListener zkListener = listeners.get(listener);
+			if (zkListener == null) {
+				listeners.putIfAbsent(listener, new IZkChildListener() {
+					@Override
+					public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
+						ZookeeperRegistry.this.notify(url, listener, toUrls(currentChilds));
 					}
-					registryListener.notifyRegistryUrl(registryUrls, urls);
-				}
-			};
-			zkClient.subscribeChildChanges(parentPath, zkChildListener);
-			subscribeListeners.put(parentPath, zkChildListener);
-			logger.info("subscribeService: {}", parentPath);
-		} finally {
-			consumerLock.unlock();
+
+				});
+				zkListener = listeners.get(listener);
+			}
+			List<String> children = zkClient.subscribeChildChanges(path, zkListener);
+			if (children != null) {
+				urls.addAll(toUrls(children));
+			}
+		}
+		notify(url, listener, urls);
+	}
+
+
+	@Override
+	public void unsubscribe(URL url, NotifyListener listener) {
+		ConcurrentMap<NotifyListener, IZkChildListener> listeners = zkListeners.get(url);
+		if (listeners != null) {
+			IZkChildListener zkListener = listeners.get(listener);
+			if (zkListener != null) {
+				String path = ZkUtils.toCategoryPath(url);
+				zkClient.unsubscribeChildChanges(path, zkListener);
+			}
 		}
 	}
 
 	@Override
-	public void unsubscribe(URL url, RegistrySide registrySide) {
-		String parentPath = ZkUtils.toRegistryPath(url, registrySide);
-		if (!subscribeListeners.containsKey(parentPath))
-			return;
+	public List<URL> discover(URL url) {
+		if (url == null) {
+			throw new IllegalArgumentException("discover url == null");
+		}
 		try {
-			consumerLock.lock();
-			if (!subscribeListeners.containsKey(parentPath))
-				return;
-			IZkChildListener zkChildListener = subscribeListeners.get(parentPath);
-			zkClient.unsubscribeChildChanges(parentPath, zkChildListener);
-			subscribeListeners.remove(parentPath);
-			logger.info("unSubscribeService: {}", parentPath);
-		} finally {
-			consumerLock.unlock();
-		}
-	}
-
-	@Override
-	public List<URL> discover(URL url, RegistrySide registrySide) {
-		String parentPath = ZkUtils.toRegistryPath(url, registrySide);
-		if (subscribeUrls.containsKey(registrySide.getName()) && subscribeUrls.get(registrySide.getName()).containsKey(parentPath))
-			return subscribeUrls.get(registrySide.getName()).get(parentPath);
-		if (zkClient.exists(parentPath)) {
-			List<String> currentChilds = zkClient.getChildren(parentPath);
-			List<URL> registryUrls = currentChilds.stream().map(_url -> new URL(_url)).collect(Collectors.toList());
-			List<URL> urls = subscribeUrls.get(registrySide.getName()).get(parentPath);
-			if (urls == null) {
-				synchronized (subscribeUrls) {
-					urls = new ArrayList<>();
-					subscribeUrls.get(registrySide.getName()).put(parentPath, urls);
+			//			List<URL> urls = super.discover(url);
+			//			if (urls != null && !urls.isEmpty())
+			//				return urls;
+			List<String> providers = new ArrayList<String>();
+			for (String path : ZkUtils.toCategoriesPath(url)) {
+				List<String> children = zkClient.getChildren(path);
+				if (children != null) {
+					providers.addAll(children);
 				}
 			}
-			registryListener.notifyRegistryUrl(registryUrls, urls);
+			return toUrls(providers);
+		} catch (Throwable e) {
+			throw new RpcException("Failed to lookup " + url + ", cause: " + e.getMessage(), e);
 		}
-		return subscribeUrls.get(registrySide.getName()).get(parentPath);
 	}
+
+	private List<URL> toUrls(List<String> providers) {
+		List<URL> urls = new ArrayList<URL>();
+		if (providers != null && !providers.isEmpty()) {
+			for (String provider : providers) {
+				provider = URL.decode(provider);
+				URL url = new URL(provider);
+				urls.add(url);
+			}
+		}
+		return urls;
+	}
+
 }

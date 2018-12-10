@@ -1,6 +1,6 @@
 package com.frameworkrpc.client;
 
-import com.frameworkrpc.common.RpcConstant;
+import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.model.URL;
 
 import java.net.InetSocketAddress;
@@ -25,7 +25,7 @@ public class AbstractClient {
 	}
 
 	protected int getConnectTimeout() {
-		return url.getIntParameter(RpcConstant.CONNECTTIMEOUT);
+		return url.getIntParameter(RpcConstants.CONNECTTIMEOUT);
 	}
 
 

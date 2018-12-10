@@ -1,11 +1,10 @@
 package com.frameworkrpc.config;
 
 import com.frameworkrpc.common.NetUtils;
-import com.frameworkrpc.common.RpcConstant;
+import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.common.StringUtils;
 import com.frameworkrpc.exporter.Exporter;
 import com.frameworkrpc.model.URL;
-import com.frameworkrpc.registry.RegistrySide;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +21,6 @@ public class ExporterConfig<T> extends AbstractConfig {
 	protected String version;
 	protected String group;
 	protected String loadbalance;
-	protected String cluster;
 	protected int timeout;
 	protected int retries;
 	protected Exporter exporter;
@@ -110,14 +108,6 @@ public class ExporterConfig<T> extends AbstractConfig {
 		this.registry = registry;
 	}
 
-	public String getCluster() {
-		return cluster;
-	}
-
-	public void setCluster(String cluster) {
-		this.cluster = cluster;
-	}
-
 	public int getTimeout() {
 		return timeout;
 	}
@@ -144,16 +134,13 @@ public class ExporterConfig<T> extends AbstractConfig {
 				return url;
 			Map<String, String> parameters = new HashMap<>();
 			parameters.put("id", getId());
+			parameters.put("category", RpcConstants.DEFAULT_CATEGORY);
 			addServiceParameters(parameters);
 			addAppliactionParameters(parameters);
 			addProtocolParameters(parameters);
 			addRegistryParameters(parameters);
 
-			String protocol = this.getClass().getName().contains("Service") ? RpcConstant.PROVIDERSCHEME : RpcConstant.CONSUMERSCHEME;
-			if (protocol.equals(RpcConstant.PROVIDERSCHEME))
-				parameters.put("side", RegistrySide.PROVIDER.getName());
-			else
-				parameters.put("side", RegistrySide.CONSUMER.getName());
+			String protocol = this.getClass().getName().contains("Service") ? RpcConstants.PROVIDERSCHEME : RpcConstants.CONSUMERSCHEME;
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append(String
 					.format("%s://%s:%s/%s?", protocol, getProtocol().getHost(), String.valueOf(getProtocol().getPort()), getInterface()));
@@ -169,12 +156,11 @@ public class ExporterConfig<T> extends AbstractConfig {
 			throw new IllegalStateException("interfaceName can not be empty");
 		}
 		parameters.put("interface", getInterface());
-		parameters.put("version", !StringUtils.isEmpty(getVersion()) ? getVersion() : RpcConstant.DEFAULT_VERSION);
-		parameters.put("group", !StringUtils.isEmpty(getGroup()) ? getGroup() : RpcConstant.DEFAULT_GROUP);
-		parameters.put("loadbalance", !StringUtils.isEmpty(getLoadbalance()) ? getLoadbalance() : RpcConstant.DEFAULT_LOADBALANCE);
-		parameters.put("cluster", !StringUtils.isEmpty(getCluster()) ? getCluster() : RpcConstant.DEFAULT_CLUSTER);
-		parameters.put("timeout", getTimeout() > 0 ? String.valueOf(getTimeout()) : String.valueOf(RpcConstant.DEFAULT_TMEOUT));
-		parameters.put("retries", getRetries() > 0 ? String.valueOf(getRetries()) : String.valueOf(RpcConstant.DEFAULT_RRETRIES));
+		parameters.put("version", !StringUtils.isEmpty(getVersion()) ? getVersion() : RpcConstants.DEFAULT_VERSION);
+		parameters.put("group", !StringUtils.isEmpty(getGroup()) ? getGroup() : RpcConstants.DEFAULT_GROUP);
+		parameters.put("loadbalance", !StringUtils.isEmpty(getLoadbalance()) ? getLoadbalance() : RpcConstants.DEFAULT_LOADBALANCE);
+		parameters.put("timeout", getTimeout() > 0 ? String.valueOf(getTimeout()) : String.valueOf(RpcConstants.DEFAULT_TMEOUT));
+		parameters.put("retries", getRetries() > 0 ? String.valueOf(getRetries()) : String.valueOf(RpcConstants.DEFAULT_RRETRIES));
 	}
 
 	private void addAppliactionParameters(Map<String, String> parameters) {
@@ -183,25 +169,25 @@ public class ExporterConfig<T> extends AbstractConfig {
 		}
 		parameters.put("application", getApplication().getName());
 		parameters.put("application.version",
-				!StringUtils.isEmpty(getApplication().getVersion()) ? getApplication().getVersion() : RpcConstant.DEFAULT_VERSION);
+				!StringUtils.isEmpty(getApplication().getVersion()) ? getApplication().getVersion() : RpcConstants.DEFAULT_VERSION);
 	}
 
 	private void addProtocolParameters(Map<String, String> parameters) {
-		parameters.put("protocol", !StringUtils.isEmpty(getProtocol().getName()) ? getProtocol().getName() : RpcConstant.DEFAULT_PROTOCOL);
+		parameters.put("protocol", !StringUtils.isEmpty(getProtocol().getName()) ? getProtocol().getName() : RpcConstants.DEFAULT_PROTOCOL);
 		parameters.put("host", getProtocol().getHost());
 		parameters.put("port", String.valueOf(getProtocol().getPort()));
 		parameters.put("transporter",
-				!StringUtils.isEmpty(getProtocol().getTransporter()) ? getProtocol().getTransporter() : RpcConstant.DEFAULT_TRANSPORTER);
+				!StringUtils.isEmpty(getProtocol().getTransporter()) ? getProtocol().getTransporter() : RpcConstants.DEFAULT_TRANSPORTER);
 		parameters.put("serialization",
-				!StringUtils.isEmpty(getProtocol().getSerialization()) ? getProtocol().getSerialization() : RpcConstant.DEFAULT_SERIALIZATION);
+				!StringUtils.isEmpty(getProtocol().getSerialization()) ? getProtocol().getSerialization() : RpcConstants.DEFAULT_SERIALIZATION);
 		parameters.put("heartbeat",
-				getProtocol().getHeartbeat() > 0 ? String.valueOf(getProtocol().getHeartbeat()) : String.valueOf(RpcConstant.DEFAULT_HEARTBEAT));
+				getProtocol().getHeartbeat() > 0 ? String.valueOf(getProtocol().getHeartbeat()) : String.valueOf(RpcConstants.DEFAULT_HEARTBEAT));
 		parameters.put("threadpool",
-				!StringUtils.isEmpty(getProtocol().getThreadpool()) ? getProtocol().getThreadpool() : RpcConstant.DEFAULT_THREADPOOL);
+				!StringUtils.isEmpty(getProtocol().getThreadpool()) ? getProtocol().getThreadpool() : RpcConstants.DEFAULT_THREADPOOL);
 		parameters.put("threads",
-				getProtocol().getThreads() > 0 ? String.valueOf(getProtocol().getThreads()) : String.valueOf(RpcConstant.DEFAULT_THREADS));
+				getProtocol().getThreads() > 0 ? String.valueOf(getProtocol().getThreads()) : String.valueOf(RpcConstants.DEFAULT_THREADS));
 		parameters.put("iothreads",
-				getProtocol().getIothreads() > 0 ? String.valueOf(getProtocol().getIothreads()) : String.valueOf(RpcConstant.DEFAULT_IOTHREADS));
+				getProtocol().getIothreads() > 0 ? String.valueOf(getProtocol().getIothreads()) : String.valueOf(RpcConstants.DEFAULT_IOTHREADS));
 	}
 
 	private void addRegistryParameters(Map<String, String> parameters) {
@@ -214,9 +200,9 @@ public class ExporterConfig<T> extends AbstractConfig {
 		parameters.put("registry.name", getRegistry().getName());
 		parameters.put("address", getRegistry().getAddress());
 		parameters.put("registry.timeout",
-				getRegistry().getTimeout() > 0 ? String.valueOf(getRegistry().getTimeout()) : String.valueOf(RpcConstant.DEFAULT_REGISTRY_TIMEOUT));
+				getRegistry().getTimeout() > 0 ? String.valueOf(getRegistry().getTimeout()) : String.valueOf(RpcConstants.DEFAULT_REGISTRY_TIMEOUT));
 		parameters.put("registry.sessiontimeout", getRegistry().getSessiontimeout() > 0 ?
 				String.valueOf(getRegistry().getSessiontimeout()) :
-				String.valueOf(RpcConstant.DEFAULT_REGISTRY_SESSIONTIMEOUT));
+				String.valueOf(RpcConstants.DEFAULT_REGISTRY_SESSIONTIMEOUT));
 	}
 }

@@ -1,6 +1,6 @@
 package com.frameworkrpc.concurrent;
 
-import com.frameworkrpc.common.RpcConstant;
+import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.model.URL;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.slf4j.Logger;
@@ -13,12 +13,12 @@ public class RpcThreadPool {
 	private static final Logger logger = LoggerFactory.getLogger(RpcThreadPool.class);
 
 	public static ExecutorService getExecutor(URL url) {
-		logger.info("ThreadPool Core[threads:" + url.getParameter(RpcConstant.THREADS) + ", threadpool:" + url.getParameter(RpcConstant.THREADPOOL)
+		logger.info("ThreadPool Core[threads:" + url.getParameter(RpcConstants.THREADS) + ", threadpool:" + url.getParameter(RpcConstants.THREADPOOL)
 				+ "]");
-		boolean fixedThreadpool = url.getParameter(RpcConstant.THREADPOOL).equals("fixed");
+		boolean fixedThreadpool = url.getParameter(RpcConstants.THREADPOOL).equals("fixed");
 		final String name = "rpcthreadpool";
-		int corePoolSize = url.getIntParameter(RpcConstant.THREADS);
-		int maximumPoolSize = fixedThreadpool ? url.getIntParameter(RpcConstant.THREADS) : Integer.MAX_VALUE;
+		int corePoolSize = url.getIntParameter(RpcConstants.THREADS);
+		int maximumPoolSize = fixedThreadpool ? url.getIntParameter(RpcConstants.THREADS) : Integer.MAX_VALUE;
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(
 				corePoolSize,
 				maximumPoolSize,

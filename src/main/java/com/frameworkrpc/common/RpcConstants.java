@@ -1,9 +1,14 @@
 package com.frameworkrpc.common;
 
-public class RpcConstant {
+import java.util.regex.Pattern;
+
+public class RpcConstants {
 
 	public final static String ZK_REGISTRY_PATH = "/myrpc";
+
 	public final static String PATH_SEPARATOR = "/";
+	public static final Pattern COMMA_SPLIT_PATTERN = Pattern
+			.compile("\\s*[,]+\\s*");
 
 	public final static String CHARSET = "utf-8";
 
@@ -20,7 +25,6 @@ public class RpcConstant {
 	public final static String SESSIONTIMEOUT = "sessiontimeout";
 	public final static String REGISTRY_NAME = "registry.name";
 	public final static String REGISTRY_SESSIONTIMEOUT = "registry.sessiontimeout";
-	public final static String REGISTRY_SIDE = "side";
 	public final static String ADDRESS = "address";
 	public final static String RETRIES = "retries";
 
@@ -41,7 +45,7 @@ public class RpcConstant {
 	public final static String REGISTRYSCHEME = "registry";
 
 	public final static String DEFAULT_VERSION = "0.0.1";
-	public final static String DEFAULT_GROUP = "defaultgroup";
+	public final static String DEFAULT_GROUP = "default";
 	public final static String DEFAULT_CLUSTER = "failover";
 	public final static String DEFAULT_LOADBALANCE = "random";
 	public final static String DEFAULT_SERIALIZATION = "hessian";
@@ -60,4 +64,10 @@ public class RpcConstant {
 	public final static int DEFAULT_REGISTRY_TIMEOUT = 5000;
 	public final static int DEFAULT_REGISTRY_SESSIONTIMEOUT = 60000;
 
+	public static final String CATEGORY_KEY = "category";
+	public static final String ANY_VALUE = "*";
+
+	public static final String PROVIDERS_CATEGORY = "providers";
+	public static final String CONSUMERS_CATEGORY = "consumers";
+	public static final String DEFAULT_CATEGORY = PROVIDERS_CATEGORY;
 }

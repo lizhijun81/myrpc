@@ -2,14 +2,13 @@ package com.frameworkrpc.proxy;
 
 import com.frameworkrpc.client.Client;
 import com.frameworkrpc.client.ClientFactory;
-import com.frameworkrpc.common.RpcConstant;
+import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.extension.Scope;
 import com.frameworkrpc.loadbalance.LoadBalance;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.registry.Registry;
 import com.frameworkrpc.registry.RegistryFactory;
-import com.frameworkrpc.registry.RegistrySide;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,16 +30,14 @@ public class AbstractProxy implements Serializable {
 	protected Registry registry;
 
 	protected void initProxy(URL url) {
-		this.loadBalance = ExtensionLoader.getExtensionLoader(LoadBalance.class)
-				.getExtension(url.getParameter(RpcConstant.LOADBALANCE), Scope.SINGLETON);
+		this.loadBalance = ExtensionLoader.getExtensionLoader(LoadBalance.class).getExtension(url.getParameter(RpcConstants.LOADBALANCE));
 		this.registry = ExtensionLoader.getExtensionLoader(RegistryFactory.class)
-				.getExtension(url.getParameter(RpcConstant.REGISTRY_NAME), Scope.SINGLETON).getRegistry(url);
-		this.registry.subscribe(url, RegistrySide.PROVIDER);
+				.getExtension(url.getParameter(RpcConstants.REGISTRY_NAME), Scope.SINGLETON).getRegistry(url);
 	}
 
 	protected List<URL> getUrls(URL url) {
-		List<URL> registryUrls = this.registry.discover(url, RegistrySide.PROVIDER).stream()
-				.filter(f -> f.getParameter(RpcConstant.VERSION).equals(url.getParameter(RpcConstant.VERSION))).collect(Collectors.toList());
+		List<URL> registryUrls = (this.registry.discover(url)).stream()
+				.filter(f -> f.getParameter(RpcConstants.VERSION).equals(url.getParameter(RpcConstants.VERSION))).collect(Collectors.toList());
 
 		if (registryUrls != null) {
 			if (registryUrls.size() > 0) {
@@ -53,7 +50,8 @@ public class AbstractProxy implements Serializable {
 				for (String serverNodeAddress : newAllServerNodeSet) {
 					if (!connectedServerClients.keySet().contains(serverNodeAddress)) {
 						Client client = ExtensionLoader.getExtensionLoader(ClientFactory.class)
-								.getExtension(url.getParameter(RpcConstant.TRANSPORTER), Scope.SINGLETON).getClient(loadBalance.select(getUrls(url)));
+								.getExtension(url.getParameter(RpcConstants.TRANSPORTER), Scope.SINGLETON)
+								.getClient(loadBalance.select(getUrls(url)));
 						if (!client.isOpened())
 							client.doOpen();
 						if (!client.isConnected())
@@ -86,7 +84,8 @@ public class AbstractProxy implements Serializable {
 	}
 
 	protected Client getClient(URL url) {
-		Client client = connectedServerClients.get(loadBalance.select(getUrls(url)));
+		List<URL> urls = getUrls(url);
+		Client client = connectedServerClients.get(loadBalance.select(urls));
 		if (!client.isOpened())
 			client.doOpen();
 		if (!client.isConnected())

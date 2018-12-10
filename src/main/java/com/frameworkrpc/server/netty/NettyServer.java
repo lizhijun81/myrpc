@@ -1,7 +1,7 @@
 package com.frameworkrpc.server.netty;
 
 import com.frameworkrpc.common.NetUtils;
-import com.frameworkrpc.common.RpcConstant;
+import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.concurrent.RpcThreadPool;
 import com.frameworkrpc.extension.Scope;
 import com.frameworkrpc.extension.ExtensionLoader;
@@ -62,7 +62,7 @@ public class NettyServer extends AbstractServer implements Server {
 
 		bootstrap = new ServerBootstrap();
 		bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("NettyServerBoss", true));
-		workerGroup = new NioEventLoopGroup(url.getIntParameter(RpcConstant.IOTHREADS), new DefaultThreadFactory("NettyServerWorker", true));
+		workerGroup = new NioEventLoopGroup(url.getIntParameter(RpcConstants.IOTHREADS), new DefaultThreadFactory("NettyServerWorker", true));
 
 
 		if (threadPoolExecutor == null) {
@@ -73,7 +73,7 @@ public class NettyServer extends AbstractServer implements Server {
 			}
 		}
 
-		IdleStateHandler idleStateHandler = new IdleStateHandler(url.getIntParameter(RpcConstant.HEARTBEAT), 0, 0) {
+		IdleStateHandler idleStateHandler = new IdleStateHandler(url.getIntParameter(RpcConstants.HEARTBEAT), 0, 0) {
 			@Override
 			public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 				if (evt instanceof IdleStateEvent) {
@@ -97,7 +97,7 @@ public class NettyServer extends AbstractServer implements Server {
 					@Override
 					protected void initChannel(NioSocketChannel ch) throws Exception {
 						Serialize serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
-								.getExtension(url.getParameter(RpcConstant.SERIALIZATION), Scope.SINGLETON);
+								.getExtension(url.getParameter(RpcConstants.SERIALIZATION), Scope.SINGLETON);
 						ch.pipeline()
 								.addLast("idlestate", idleStateHandler)
 								.addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))
@@ -105,7 +105,7 @@ public class NettyServer extends AbstractServer implements Server {
 								.addLast("handler", new NettyServerHandler(url, rpcInstanceFactory, threadPoolExecutor));
 					}
 				});
-		ChannelFuture channelFuture = bootstrap.bind(url.getIntParameter(RpcConstant.PORT));
+		ChannelFuture channelFuture = bootstrap.bind(url.getIntParameter(RpcConstants.PORT));
 		channelFuture.syncUninterruptibly();
 		serverChannel = channelFuture.channel();
 		logger.info("Netty RPC Server start success!port:{}", NetUtils.getAvailablePort());

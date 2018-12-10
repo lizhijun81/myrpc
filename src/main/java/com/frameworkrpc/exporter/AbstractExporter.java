@@ -1,6 +1,6 @@
 package com.frameworkrpc.exporter;
 
-import com.frameworkrpc.common.RpcConstant;
+import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.extension.Scope;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.model.URL;
@@ -35,7 +35,7 @@ public class AbstractExporter implements Serializable {
 	public void initExporter() {
 		if (!exportedServers.containsKey(url.getServerPortStr())) {
 			this.server = ExtensionLoader.getExtensionLoader(ServerFactory.class)
-					.getExtension(url.getParameter(RpcConstant.TRANSPORTER), Scope.SINGLETON).getServer(url);
+					.getExtension(url.getParameter(RpcConstants.TRANSPORTER), Scope.SINGLETON).getServer(url);
 			exportedServers.put(url.getServerPortStr(),this.server);
 		}
 		else {
@@ -43,6 +43,6 @@ public class AbstractExporter implements Serializable {
 		}
 
 		this.registry = ExtensionLoader.getExtensionLoader(RegistryFactory.class)
-				.getExtension(url.getParameter(RpcConstant.REGISTRY_NAME), Scope.SINGLETON).getRegistry(url);
+				.getExtension(url.getParameter(RpcConstants.REGISTRY_NAME), Scope.SINGLETON).getRegistry(url);
 	}
 }

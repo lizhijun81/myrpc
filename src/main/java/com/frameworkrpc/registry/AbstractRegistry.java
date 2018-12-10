@@ -1,47 +1,137 @@
 package com.frameworkrpc.registry;
 
+import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.model.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.google.common.collect.Sets.newConcurrentHashSet;
 
 public class AbstractRegistry {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractRegistry.class);
-	protected final Map<String, ConcurrentHashMap<String, List<URL>>> subscribeUrls = new ConcurrentHashMap<String, ConcurrentHashMap<String, List<URL>>>() {
-		{
-			put(RegistrySide.PROVIDER.getName(), new ConcurrentHashMap<>());
-			put(RegistrySide.CONSUMER.getName(), new ConcurrentHashMap<>());
+	private final ConcurrentMap<URL, Map<String, List<URL>>> notified = new ConcurrentHashMap<URL, Map<String, List<URL>>>();
+	private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>();
+	protected final Set<URL> registered = newConcurrentHashSet();
+
+	protected void register(URL url) {
+		registered.add(url);
+		logger.info("notify {}", url.toFullStr());
+	}
+
+	protected void unregister(URL url) {
+		registered.remove(url);
+		logger.info("remove {}", url.toFullStr());
+	}
+
+	public void subscribe(URL url, NotifyListener listener) {
+		if (url == null) {
+			throw new IllegalArgumentException("subscribe url == null");
 		}
-	};
-	protected final Set<URL> registeredServiceUrls = newConcurrentHashSet();
-	protected final Set<URL> registeredConsumerUrls = newConcurrentHashSet();
-
-
-	protected void register(URL url, RegistrySide registrySide) {
-		if (registrySide.getName().equals(registrySide.PROVIDER.getName()))
-			registeredServiceUrls.add(url);
-		else
-			registeredConsumerUrls.add(url);
-		logger.info("notify {} : {}", registrySide.getName(), url.toFullStr());
+		if (listener == null) {
+			throw new IllegalArgumentException("subscribe listener == null");
+		}
+		if (logger.isInfoEnabled()) {
+			logger.info("Subscribe: " + url);
+		}
+		Set<NotifyListener> listeners = subscribed.get(url);
+		if (listeners == null) {
+			subscribed.putIfAbsent(url, newConcurrentHashSet());
+			listeners = subscribed.get(url);
+		}
+		listeners.add(listener);
 	}
 
-	protected void unregister(URL url, RegistrySide registrySide) {
-		if (registrySide.getName().equals(registrySide.PROVIDER.getName()))
-			registeredServiceUrls.remove(url);
-		else
-			registeredConsumerUrls.remove(url);
-		logger.info("remove {} : {}", registrySide.getName(), url.toFullStr());
+	public void unsubscribe(URL url, NotifyListener listener) {
+		if (url == null) {
+			throw new IllegalArgumentException("unsubscribe url == null");
+		}
+		if (listener == null) {
+			throw new IllegalArgumentException("unsubscribe listener == null");
+		}
+		if (logger.isInfoEnabled()) {
+			logger.info("Unsubscribe: " + url);
+		}
+		Set<NotifyListener> listeners = subscribed.get(url);
+		if (listeners != null) {
+			listeners.remove(listener);
+		}
 	}
 
-	public Set<URL> getRegisteredServiceUrls() {
-		return this.registeredServiceUrls;
+	public Set<URL> getRegisteredUrls() {
+		return this.registered;
 	}
 
+	public List<URL> discover(URL url) {
+		List<URL> result = new ArrayList<URL>();
+		Map<String, List<URL>> notifiedUrls = notified.get(url);
+		if (notifiedUrls != null && notifiedUrls.size() > 0) {
+			for (List<URL> urls : notifiedUrls.values()) {
+				for (URL u : urls) {
+					result.add(u);
+				}
+			}
+		} else {
+			final AtomicReference<List<URL>> reference = new AtomicReference<List<URL>>();
+			NotifyListener listener = new NotifyListener() {
+				@Override
+				public void notify(List<URL> urls) {
+					reference.set(urls);
+				}
+			};
+			subscribe(url, listener); // Subscribe logic guarantees the first notify to return
+			List<URL> urls = reference.get();
+			if (urls != null && !urls.isEmpty()) {
+				for (URL u : urls) {
+					result.add(u);
+				}
+			}
+		}
+		return result;
+	}
+
+	protected void notify(URL url, NotifyListener listener, List<URL> urls) {
+		if (url == null) {
+			throw new IllegalArgumentException("notify url == null");
+		}
+		if (listener == null) {
+			throw new IllegalArgumentException("notify listener == null");
+		}
+		if (urls == null || urls.isEmpty()) {
+			logger.warn("Ignore empty notify urls for subscribe url " + url);
+			return;
+		}
+
+		logger.info("Notify urls for subscribe url " + url + ", urls: " + urls);
+
+		Map<String, List<URL>> result = new HashMap<String, List<URL>>();
+		for (URL u : urls) {
+			String category = u.getParameter(RpcConstants.CATEGORY_KEY, RpcConstants.DEFAULT_CATEGORY);
+			List<URL> categoryList = result.get(category);
+			if (categoryList == null) {
+				categoryList = new ArrayList<URL>();
+				result.put(category, categoryList);
+			}
+			categoryList.add(u);
+		}
+		if (result.size() == 0) {
+			return;
+		}
+		Map<String, List<URL>> categoryNotified = notified.get(url);
+		if (categoryNotified == null) {
+			notified.putIfAbsent(url, new ConcurrentHashMap<String, List<URL>>());
+			categoryNotified = notified.get(url);
+		}
+		for (Map.Entry<String, List<URL>> entry : result.entrySet()) {
+			String category = entry.getKey();
+			List<URL> categoryList = entry.getValue();
+			categoryNotified.put(category, categoryList);
+			listener.notify(categoryList);
+		}
+	}
 }

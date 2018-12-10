@@ -77,7 +77,7 @@ public class NetUtils {
 		if (port == 0) {
 			try {
 				portLock.lock();
-				int _port = RpcConstant.DEFAULT_IOPORT;
+				int _port = RpcConstants.DEFAULT_IOPORT;
 				int i = 100;
 				while (i > 0) {
 					i--;

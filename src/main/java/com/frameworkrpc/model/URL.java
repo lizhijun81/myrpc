@@ -1,7 +1,7 @@
 package com.frameworkrpc.model;
 
 import com.frameworkrpc.common.NetUtils;
-import com.frameworkrpc.common.RpcConstant;
+import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.exception.RpcException;
 
 import java.io.Serializable;
@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,7 +22,7 @@ public class URL implements Serializable {
 
 	public URL(String url) {
 		try {
-			uri = new URI(URLDecoder.decode(url, RpcConstant.CHARSET));
+			uri = new URI(URLDecoder.decode(url, RpcConstants.CHARSET));
 			setParameters();
 		} catch (URISyntaxException e) {
 			throw new RpcException(e.getMessage(), e);
@@ -105,6 +106,14 @@ public class URL implements Serializable {
 		return value;
 	}
 
+	public String[] getParameter(String key, String[] defaultValue) {
+		String value = getParameter(key);
+		if (value == null || value.length() == 0) {
+			return defaultValue;
+		}
+		return RpcConstants.COMMA_SPLIT_PATTERN.split(value);
+	}
+
 	public Boolean getBooleanParameter(String name) {
 		String value = getParameter(name);
 		return Boolean.parseBoolean(value);
@@ -149,5 +158,27 @@ public class URL implements Serializable {
 			numbers = new ConcurrentHashMap<String, Number>();
 		}
 		return numbers;
+	}
+
+	public static String encode(String value) {
+		if (value == null || value.length() == 0) {
+			return "";
+		}
+		try {
+			return URLEncoder.encode(value, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+
+	public static String decode(String value) {
+		if (value == null || value.length() == 0) {
+			return "";
+		}
+		try {
+			return URLDecoder.decode(value, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
 	}
 }

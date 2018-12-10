@@ -1,7 +1,7 @@
 package com.frameworkrpc.server.netty;
 
 import com.frameworkrpc.extension.RpcComponent;
-import com.frameworkrpc.common.RpcConstant;
+import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.extension.Scope;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.model.URL;
@@ -14,7 +14,7 @@ public class NettyServerFactory implements ServerFactory {
 	@Override
 	public Server getServer(URL url) {
 		RpcInstanceFactory rpcInstanceFactory = ExtensionLoader.getExtensionLoader(RpcInstanceFactory.class)
-				.getExtension(url.getParameter(RpcConstant.TRANSPORTER), Scope.SINGLETON);
+				.getExtension(url.getParameter(RpcConstants.TRANSPORTER), Scope.SINGLETON);
 		return new NettyServer(url, rpcInstanceFactory);
 	}
 }

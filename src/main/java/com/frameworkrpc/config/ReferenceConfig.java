@@ -1,6 +1,6 @@
 package com.frameworkrpc.config;
 
-import com.frameworkrpc.common.RpcConstant;
+import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.proxy.ProxyFactory;
@@ -22,7 +22,7 @@ public class ReferenceConfig<T> extends ExporterConfig {
 	protected URL getUrl() {
 		URL url = super.getUrl();
 		return url.addParameters("connecttimeout",
-				getConnecttimeout() > 0 ? String.valueOf(getConnecttimeout()) : String.valueOf(RpcConstant.DEFAULT_CONNECTTIMEOUT));
+				getConnecttimeout() > 0 ? String.valueOf(getConnecttimeout()) : String.valueOf(RpcConstants.DEFAULT_CONNECTTIMEOUT));
 	}
 
 	public T get() {

@@ -14,7 +14,6 @@ public class ExtensionLoader<T> {
 	private ConcurrentMap<String, T> singletonInstances = new ConcurrentHashMap<>();
 	protected ConcurrentMap<String, Class<T>> extensionClasses = new ConcurrentHashMap<>();
 
-
 	private ClassLoader classLoader;
 	private Class<T> type;
 

@@ -4,13 +4,14 @@ import com.frameworkrpc.model.RpcRequester;
 import com.frameworkrpc.model.RpcResponse;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.proxy.RPCFuture;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.SocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
 
 public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
 
@@ -64,22 +65,11 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
 				cause.getMessage(), cause);
 		ctx.close();
 	}
+
 	public RPCFuture sendRequest(RpcRequester request) {
-		final CountDownLatch latch = new CountDownLatch(1);
 		RPCFuture rpcFuture = new RPCFuture(request);
 		pendingRPC.put(request.getRequestId(), rpcFuture);
-		channel.writeAndFlush(request).addListener(new ChannelFutureListener() {
-			@Override
-			public void operationComplete(ChannelFuture future) {
-				latch.countDown();
-			}
-		});
-		try {
-			latch.await();
-		} catch (InterruptedException e) {
-			logger.error(e.getMessage());
-		}
-
+		channel.writeAndFlush(request);
 		return rpcFuture;
 	}
 }

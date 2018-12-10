@@ -47,7 +47,6 @@ public class JdkProxyFactory extends AbstractProxy implements ProxyFactory {
 				request.setParameters(args);
 
 				Client client = getClient(url);
-
 				return client.request(request).get();
 			}
 		});

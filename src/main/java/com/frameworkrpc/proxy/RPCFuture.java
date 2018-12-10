@@ -9,64 +9,70 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.locks.AbstractQueuedSynchronizer;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class RPCFuture implements Future<Object> {
-	private static final Logger logger = LoggerFactory.getLogger(RPCFuture.class);
 
-	private Sync sync;
+	private static final Logger logger = LoggerFactory.getLogger(RPCFuture.class);
 	private RpcRequester request;
 	private RpcResponse response;
 	private long startTime;
-	private long responseTimeThreshold = 5000;
 
-	private ReentrantLock lock = new ReentrantLock();
+	private Lock lock = new ReentrantLock();
+	private Condition finish = lock.newCondition();
 
 	public RPCFuture(RpcRequester request) {
-		this.sync = new Sync();
 		this.request = request;
 		this.startTime = System.currentTimeMillis();
 	}
 
 	@Override
 	public boolean isDone() {
-		return sync.isDone();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Object get() throws InterruptedException, ExecutionException {
-		sync.acquire(-1);
-		if (this.response != null) {
-			return this.response.getResult();
-		} else {
-			return null;
-		}
-	}
-
-	public void done(RpcResponse reponse) {
-		this.response = reponse;
-		sync.release(1);
-		long responseTime = System.currentTimeMillis() - startTime;
-		if (responseTime > this.responseTimeThreshold) {
-			logger.warn("Service response time is too slow. Request id = " + reponse.getRequestId() + ". Response Time = " + responseTime + "ms");
-		}
-	}
-
-	@Override
-	public Object get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-		boolean success = sync.tryAcquireNanos(-1, unit.toNanos(timeout));
-		if (success) {
+		try {
+			lock.lock();
+			finish.await();
 			if (this.response != null) {
 				return this.response.getResult();
 			} else {
 				return null;
 			}
-		} else {
-			throw new InvokeException(
-					"Timeout exception. Request id: " + this.request.getRequestId() + ". Request class name: " + this.request.getInterfaceName()
-							+ ". Request method: " + this.request.getMethodName());
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	public void done(RpcResponse reponse) {
+		try {
+			lock.lock();
+			finish.signal();
+			this.response = reponse;
+			long responseTime = System.currentTimeMillis() - startTime;
+			logger.debug("Service response Request id: " + this.request.getRequestId() + ". Request interfaceName: " + this.request.getInterfaceName()
+					+ ". Request method: " + this.request.getMethodName() + ". Response Time: " + responseTime + "ms");
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	@Override
+	public Object get(long timeout, TimeUnit unit) {
+		try {
+			lock.lock();
+			await(timeout, unit);
+			if (this.response != null) {
+				return this.response.getResult();
+			} else {
+				return null;
+			}
+		} finally {
+			lock.unlock();
 		}
 	}
 
@@ -80,35 +86,18 @@ public class RPCFuture implements Future<Object> {
 		throw new UnsupportedOperationException();
 	}
 
-	static class Sync extends AbstractQueuedSynchronizer {
 
-		private static final long serialVersionUID = 1L;
-
-		//future status
-		private final int done = 1;
-		private final int pending = 0;
-
-		@Override
-		protected boolean tryAcquire(int arg) {
-			return getState() == done;
+	private void await(long timeout, TimeUnit unit) {
+		boolean isTimeout = false;
+		try {
+			isTimeout = finish.await(timeout, unit);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-
-		@Override
-		protected boolean tryRelease(int arg) {
-			if (getState() == pending) {
-				if (compareAndSetState(pending, done)) {
-					return true;
-				} else {
-					return false;
-				}
-			} else {
-				return true;
-			}
-		}
-
-		public boolean isDone() {
-			getState();
-			return getState() == done;
+		if (!isTimeout) {
+			throw new InvokeException(
+					"Timeout exception. Request id: " + this.request.getRequestId() + ". Request class name: " + this.request.getInterfaceName()
+							+ ". Request method: " + this.request.getMethodName());
 		}
 	}
 }

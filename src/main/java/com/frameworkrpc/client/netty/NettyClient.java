@@ -3,7 +3,7 @@ package com.frameworkrpc.client.netty;
 import com.frameworkrpc.client.AbstractClient;
 import com.frameworkrpc.client.Client;
 import com.frameworkrpc.common.NetUtils;
-import com.frameworkrpc.common.RpcConstant;
+import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.exception.RemotingException;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.extension.Scope;
@@ -31,7 +31,7 @@ public class NettyClient extends AbstractClient implements Client {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
 	private Bootstrap bootstrap;
-	private static final NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup(RpcConstant.DEFAULT_IOTHREADS,
+	private static final NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup(RpcConstants.DEFAULT_IOTHREADS,
 			new DefaultThreadFactory("NettyClientBoss", true));
 
 	private volatile Channel channel;
@@ -67,7 +67,7 @@ public class NettyClient extends AbstractClient implements Client {
 			return;
 
 		bootstrap = new Bootstrap();
-		bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, url.getIntParameter(RpcConstant.TIMEOUT));
+		bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, url.getIntParameter(RpcConstants.TIMEOUT));
 		bootstrap.option(ChannelOption.TCP_NODELAY, true);
 		bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
 		nettyClientHandler = new NettyClientHandler(url);
@@ -75,7 +75,7 @@ public class NettyClient extends AbstractClient implements Client {
 			@Override
 			protected void initChannel(NioSocketChannel ch) throws Exception {
 				Serialize serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
-						.getExtension(url.getParameter(RpcConstant.SERIALIZATION), Scope.SINGLETON);
+						.getExtension(url.getParameter(RpcConstants.SERIALIZATION), Scope.SINGLETON);
 				ch.pipeline().addLast("decoder", new MessageDecoder(serialize, RpcResponse.class))
 						.addLast("encoder", new MessageEncoder(serialize, RpcRequester.class))
 						.addLast("handler", nettyClientHandler);
@@ -98,7 +98,7 @@ public class NettyClient extends AbstractClient implements Client {
 		long start = System.currentTimeMillis();
 		ChannelFuture future = bootstrap.connect(getConnectAddress());
 		try {
-			boolean ret = future.awaitUninterruptibly(url.getIntParameter(RpcConstant.CONNECTTIMEOUT), TimeUnit.MILLISECONDS);
+			boolean ret = future.awaitUninterruptibly(url.getIntParameter(RpcConstants.CONNECTTIMEOUT), TimeUnit.MILLISECONDS);
 
 			if (ret && future.isSuccess()) {
 				Channel newChannel = future.channel();
@@ -134,7 +134,7 @@ public class NettyClient extends AbstractClient implements Client {
 				throw new RemotingException(
 						"client(url: " + getUrl().toFullStr() + ") failed to connect to server " + getConnectAddress() + " client-side timeout "
 								+ getConnectAddress() + "ms (elapsed: " + (System.currentTimeMillis() - start) + "ms) from netty client " + NetUtils
-								.getLocalHost() + " using  version " + getUrl().getParameter(RpcConstant.VERSION));
+								.getLocalHost() + " using  version " + getUrl().getParameter(RpcConstants.VERSION));
 			}
 		} finally {
 			//			if (!isConnected()) {
