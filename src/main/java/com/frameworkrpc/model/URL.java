@@ -69,6 +69,27 @@ public class URL implements Serializable {
 		return host;
 	}
 
+	public String getServiceInterface() {
+		return getParameter(RpcConstants.INTERFACE, getPath());
+	}
+
+	public String getServiceKey() {
+		String inf = getServiceInterface();
+		if (inf == null)
+			return null;
+		StringBuilder buf = new StringBuilder();
+		String group = getParameter(RpcConstants.GROUP);
+		if (group != null && group.length() > 0) {
+			buf.append(group).append("/");
+		}
+		buf.append(inf);
+		String version = getParameter(RpcConstants.VERSION);
+		if (version != null && version.length() > 0) {
+			buf.append(":").append(version);
+		}
+		return buf.toString();
+	}
+
 	public String toFullStr() {
 		return this.uri.toString();
 	}
@@ -155,7 +176,7 @@ public class URL implements Serializable {
 
 	private Map<String, Number> getNumbers() {
 		if (numbers == null) {
-			numbers = new ConcurrentHashMap<String, Number>();
+			numbers = new ConcurrentHashMap<>();
 		}
 		return numbers;
 	}

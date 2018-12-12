@@ -1,7 +1,6 @@
 package com.frameworkrpc.registry.zookeeper;
 
 import com.frameworkrpc.common.RpcConstants;
-import com.frameworkrpc.exception.RpcException;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.registry.AbstractRegistry;
 import com.frameworkrpc.registry.NotifyListener;
@@ -23,7 +22,6 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
 
 	private static final Logger logger = LoggerFactory.getLogger(ZookeeperRegistry.class);
 	private ZkClient zkClient;
-	private NotifyListener registryListener;
 	private final Map<URL, ConcurrentMap<NotifyListener, IZkChildListener>> zkListeners = new ConcurrentHashMap<>();
 
 	public ZookeeperRegistry(URL url) {
@@ -128,28 +126,6 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
 				String path = ZkUtils.toCategoryPath(url);
 				zkClient.unsubscribeChildChanges(path, zkListener);
 			}
-		}
-	}
-
-	@Override
-	public List<URL> discover(URL url) {
-		if (url == null) {
-			throw new IllegalArgumentException("discover url == null");
-		}
-		try {
-			//			List<URL> urls = super.discover(url);
-			//			if (urls != null && !urls.isEmpty())
-			//				return urls;
-			List<String> providers = new ArrayList<String>();
-			for (String path : ZkUtils.toCategoriesPath(url)) {
-				List<String> children = zkClient.getChildren(path);
-				if (children != null) {
-					providers.addAll(children);
-				}
-			}
-			return toUrls(providers);
-		} catch (Throwable e) {
-			throw new RpcException("Failed to lookup " + url + ", cause: " + e.getMessage(), e);
 		}
 	}
 

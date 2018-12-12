@@ -99,7 +99,7 @@ public class NettyServer extends AbstractServer implements Server {
 						Serialize serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
 								.getExtension(url.getParameter(RpcConstants.SERIALIZATION), Scope.SINGLETON);
 						ch.pipeline()
-								.addLast("idlestate", idleStateHandler)
+								//.addLast("idlestate", idleStateHandler)
 								.addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))
 								.addLast("encoder", new MessageEncoder(serialize, RpcResponse.class))
 								.addLast("handler", new NettyServerHandler(url, rpcInstanceFactory, threadPoolExecutor));

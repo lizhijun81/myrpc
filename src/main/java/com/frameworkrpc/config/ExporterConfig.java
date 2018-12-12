@@ -15,6 +15,7 @@ public class ExporterConfig<T> extends AbstractConfig {
 	protected String id;
 	protected String interfaceName;
 	protected Class<?> interfaceClass;
+	protected T ref;
 	protected ApplicationConfig application;
 	protected RegistryConfig registry;
 	protected ProtocolConfig protocol;
@@ -58,6 +59,14 @@ public class ExporterConfig<T> extends AbstractConfig {
 
 	public void setInterfaceClass(Class<?> interfaceClass) {
 		this.interfaceClass = interfaceClass;
+	}
+
+	public T getRef() {
+		return ref;
+	}
+
+	public void setRef(T ref) {
+		this.ref = ref;
 	}
 
 	public ApplicationConfig getApplication() {
@@ -134,7 +143,7 @@ public class ExporterConfig<T> extends AbstractConfig {
 				return url;
 			Map<String, String> parameters = new HashMap<>();
 			parameters.put("id", getId());
-			parameters.put("category", RpcConstants.DEFAULT_CATEGORY);
+//			parameters.put("category", RpcConstants.DEFAULT_CATEGORY);
 			addServiceParameters(parameters);
 			addAppliactionParameters(parameters);
 			addProtocolParameters(parameters);

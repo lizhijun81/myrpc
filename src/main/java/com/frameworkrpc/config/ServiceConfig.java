@@ -1,35 +1,32 @@
 package com.frameworkrpc.config;
 
 import com.frameworkrpc.common.RpcConstants;
-import com.frameworkrpc.extension.Scope;
 import com.frameworkrpc.exporter.Exporter;
 import com.frameworkrpc.extension.ExtensionLoader;
+import com.frameworkrpc.extension.Scope;
 import com.frameworkrpc.rpc.RpcInstanceFactory;
 
 public class ServiceConfig<T> extends ExporterConfig {
 
 	private static final long serialVersionUID = 4186914879813709242L;
-	private T ref;
-
-
-	public T getRef() {
-		return ref;
-	}
-
-	public void setRef(T ref) {
-		this.ref = ref;
-	}
+    private volatile boolean isexport;
 
 	public void export() {
-		checkRef();
-		RpcInstanceFactory rpcInstanceFactory = ExtensionLoader.getExtensionLoader(RpcInstanceFactory.class)
-				.getExtension(getUrl().getParameter(RpcConstants.TRANSPORTER), Scope.SINGLETON);
-		rpcInstanceFactory.setRpcInstance(getInterface(), getRef());
-		exporter = ExtensionLoader.getExtensionLoader(Exporter.class).getExtension("default");
-		exporter.setUrl(getUrl());
-		exporter.initExporter();
-		exporter.exportServer();
-		exporter.exportUrl();
+		if (!isexport){
+			synchronized (this){
+				if (!isexport) {
+					checkRef();
+					RpcInstanceFactory rpcInstanceFactory = ExtensionLoader.getExtensionLoader(RpcInstanceFactory.class)
+							.getExtension(getUrl().getParameter(RpcConstants.TRANSPORTER), Scope.SINGLETON);
+					rpcInstanceFactory.setRpcInstance(getInterface(), getRef());
+					exporter = ExtensionLoader.getExtensionLoader(Exporter.class).getExtension("default");
+					exporter.setUrl(getUrl());
+					exporter.initExporter();
+					exporter.exportServer();
+					exporter.exportUrl();
+				}
+			}
+		}
 	}
 
 	private void checkRef() {

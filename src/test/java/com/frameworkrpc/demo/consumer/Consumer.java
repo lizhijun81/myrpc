@@ -30,6 +30,14 @@ public class Consumer {
 		reference.setVersion("1.0.0");
 
 		DemoService demoService = reference.get();
-		System.out.print(demoService.sayHello("name"));
+		while (true) {
+			try {
+				Thread.sleep(1000);
+				String hello = demoService.sayHello("world"); // call remote method
+				System.out.println(hello); // get result
+			} catch (Throwable throwable) {
+				throwable.printStackTrace();
+			}
+		}
 	}
 }

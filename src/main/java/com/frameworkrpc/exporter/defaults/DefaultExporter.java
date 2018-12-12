@@ -1,8 +1,10 @@
 package com.frameworkrpc.exporter.defaults;
 
+import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.exporter.AbstractExporter;
 import com.frameworkrpc.exporter.Exporter;
 import com.frameworkrpc.extension.RpcComponent;
+import com.frameworkrpc.model.URL;
 
 @RpcComponent(name = "default")
 public class DefaultExporter extends AbstractExporter implements Exporter {
@@ -19,7 +21,8 @@ public class DefaultExporter extends AbstractExporter implements Exporter {
 	@Override
 	public void exportUrl() {
 		if (!exportedUrls.contains(url)) {
-			registry.register(url);
+			URL registerUrl = url.addParameters(RpcConstants.CATEGORY_KEY, RpcConstants.DEFAULT_CATEGORY);
+			registry.register(registerUrl);
 			exportedUrls.add(url);
 		}
 	}
@@ -34,7 +37,8 @@ public class DefaultExporter extends AbstractExporter implements Exporter {
 
 	@Override
 	public void unexportUrl() {
-		registry.unregister(url);
+		URL registerUrl = url.addParameters(RpcConstants.CATEGORY_KEY, RpcConstants.DEFAULT_CATEGORY);
+		registry.unregister(registerUrl);
 		exportedUrls.remove(url);
 	}
 }

@@ -76,7 +76,8 @@ public class NettyClient extends AbstractClient implements Client {
 			protected void initChannel(NioSocketChannel ch) throws Exception {
 				Serialize serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
 						.getExtension(url.getParameter(RpcConstants.SERIALIZATION), Scope.SINGLETON);
-				ch.pipeline().addLast("decoder", new MessageDecoder(serialize, RpcResponse.class))
+				ch.pipeline()
+						.addLast("decoder", new MessageDecoder(serialize, RpcResponse.class))
 						.addLast("encoder", new MessageEncoder(serialize, RpcRequester.class))
 						.addLast("handler", nettyClientHandler);
 			}

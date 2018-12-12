@@ -7,8 +7,7 @@ public class RpcConstants {
 	public final static String ZK_REGISTRY_PATH = "/myrpc";
 
 	public final static String PATH_SEPARATOR = "/";
-	public static final Pattern COMMA_SPLIT_PATTERN = Pattern
-			.compile("\\s*[,]+\\s*");
+	public static final Pattern COMMA_SPLIT_PATTERN = Pattern.compile("\\s*[,]+\\s*");
 
 	public final static String CHARSET = "utf-8";
 
@@ -40,14 +39,12 @@ public class RpcConstants {
 
 	public final static String PROVIDERSCHEME = "provider";
 	public final static String CONSUMERSCHEME = "consumer";
-	public final static String APPLICATIONSCHEME = "application";
-	public final static String PROTOCOLSCHEME = "protocol";
-	public final static String REGISTRYSCHEME = "registry";
+	;
 
 	public final static String DEFAULT_VERSION = "0.0.1";
 	public final static String DEFAULT_GROUP = "default";
 	public final static String DEFAULT_CLUSTER = "failover";
-	public final static String DEFAULT_LOADBALANCE = "random";
+	public final static String DEFAULT_LOADBALANCE = "roundrobin";
 	public final static String DEFAULT_SERIALIZATION = "hessian";
 	public final static int DEFAULT_TMEOUT = 1000;
 	public final static int DEFAULT_CONNECTTIMEOUT = 3000;

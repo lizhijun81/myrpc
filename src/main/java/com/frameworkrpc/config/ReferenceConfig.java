@@ -5,7 +5,7 @@ import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.proxy.ProxyFactory;
 
-public class ReferenceConfig<T> extends ExporterConfig {
+public class ReferenceConfig<T> extends ExporterConfig<T> {
 
 	private static final long serialVersionUID = 8866752725969090439L;
 	protected int connecttimeout;
@@ -26,9 +26,12 @@ public class ReferenceConfig<T> extends ExporterConfig {
 	}
 
 	public T get() {
-		ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getExtension("jdk");
-		proxyFactory.initProxy(getUrl());
-		return proxyFactory.getInstance((Class<T>) interfaceClass, getUrl());
+		if (ref == null) {
+			ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getExtension("jdk");
+			proxyFactory.initProxy(getUrl());
+			ref = proxyFactory.getInstance((Class<T>) interfaceClass, getUrl());
+		}
+		return ref;
 	}
 
 }

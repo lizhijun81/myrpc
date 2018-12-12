@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.google.common.collect.Sets.newConcurrentHashSet;
 
@@ -67,33 +66,6 @@ public class AbstractRegistry {
 		return this.registered;
 	}
 
-	public List<URL> discover(URL url) {
-		List<URL> result = new ArrayList<URL>();
-		Map<String, List<URL>> notifiedUrls = notified.get(url);
-		if (notifiedUrls != null && notifiedUrls.size() > 0) {
-			for (List<URL> urls : notifiedUrls.values()) {
-				for (URL u : urls) {
-					result.add(u);
-				}
-			}
-		} else {
-			final AtomicReference<List<URL>> reference = new AtomicReference<List<URL>>();
-			NotifyListener listener = new NotifyListener() {
-				@Override
-				public void notify(List<URL> urls) {
-					reference.set(urls);
-				}
-			};
-			subscribe(url, listener); // Subscribe logic guarantees the first notify to return
-			List<URL> urls = reference.get();
-			if (urls != null && !urls.isEmpty()) {
-				for (URL u : urls) {
-					result.add(u);
-				}
-			}
-		}
-		return result;
-	}
 
 	protected void notify(URL url, NotifyListener listener, List<URL> urls) {
 		if (url == null) {
