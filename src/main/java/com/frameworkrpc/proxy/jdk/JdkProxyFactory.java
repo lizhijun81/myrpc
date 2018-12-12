@@ -1,6 +1,7 @@
 package com.frameworkrpc.proxy.jdk;
 
 import com.frameworkrpc.client.Client;
+import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.extension.RpcComponent;
 import com.frameworkrpc.model.RpcRequester;
 import com.frameworkrpc.model.URL;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @RpcComponent(name = "jdk")
 public class JdkProxyFactory extends AbstractProxy implements ProxyFactory {
@@ -46,8 +48,8 @@ public class JdkProxyFactory extends AbstractProxy implements ProxyFactory {
 				request.setParameterTypes(method.getParameterTypes());
 				request.setParameters(args);
 
-				Client client = getClient(url);
-				return client.request(request).get();
+				Client serverClient = getServerClient(url);
+				return serverClient.request(request).get(url.getIntParameter(RpcConstants.TIMEOUT_KEY), TimeUnit.MILLISECONDS);
 			}
 		});
 	}

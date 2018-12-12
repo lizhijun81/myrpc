@@ -25,7 +25,7 @@ public class AbstractClient {
 	}
 
 	protected int getConnectTimeout() {
-		return url.getIntParameter(RpcConstants.CONNECTTIMEOUT);
+		return url.getIntParameter(RpcConstants.CONNECTTIMEOUT_KEY);
 	}
 
 

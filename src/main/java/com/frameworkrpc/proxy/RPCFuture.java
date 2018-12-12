@@ -6,6 +6,7 @@ import com.frameworkrpc.model.RpcResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class RPCFuture implements Future<Object> {
 
 	private static final Logger logger = LoggerFactory.getLogger(RPCFuture.class);
+	public static final ConcurrentHashMap<String, RPCFuture> pendingRPC = new ConcurrentHashMap<>();
 	private RpcRequester request;
 	private RpcResponse response;
 	private long startTime;
@@ -86,7 +88,6 @@ public class RPCFuture implements Future<Object> {
 		throw new UnsupportedOperationException();
 	}
 
-
 	private void await(long timeout, TimeUnit unit) {
 		boolean isTimeout = false;
 		try {
@@ -95,6 +96,7 @@ public class RPCFuture implements Future<Object> {
 			e.printStackTrace();
 		}
 		if (!isTimeout) {
+			pendingRPC.remove(this.request.getRequestId());
 			throw new InvokeException(
 					"Timeout exception. Request id: " + this.request.getRequestId() + ". Request class name: " + this.request.getInterfaceName()
 							+ ". Request method: " + this.request.getMethodName());

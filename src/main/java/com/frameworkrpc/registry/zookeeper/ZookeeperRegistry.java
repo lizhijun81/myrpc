@@ -25,8 +25,8 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
 	private final Map<URL, ConcurrentMap<NotifyListener, IZkChildListener>> zkListeners = new ConcurrentHashMap<>();
 
 	public ZookeeperRegistry(URL url) {
-		zkClient = new ZkClient(url.getParameter(RpcConstants.ADDRESS), url.getIntParameter(RpcConstants.REGISTRY_SESSIONTIMEOUT),
-				url.getIntParameter(RpcConstants.REGISTRY_TIMEOUT));
+		zkClient = new ZkClient(url.getParameter(RpcConstants.ADDRESS_KEY), url.getIntParameter(RpcConstants.REGISTRY_SESSIONTIMEOUT_KEY),
+				url.getIntParameter(RpcConstants.REGISTRY_TIMEOUT_KEY));
 		IZkStateListener zkStateListener = new IZkStateListener() {
 			@Override
 			public void handleStateChanged(Watcher.Event.KeeperState state) {

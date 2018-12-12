@@ -11,12 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.SocketAddress;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyClientHandler.class);
-	private ConcurrentHashMap<String, RPCFuture> pendingRPC = new ConcurrentHashMap<>();
 	private URL url;
 	private Channel channel;
 	private SocketAddress remotePeer;
@@ -52,9 +50,9 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
 	@Override
 	protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcResponse response) throws Exception {
 		String requestId = response.getRequestId();
-		RPCFuture rpcFuture = pendingRPC.get(requestId);
+		RPCFuture rpcFuture = RPCFuture.pendingRPC.get(requestId);
 		if (rpcFuture != null) {
-			pendingRPC.remove(requestId);
+			RPCFuture.pendingRPC.remove(requestId);
 			rpcFuture.done(response);
 		}
 	}
@@ -68,7 +66,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
 
 	public RPCFuture sendRequest(RpcRequester request) {
 		RPCFuture rpcFuture = new RPCFuture(request);
-		pendingRPC.put(request.getRequestId(), rpcFuture);
+		RPCFuture.pendingRPC.put(request.getRequestId(), rpcFuture);
 		channel.writeAndFlush(request);
 		return rpcFuture;
 	}

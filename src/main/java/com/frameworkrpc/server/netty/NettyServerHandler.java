@@ -4,6 +4,7 @@ import com.frameworkrpc.exception.RpcException;
 import com.frameworkrpc.model.RpcRequester;
 import com.frameworkrpc.model.RpcResponse;
 import com.frameworkrpc.model.URL;
+import com.frameworkrpc.rpc.RpcContext;
 import com.frameworkrpc.rpc.RpcInstanceFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -57,6 +58,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequester
 					response.setRequestId(request.getRequestId());
 					final long processStartTime = System.currentTimeMillis();
 					try {
+						RpcContext.init(request);
 						Object result = handle(request);
 						response.setResult(result);
 					} catch (Exception e) {
@@ -77,6 +79,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequester
 			response.setRequestId(request.getRequestId());
 			response.setError(new RpcException("process thread pool is full, reject by server: " + ctx.channel().localAddress(), rejectException));
 			sendResponse(ctx, response);
+		}finally {
+			RpcContext.destroy();
 		}
 	}
 

@@ -67,20 +67,23 @@ public class NettyClient extends AbstractClient implements Client {
 			return;
 
 		bootstrap = new Bootstrap();
-		bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, url.getIntParameter(RpcConstants.TIMEOUT));
+		bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, url.getIntParameter(RpcConstants.CONNECTTIMEOUT_KEY));
 		bootstrap.option(ChannelOption.TCP_NODELAY, true);
 		bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
 		nettyClientHandler = new NettyClientHandler(url);
-		bootstrap.group(nioEventLoopGroup).channel(NioSocketChannel.class).handler(new ChannelInitializer<NioSocketChannel>() {
-			@Override
-			protected void initChannel(NioSocketChannel ch) throws Exception {
-				Serialize serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
-						.getExtension(url.getParameter(RpcConstants.SERIALIZATION), Scope.SINGLETON);
-				ch.pipeline()
-						.addLast("decoder", new MessageDecoder(serialize, RpcResponse.class))
-						.addLast("encoder", new MessageEncoder(serialize, RpcRequester.class))
-						.addLast("handler", nettyClientHandler);
-			}
+		bootstrap
+				.group(nioEventLoopGroup)
+				.channel(NioSocketChannel.class)
+				.handler(new ChannelInitializer<NioSocketChannel>() {
+					@Override
+					protected void initChannel(NioSocketChannel ch) throws Exception {
+						Serialize serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
+								.getExtension(url.getParameter(RpcConstants.SERIALIZATION_KEY), Scope.SINGLETON);
+						ch.pipeline()
+								.addLast("decoder", new MessageDecoder(serialize, RpcResponse.class))
+								.addLast("encoder", new MessageEncoder(serialize, RpcRequester.class))
+								.addLast("handler", nettyClientHandler);
+					}
 		});
 		isOpened = true;
 	}
@@ -99,7 +102,7 @@ public class NettyClient extends AbstractClient implements Client {
 		long start = System.currentTimeMillis();
 		ChannelFuture future = bootstrap.connect(getConnectAddress());
 		try {
-			boolean ret = future.awaitUninterruptibly(url.getIntParameter(RpcConstants.CONNECTTIMEOUT), TimeUnit.MILLISECONDS);
+			boolean ret = future.awaitUninterruptibly(url.getIntParameter(RpcConstants.CONNECTTIMEOUT_KEY), TimeUnit.MILLISECONDS);
 
 			if (ret && future.isSuccess()) {
 				Channel newChannel = future.channel();
@@ -135,7 +138,7 @@ public class NettyClient extends AbstractClient implements Client {
 				throw new RemotingException(
 						"client(url: " + getUrl().toFullStr() + ") failed to connect to server " + getConnectAddress() + " client-side timeout "
 								+ getConnectAddress() + "ms (elapsed: " + (System.currentTimeMillis() - start) + "ms) from netty client " + NetUtils
-								.getLocalHost() + " using  version " + getUrl().getParameter(RpcConstants.VERSION));
+								.getLocalHost() + " using  version " + getUrl().getParameter(RpcConstants.VERSION_KEY));
 			}
 		} finally {
 			//			if (!isConnected()) {

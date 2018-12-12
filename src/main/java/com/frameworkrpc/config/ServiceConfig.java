@@ -17,7 +17,7 @@ public class ServiceConfig<T> extends ExporterConfig {
 				if (!isexport) {
 					checkRef();
 					RpcInstanceFactory rpcInstanceFactory = ExtensionLoader.getExtensionLoader(RpcInstanceFactory.class)
-							.getExtension(getUrl().getParameter(RpcConstants.TRANSPORTER), Scope.SINGLETON);
+							.getExtension(getUrl().getParameter(RpcConstants.TRANSPORTER_KEY), Scope.SINGLETON);
 					rpcInstanceFactory.setRpcInstance(getInterface(), getRef());
 					exporter = ExtensionLoader.getExtensionLoader(Exporter.class).getExtension("default");
 					exporter.setUrl(getUrl());

@@ -21,8 +21,9 @@ public class ReferenceConfig<T> extends ExporterConfig<T> {
 	@Override
 	protected URL getUrl() {
 		URL url = super.getUrl();
-		return url.addParameters("connecttimeout",
+		url = url.addParameters("connecttimeout",
 				getConnecttimeout() > 0 ? String.valueOf(getConnecttimeout()) : String.valueOf(RpcConstants.DEFAULT_CONNECTTIMEOUT));
+		return url;
 	}
 
 	public T get() {

@@ -14,7 +14,7 @@ public class NettyServerFactory implements ServerFactory {
 	@Override
 	public Server getServer(URL url) {
 		RpcInstanceFactory rpcInstanceFactory = ExtensionLoader.getExtensionLoader(RpcInstanceFactory.class)
-				.getExtension(url.getParameter(RpcConstants.TRANSPORTER), Scope.SINGLETON);
+				.getExtension(url.getParameter(RpcConstants.TRANSPORTER_KEY), Scope.SINGLETON);
 		return new NettyServer(url, rpcInstanceFactory);
 	}
 }

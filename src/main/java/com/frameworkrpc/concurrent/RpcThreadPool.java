@@ -13,12 +13,12 @@ public class RpcThreadPool {
 	private static final Logger logger = LoggerFactory.getLogger(RpcThreadPool.class);
 
 	public static ExecutorService getExecutor(URL url) {
-		logger.info("ThreadPool Core[threads:" + url.getParameter(RpcConstants.THREADS) + ", threadpool:" + url.getParameter(RpcConstants.THREADPOOL)
+		logger.info("ThreadPool Core[threads:" + url.getParameter(RpcConstants.THREADS_KEY) + ", threadpool:" + url.getParameter(RpcConstants.THREADPOOL_KEY)
 				+ "]");
-		boolean fixedThreadpool = url.getParameter(RpcConstants.THREADPOOL).equals("fixed");
+		boolean fixedThreadpool = url.getParameter(RpcConstants.THREADPOOL_KEY).equals("fixed");
 		final String name = "rpcthreadpool";
-		int corePoolSize = url.getIntParameter(RpcConstants.THREADS);
-		int maximumPoolSize = fixedThreadpool ? url.getIntParameter(RpcConstants.THREADS) : Integer.MAX_VALUE;
+		int corePoolSize = url.getIntParameter(RpcConstants.THREADS_KEY);
+		int maximumPoolSize = fixedThreadpool ? url.getIntParameter(RpcConstants.THREADS_KEY) : Integer.MAX_VALUE;
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(
 				corePoolSize,
 				maximumPoolSize,

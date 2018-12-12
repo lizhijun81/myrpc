@@ -6,7 +6,7 @@ import com.frameworkrpc.model.URL;
 public class ZkUtils {
 
 	public static String toGroupPath(URL url) {
-		return String.format("%s%s%s", RpcConstants.ZK_REGISTRY_PATH, RpcConstants.PATH_SEPARATOR, url.getParameter(RpcConstants.GROUP));
+		return String.format("%s%s%s", RpcConstants.ZK_REGISTRY_PATH, RpcConstants.PATH_SEPARATOR, url.getParameter(RpcConstants.GROUP_KEY));
 	}
 
 	public static String toServicePath(URL url) {

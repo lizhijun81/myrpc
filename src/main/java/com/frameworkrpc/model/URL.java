@@ -70,7 +70,7 @@ public class URL implements Serializable {
 	}
 
 	public String getServiceInterface() {
-		return getParameter(RpcConstants.INTERFACE, getPath());
+		return getParameter(RpcConstants.INTERFACE_KEY, getPath());
 	}
 
 	public String getServiceKey() {
@@ -78,12 +78,12 @@ public class URL implements Serializable {
 		if (inf == null)
 			return null;
 		StringBuilder buf = new StringBuilder();
-		String group = getParameter(RpcConstants.GROUP);
+		String group = getParameter(RpcConstants.GROUP_KEY);
 		if (group != null && group.length() > 0) {
 			buf.append(group).append("/");
 		}
 		buf.append(inf);
-		String version = getParameter(RpcConstants.VERSION);
+		String version = getParameter(RpcConstants.VERSION_KEY);
 		if (version != null && version.length() > 0) {
 			buf.append(":").append(version);
 		}
