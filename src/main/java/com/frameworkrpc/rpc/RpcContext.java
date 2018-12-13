@@ -10,7 +10,7 @@ public class RpcContext {
 
 	private RpcRequester request;
 	private RpcResponse response;
-	private String clientRpcRequesterId = null;
+	private String clientRequesterId = null;
 
 	public static RpcContext getContext() {
 		return LOCAL_CONTEXT.get();
@@ -19,7 +19,7 @@ public class RpcContext {
 	public static RpcContext init(RpcRequester request) {
 		RpcContext context = new RpcContext();
 		if (request != null) {
-			context.setRpcRequest(request);
+			context.setRequest(request);
 		}
 		LOCAL_CONTEXT.set(context);
 		return context;
@@ -35,19 +35,19 @@ public class RpcContext {
 		LOCAL_CONTEXT.remove();
 	}
 
-	public String getRpcRequesterId() {
-		if (clientRpcRequesterId != null) {
-			return clientRpcRequesterId;
+	public String getRequesterId() {
+		if (clientRequesterId != null) {
+			return clientRequesterId;
 		} else {
 			return request == null ? null : String.valueOf(request.getRequestId());
 		}
 	}
 
-	public RpcRequester getRpcRequest() {
+	public RpcRequester getRequest() {
 		return request;
 	}
 
-	public void setRpcRequest(RpcRequester request) {
+	public void setRequest(RpcRequester request) {
 		this.request = request;
 	}
 
@@ -59,11 +59,11 @@ public class RpcContext {
 		this.response = response;
 	}
 
-	public String getClientRpcRequesterId() {
-		return clientRpcRequesterId;
+	public String getClientRequesterId() {
+		return clientRequesterId;
 	}
 
-	public void setClientRpcRequesterId(String clientRpcRequesterId) {
-		this.clientRpcRequesterId = clientRpcRequesterId;
+	public void setClientRequesterId(String clientRpcRequesterId) {
+		this.clientRequesterId = clientRequesterId;
 	}
 }

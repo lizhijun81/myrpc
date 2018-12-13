@@ -49,7 +49,7 @@ public class RpcConstants {
 	public final static String DEFAULT_CLUSTER = "failover";
 	public final static String DEFAULT_LOADBALANCE = "roundrobin";
 	public final static String DEFAULT_SERIALIZATION = "hessian";
-	public final static int DEFAULT_TMEOUT = 1000;
+	public final static int DEFAULT_TMEOUT = 5000;
 	public final static int DEFAULT_CONNECTTIMEOUT = 3000;
 	public final static int DEFAULT_RRETRIES = 2;
 

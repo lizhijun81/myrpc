@@ -41,7 +41,11 @@ public class RPCFuture implements Future<Object> {
 			lock.lock();
 			finish.await();
 			if (this.response != null) {
-				return this.response.getResult();
+				if (this.response.getError() != null) {
+					return this.response.getResult();
+				} else {
+					throw new InvokeException(this.response.getError());
+				}
 			} else {
 				return null;
 			}
@@ -69,7 +73,11 @@ public class RPCFuture implements Future<Object> {
 			lock.lock();
 			await(timeout, unit);
 			if (this.response != null) {
-				return this.response.getResult();
+				if (this.response.getError() == null) {
+					return this.response.getResult();
+				} else {
+					throw new InvokeException(this.response.getError());
+				}
 			} else {
 				return null;
 			}

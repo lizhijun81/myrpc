@@ -47,58 +47,40 @@ public class NettyClient extends AbstractClient implements Client {
 	}
 
 	@Override
-	public boolean isOpened() {
-		return isOpened;
-	}
-
-	@Override
 	public boolean isClosed() {
 		return isClosed;
 	}
 
 	@Override
 	public boolean isConnected() {
-		return isConnected;
+		return channel != null && channel.isActive();
 	}
 
 	@Override
-	public synchronized void doOpen() {
-		if (isOpened)
-			return;
+	public void doClose() {
 
-		bootstrap = new Bootstrap();
-		bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, url.getIntParameter(RpcConstants.CONNECTTIMEOUT_KEY));
-		bootstrap.option(ChannelOption.TCP_NODELAY, true);
-		bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
-		nettyClientHandler = new NettyClientHandler(url);
-		bootstrap
-				.group(nioEventLoopGroup)
-				.channel(NioSocketChannel.class)
-				.handler(new ChannelInitializer<NioSocketChannel>() {
-					@Override
-					protected void initChannel(NioSocketChannel ch) throws Exception {
-						Serialize serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
-								.getExtension(url.getParameter(RpcConstants.SERIALIZATION_KEY), Scope.SINGLETON);
-						ch.pipeline()
-								.addLast("decoder", new MessageDecoder(serialize, RpcResponse.class))
-								.addLast("encoder", new MessageEncoder(serialize, RpcRequester.class))
-								.addLast("handler", nettyClientHandler);
-					}
-		});
-		isOpened = true;
-	}
-
-	@Override
-	public synchronized void doClose() {
 	}
 
 	@Override
 	public synchronized void doConnect() {
-		if (!isOpened) {
-			throw new RemotingException("nettyclient shoud be opened first");
-		}
-		if (isConnected)
+		if (isConnected()) {
 			return;
+		}
+		nettyClientHandler = new NettyClientHandler(url);
+		Serialize serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
+				.getExtension(url.getParameter(RpcConstants.SERIALIZATION_KEY), Scope.SINGLETON);
+		bootstrap = new Bootstrap();
+		bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, url.getIntParameter(RpcConstants.CONNECTTIMEOUT_KEY));
+		bootstrap.option(ChannelOption.TCP_NODELAY, true);
+		bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
+		bootstrap.group(nioEventLoopGroup).channel(NioSocketChannel.class).handler(new ChannelInitializer<NioSocketChannel>() {
+			@Override
+			protected void initChannel(NioSocketChannel ch) throws Exception {
+				ch.pipeline().addLast("decoder", new MessageDecoder(serialize, RpcResponse.class))
+						.addLast("encoder", new MessageEncoder(serialize, RpcRequester.class)).addLast("handler", nettyClientHandler);
+			}
+		});
+
 		long start = System.currentTimeMillis();
 		ChannelFuture future = bootstrap.connect(getConnectAddress());
 		try {
@@ -145,14 +127,12 @@ public class NettyClient extends AbstractClient implements Client {
 			//				//future.cancel(true);
 			//			}
 		}
-		isConnected = true;
 	}
 
 	@Override
 	public synchronized void disConnect() {
-		if (isConnected) {
+		if (isConnected()) {
 			channel.close();
-			isConnected = false;
 		}
 	}
 

@@ -3,6 +3,7 @@ package com.frameworkrpc.proxy;
 import com.frameworkrpc.client.Client;
 import com.frameworkrpc.client.ClientFactory;
 import com.frameworkrpc.common.RpcConstants;
+import com.frameworkrpc.exception.InvokeException;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.extension.Scope;
 import com.frameworkrpc.loadbalance.LoadBalance;
@@ -42,6 +43,9 @@ public class AbstractProxy implements Serializable {
 
 	protected List<String> getServerNodes(URL url) {
 		List<URL> providerUrls = registryListener.getProviderUrls();
+		if (providerUrls == null || providerUrls.isEmpty()) {
+			throw new InvokeException("providerUrl can not be empty");
+		}
 		Set<String> newAllServerNodeSet = new HashSet<>();
 
 		if (providerUrls != null) {
@@ -52,8 +56,6 @@ public class AbstractProxy implements Serializable {
 						providerUrl = providerUrl.addParameters(RpcConstants.CONNECTTIMEOUT_KEY, url.getParameter(RpcConstants.CONNECTTIMEOUT_KEY));
 						Client client = ExtensionLoader.getExtensionLoader(ClientFactory.class)
 								.getExtension(url.getParameter(RpcConstants.TRANSPORTER_KEY), Scope.SINGLETON).getClient(providerUrl);
-						if (!client.isOpened())
-							client.doOpen();
 						if (!client.isConnected())
 							client.doConnect();
 						serverClients.put(serverNodeAddress, client);
@@ -89,8 +91,6 @@ public class AbstractProxy implements Serializable {
 		List<String> serverNodes = getServerNodes(url);
 		String serverNode = loadBalance.select(serverNodes);
 		Client client = serverClients.get(serverNode);
-		if (!client.isOpened())
-			client.doOpen();
 		if (!client.isConnected())
 			client.doConnect();
 		return client;

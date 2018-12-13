@@ -48,6 +48,12 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
 	}
 
 	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		super.channelInactive(ctx);
+		this.remotePeer = this.channel.remoteAddress();
+	}
+
+	@Override
 	protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcResponse response) throws Exception {
 		String requestId = response.getRequestId();
 		RPCFuture rpcFuture = RPCFuture.pendingRPC.get(requestId);

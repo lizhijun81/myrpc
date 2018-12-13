@@ -73,35 +73,40 @@ public class NettyServer extends AbstractServer implements Server {
 			}
 		}
 
-		IdleStateHandler idleStateHandler = new IdleStateHandler(url.getIntParameter(RpcConstants.HEARTBEAT_KEY), 0, 0) {
-			@Override
-			public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-				if (evt instanceof IdleStateEvent) {
-					IdleStateEvent e = (IdleStateEvent) evt;
-					if (e.state() == IdleState.READER_IDLE) {
-						ctx.close();
-					} else if (e.state() == IdleState.WRITER_IDLE) {
-						//ctx.writeAndFlush(new PingMessage());
-					}
-				}
-			}
-		};
+		Serialize serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
+				.getExtension(url.getParameter(RpcConstants.SERIALIZATION_KEY), Scope.SINGLETON);
 
-		bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-				.childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE).childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+		int readerIdleTimeSeconds = url.getIntParameter(RpcConstants.HEARTBEAT_KEY);
+
+		bootstrap.group(bossGroup, workerGroup)
+				.channel(NioServerSocketChannel.class)
+				.childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+				.childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
+				.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
 				.childHandler(new ChannelInitializer<NioSocketChannel>() {
 					@Override
 					protected void initChannel(NioSocketChannel ch) throws Exception {
-						Serialize serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
-								.getExtension(url.getParameter(RpcConstants.SERIALIZATION_KEY), Scope.SINGLETON);
 						ch.pipeline()
-								//.addLast("idlestate", idleStateHandler)
+								.addLast("idlestate", new IdleStateHandler(readerIdleTimeSeconds, 0, 0) {
+										@Override
+										public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+											if (evt instanceof IdleStateEvent) {
+												IdleStateEvent e = (IdleStateEvent) evt;
+												if (e.state() == IdleState.READER_IDLE) {
+													ctx.close();
+												} else if (e.state() == IdleState.WRITER_IDLE) {
+													//ctx.writeAndFlush(new PingMessage());
+												}
+											}else {
+												super.userEventTriggered(ctx,evt);
+											}
+										}
+									})
 								.addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))
 								.addLast("encoder", new MessageEncoder(serialize, RpcResponse.class))
 								.addLast("handler", new NettyServerHandler(url, rpcInstanceFactory, threadPoolExecutor));
 					}
-				});
-		ChannelFuture channelFuture = bootstrap.bind(url.getIntParameter(RpcConstants.PORT_KEY));
+				}); ChannelFuture channelFuture = bootstrap.bind(url.getIntParameter(RpcConstants.PORT_KEY));
 		channelFuture.syncUninterruptibly();
 		serverChannel = channelFuture.channel();
 		logger.info("Netty RPC Server start success!port:{}", NetUtils.getAvailablePort());

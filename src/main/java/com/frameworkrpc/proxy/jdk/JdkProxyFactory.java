@@ -26,7 +26,7 @@ public class JdkProxyFactory extends AbstractProxy implements ProxyFactory {
 	public <T> T getInstance(Class<T> inf, URL url) {
 		return (T) Reflection.newProxy(inf, new InvocationHandler() {
 			@Override
-			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+			public Object invoke(Object proxy, Method method, Object[] args) {
 				if (Object.class == method.getDeclaringClass()) {
 					String name = method.getName();
 					if ("equals".equals(name)) {

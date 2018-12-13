@@ -6,6 +6,7 @@ import com.frameworkrpc.model.RpcResponse;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.rpc.RpcContext;
 import com.frameworkrpc.rpc.RpcInstanceFactory;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.concurrent.Future;
@@ -19,7 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
-
+@ChannelHandler.Sharable
 public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequester> {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
