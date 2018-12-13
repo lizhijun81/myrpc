@@ -7,6 +7,7 @@ import com.frameworkrpc.exception.InvokeException;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.extension.Scope;
 import com.frameworkrpc.loadbalance.LoadBalance;
+import com.frameworkrpc.model.RpcRequester;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.registry.Registry;
 import com.frameworkrpc.registry.RegistryFactory;
@@ -15,20 +16,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class AbstractProxy implements Serializable {
 
 	private static final long serialVersionUID = 6592280954313884159L;
-	private static final Logger logger = LoggerFactory.getLogger(AbstractProxy.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	protected final Map<String, Client> serverClients = new ConcurrentHashMap<>();
+	protected URL url;
 	protected LoadBalance loadBalance;
 	protected Registry registry;
 	protected RegistryListener registryListener;
 
-	protected void initProxy(URL url) {
+	protected AbstractProxy(URL url) {
+		this.url = url;
+
 		this.loadBalance = ExtensionLoader.getExtensionLoader(LoadBalance.class).getExtension(url.getParameter(RpcConstants.LOADBALANCE_KEY));
 
 		this.registry = ExtensionLoader.getExtensionLoader(RegistryFactory.class)
@@ -86,6 +92,17 @@ public class AbstractProxy implements Serializable {
 		}
 		return new ArrayList<>(newAllServerNodeSet);
 	}
+
+	protected Object invocation(Object proxy, Method method, Object[] args) {
+		RpcRequester request = new RpcRequester();
+		request.setRequestId(UUID.randomUUID().toString());
+		request.setInterfaceName(method.getDeclaringClass().getName());
+		request.setMethodName(method.getName());
+		request.setParameterTypes(method.getParameterTypes());
+		request.setParameters(args);
+		return getServerClient(url).request(request).get(url.getIntParameter(RpcConstants.TIMEOUT_KEY), TimeUnit.MILLISECONDS);
+	}
+
 
 	protected Client getServerClient(URL url) {
 		List<String> serverNodes = getServerNodes(url);

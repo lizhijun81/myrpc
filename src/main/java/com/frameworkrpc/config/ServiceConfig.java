@@ -1,7 +1,7 @@
 package com.frameworkrpc.config;
 
 import com.frameworkrpc.common.RpcConstants;
-import com.frameworkrpc.exporter.Exporter;
+import com.frameworkrpc.exporter.DefaultExporter;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.extension.Scope;
 import com.frameworkrpc.rpc.RpcInstanceFactory;
@@ -19,9 +19,7 @@ public class ServiceConfig<T> extends ExporterConfig {
 					RpcInstanceFactory rpcInstanceFactory = ExtensionLoader.getExtensionLoader(RpcInstanceFactory.class)
 							.getExtension(getUrl().getParameter(RpcConstants.TRANSPORTER_KEY), Scope.SINGLETON);
 					rpcInstanceFactory.setRpcInstance(getInterface(), getRef());
-					exporter = ExtensionLoader.getExtensionLoader(Exporter.class).getExtension("default");
-					exporter.setUrl(getUrl());
-					exporter.initExporter();
+					exporter = new DefaultExporter(getUrl());
 					exporter.exportServer();
 					exporter.exportUrl();
 				}

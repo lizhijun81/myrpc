@@ -1,36 +1,19 @@
 package com.frameworkrpc.config;
 
-import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.extension.ExtensionLoader;
-import com.frameworkrpc.model.URL;
+import com.frameworkrpc.extension.Scope;
+import com.frameworkrpc.proxy.ClassProxy;
 import com.frameworkrpc.proxy.ProxyFactory;
 
 public class ReferenceConfig<T> extends ExporterConfig<T> {
 
 	private static final long serialVersionUID = 8866752725969090439L;
-	protected int connecttimeout;
-
-	public int getConnecttimeout() {
-		return connecttimeout;
-	}
-
-	public void setConnecttimeout(int connecttimeout) {
-		this.connecttimeout = connecttimeout;
-	}
-
-	@Override
-	protected URL getUrl() {
-		URL url = super.getUrl();
-		url = url.addParameters("connecttimeout",
-				getConnecttimeout() > 0 ? String.valueOf(getConnecttimeout()) : String.valueOf(RpcConstants.DEFAULT_CONNECTTIMEOUT));
-		return url;
-	}
 
 	public T get() {
 		if (ref == null) {
-			ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getExtension("jdk");
-			proxyFactory.initProxy(getUrl());
-			ref = proxyFactory.getInstance((Class<T>) interfaceClass, getUrl());
+			ClassProxy proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getExtension("jdk", Scope.SINGLETON)
+					.getClassProxy(getUrl());
+			ref = proxyFactory.getInstance(interfaceClass);
 		}
 		return ref;
 	}

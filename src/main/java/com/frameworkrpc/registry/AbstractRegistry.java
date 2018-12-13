@@ -13,7 +13,7 @@ import static com.google.common.collect.Sets.newConcurrentHashSet;
 
 public class AbstractRegistry {
 
-	private static final Logger logger = LoggerFactory.getLogger(AbstractRegistry.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final ConcurrentMap<URL, Map<String, List<URL>>> notified = new ConcurrentHashMap<URL, Map<String, List<URL>>>();
 	private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>();
 	protected final Set<URL> registered = newConcurrentHashSet();

@@ -14,7 +14,7 @@ public class ExporterConfig<T> extends AbstractConfig {
 	private static final long serialVersionUID = 5369377538761488535L;
 	protected String id;
 	protected String interfaceName;
-	protected Class<?> interfaceClass;
+	protected Class<T> interfaceClass;
 	protected T ref;
 	protected ApplicationConfig application;
 	protected RegistryConfig registry;
@@ -24,6 +24,9 @@ public class ExporterConfig<T> extends AbstractConfig {
 	protected String loadbalance;
 	protected int timeout;
 	protected int retries;
+	protected int connecttimeout;
+
+
 	protected Exporter exporter;
 
 	public void setId(String id) {
@@ -38,7 +41,7 @@ public class ExporterConfig<T> extends AbstractConfig {
 		return interfaceName;
 	}
 
-	public void setInterface(Class<?> interfaceClass) {
+	public void setInterface(Class<T> interfaceClass) {
 		if (interfaceClass != null && !interfaceClass.isInterface()) {
 			throw new IllegalStateException("The interface class " + interfaceClass + " is not a interface!");
 		}
@@ -57,7 +60,7 @@ public class ExporterConfig<T> extends AbstractConfig {
 		return interfaceClass;
 	}
 
-	public void setInterfaceClass(Class<?> interfaceClass) {
+	public void setInterfaceClass(Class<T> interfaceClass) {
 		this.interfaceClass = interfaceClass;
 	}
 
@@ -78,6 +81,8 @@ public class ExporterConfig<T> extends AbstractConfig {
 	}
 
 	public ProtocolConfig getProtocol() {
+		if (this.protocol == null)
+			protocol = new ProtocolConfig();
 		return protocol;
 	}
 
@@ -133,6 +138,14 @@ public class ExporterConfig<T> extends AbstractConfig {
 		this.retries = retries;
 	}
 
+	public int getConnecttimeout() {
+		return connecttimeout;
+	}
+
+	public void setConnecttimeout(int connecttimeout) {
+		this.connecttimeout = connecttimeout;
+	}
+
 	private volatile URL url;
 
 	protected URL getUrl() {
@@ -143,13 +156,16 @@ public class ExporterConfig<T> extends AbstractConfig {
 				return url;
 			Map<String, String> parameters = new HashMap<>();
 			parameters.put("id", getId());
-//			parameters.put("category", RpcConstants.DEFAULT_CATEGORY);
 			addServiceParameters(parameters);
 			addAppliactionParameters(parameters);
 			addProtocolParameters(parameters);
 			addRegistryParameters(parameters);
 
-			String protocol = this.getClass().getName().contains("Service") ? RpcConstants.PROVIDERSCHEME : RpcConstants.CONSUMERSCHEME;
+			String protocol = this.getClass().getName().contains("Service") ? RpcConstants.PROVIDER : RpcConstants.CONSUMER;
+			if (protocol.equals(RpcConstants.CONSUMER)) {
+				parameters.put("connecttimeout",
+						getConnecttimeout() > 0 ? String.valueOf(getConnecttimeout()) : String.valueOf(RpcConstants.DEFAULT_CONNECTTIMEOUT));
+			}
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append(String
 					.format("%s://%s:%s/%s?", protocol, getProtocol().getHost(), String.valueOf(getProtocol().getPort()), getInterface()));

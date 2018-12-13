@@ -46,20 +46,17 @@ public class NettyServer extends AbstractServer implements Server {
 
 	@Override
 	public boolean isOpened() {
-		return isOpened;
+		return serverChannel != null && serverChannel.isActive();
 	}
 
 	@Override
 	public boolean isClosed() {
-		return isClosed;
+		return serverChannel == null || !serverChannel.isActive();
 	}
 
 
 	@Override
 	public synchronized void doOpen() {
-		if (isOpened)
-			return;
-
 		bootstrap = new ServerBootstrap();
 		bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("NettyServerBoss", true));
 		workerGroup = new NioEventLoopGroup(url.getIntParameter(RpcConstants.IOTHREADS_KEY), new DefaultThreadFactory("NettyServerWorker", true));
@@ -78,46 +75,38 @@ public class NettyServer extends AbstractServer implements Server {
 
 		int readerIdleTimeSeconds = url.getIntParameter(RpcConstants.HEARTBEAT_KEY);
 
-		bootstrap.group(bossGroup, workerGroup)
-				.channel(NioServerSocketChannel.class)
-				.childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-				.childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
-				.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+		bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+				.childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE).childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
 				.childHandler(new ChannelInitializer<NioSocketChannel>() {
 					@Override
 					protected void initChannel(NioSocketChannel ch) throws Exception {
-						ch.pipeline()
-								.addLast("idlestate", new IdleStateHandler(readerIdleTimeSeconds, 0, 0) {
-										@Override
-										public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-											if (evt instanceof IdleStateEvent) {
-												IdleStateEvent e = (IdleStateEvent) evt;
-												if (e.state() == IdleState.READER_IDLE) {
-													ctx.close();
-												} else if (e.state() == IdleState.WRITER_IDLE) {
-													//ctx.writeAndFlush(new PingMessage());
-												}
-											}else {
-												super.userEventTriggered(ctx,evt);
-											}
-										}
-									})
-								.addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))
+						ch.pipeline().addLast("idlestate", new IdleStateHandler(readerIdleTimeSeconds, 0, 0) {
+							@Override
+							public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+								if (evt instanceof IdleStateEvent) {
+									IdleStateEvent e = (IdleStateEvent) evt;
+									if (e.state() == IdleState.READER_IDLE) {
+										ctx.close();
+									} else if (e.state() == IdleState.WRITER_IDLE) {
+										//ctx.writeAndFlush(new PingMessage());
+									}
+								} else {
+									super.userEventTriggered(ctx, evt);
+								}
+							}
+						}).addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))
 								.addLast("encoder", new MessageEncoder(serialize, RpcResponse.class))
 								.addLast("handler", new NettyServerHandler(url, rpcInstanceFactory, threadPoolExecutor));
 					}
-				}); ChannelFuture channelFuture = bootstrap.bind(url.getIntParameter(RpcConstants.PORT_KEY));
+				});
+		ChannelFuture channelFuture = bootstrap.bind(url.getIntParameter(RpcConstants.PORT_KEY));
 		channelFuture.syncUninterruptibly();
 		serverChannel = channelFuture.channel();
 		logger.info("Netty RPC Server start success!port:{}", NetUtils.getAvailablePort());
-		isOpened = true;
 	}
 
 	@Override
 	public synchronized void doClose() {
-		if (isClosed)
-			return;
-
 		if (serverChannel != null) {
 			serverChannel.close();
 			bossGroup.shutdownGracefully();
@@ -126,6 +115,5 @@ public class NettyServer extends AbstractServer implements Server {
 			workerGroup = null;
 		}
 		logger.info("Netty RPC Server shutdown success!port:{}", NetUtils.getAvailablePort());
-		isClosed = true;
 	}
 }

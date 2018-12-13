@@ -40,8 +40,8 @@ public class RpcConstants {
 	public final static String THREADS_KEY = "threads";
 	public final static String HEARTBEAT_KEY = "heartbeat";
 
-	public final static String PROVIDERSCHEME = "provider";
-	public final static String CONSUMERSCHEME = "consumer";
+	public final static String PROVIDER = "provider";
+	public final static String CONSUMER = "consumer";
 	;
 
 	public final static String DEFAULT_VERSION = "0.0.1";

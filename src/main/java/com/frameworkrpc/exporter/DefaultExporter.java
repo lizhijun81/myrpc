@@ -1,8 +1,6 @@
-package com.frameworkrpc.exporter.defaults;
+package com.frameworkrpc.exporter;
 
 import com.frameworkrpc.common.RpcConstants;
-import com.frameworkrpc.exporter.AbstractExporter;
-import com.frameworkrpc.exporter.Exporter;
 import com.frameworkrpc.extension.RpcComponent;
 import com.frameworkrpc.model.URL;
 
@@ -10,6 +8,10 @@ import com.frameworkrpc.model.URL;
 public class DefaultExporter extends AbstractExporter implements Exporter {
 
 	private static final long serialVersionUID = 6568819430920801686L;
+
+	public DefaultExporter(URL url) {
+		super(url);
+	}
 
 	@Override
 	public void exportServer() {
@@ -20,11 +22,8 @@ public class DefaultExporter extends AbstractExporter implements Exporter {
 
 	@Override
 	public void exportUrl() {
-		if (!exportedUrls.contains(url)) {
-			URL registerUrl = url.addParameters(RpcConstants.CATEGORY_KEY, RpcConstants.DEFAULT_CATEGORY);
-			registry.register(registerUrl);
-			exportedUrls.add(url);
-		}
+		URL registerUrl = url.addParameters(RpcConstants.CATEGORY_KEY, RpcConstants.DEFAULT_CATEGORY);
+		registry.register(registerUrl);
 	}
 
 	@Override
@@ -32,13 +31,11 @@ public class DefaultExporter extends AbstractExporter implements Exporter {
 		if (!server.isClosed()) {
 			server.doClose();
 		}
-		exportedServers.remove(url.getServerPortStr());
 	}
 
 	@Override
 	public void unexportUrl() {
 		URL registerUrl = url.addParameters(RpcConstants.CATEGORY_KEY, RpcConstants.DEFAULT_CATEGORY);
 		registry.unregister(registerUrl);
-		exportedUrls.remove(url);
 	}
 }
