@@ -10,7 +10,5 @@
 
     <myrpc:registry name="${zookeeper.name}" address="${zookeeper.address}"/>
 
-    <bean id="demoService" class="com.frameworkrpc.demo.provider.DemoServiceImpl"/>
-
-    <myrpc:service interface="com.frameworkrpc.demo.api.DemoService" ref="demoService"/>
+    <myrpc:reference id="demoService" interface="com.frameworkrpc.demo.api.DemoService"/>
 </beans>

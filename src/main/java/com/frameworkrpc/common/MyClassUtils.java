@@ -15,7 +15,7 @@ import java.util.jar.JarFile;
 /*
  * 一个工具类，获取指定包下的所有文件
  */
-public class MyClassUtil {
+public class MyClassUtils {
 	/**
 	 * 给我一个包名，获取该包下的所有class文件
 	 * @param packageName 包名 com.xxx.xxx

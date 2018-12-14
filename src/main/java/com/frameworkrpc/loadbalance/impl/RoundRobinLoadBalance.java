@@ -1,6 +1,6 @@
 package com.frameworkrpc.loadbalance.impl;
 
-import com.frameworkrpc.common.MathUtil;
+import com.frameworkrpc.common.MathUtils;
 import com.frameworkrpc.extension.RpcComponent;
 import com.frameworkrpc.loadbalance.LoadBalance;
 
@@ -13,7 +13,7 @@ public class RoundRobinLoadBalance implements LoadBalance {
 	private AtomicInteger idx = new AtomicInteger(0);
 
 	private int getNextNonNegative() {
-		return MathUtil.getNonNegative(idx.incrementAndGet());
+		return MathUtils.getNonNegative(idx.incrementAndGet());
 	}
 
 	@Override

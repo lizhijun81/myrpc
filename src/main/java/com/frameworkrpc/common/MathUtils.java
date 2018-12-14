@@ -3,7 +3,7 @@ package com.frameworkrpc.common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MathUtil {
+public class MathUtils {
 
 	private static final Logger logger = LoggerFactory.getLogger(NetUtils.class);
 	/**

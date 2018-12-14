@@ -68,6 +68,4 @@ public class RpcConstants {
 	public static final String CONSUMERS_CATEGORY = "consumers";
 	public static final String DEFAULT_CATEGORY = PROVIDERS_CATEGORY;
 
-	public static final String PROVIDER_SIDE = "provider";
-	public static final String CONSUMER_SIDE = "consumer";
 }

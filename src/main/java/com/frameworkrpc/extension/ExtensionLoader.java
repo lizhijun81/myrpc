@@ -1,6 +1,6 @@
 package com.frameworkrpc.extension;
 
-import com.frameworkrpc.common.MyClassUtil;
+import com.frameworkrpc.common.MyClassUtils;
 import com.frameworkrpc.exception.RpcException;
 
 import java.lang.annotation.Annotation;
@@ -88,7 +88,7 @@ public class ExtensionLoader<T> {
 		}
 		try {
 			String packageName = this.type.getPackage().getName();
-			List<Class<?>> clazzs = MyClassUtil.getClassList(packageName, true);
+			List<Class<?>> clazzs = MyClassUtils.getClassList(packageName, true);
 			for (Class<?> clazz : clazzs) {
 				if (type.isAssignableFrom(clazz) && clazz != type) {
 					Annotation[] annotations = clazz.getDeclaredAnnotations();

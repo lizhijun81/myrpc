@@ -2,7 +2,7 @@
 <xsd:schema xmlns="http://www.frameworkrpc.com/myrpc"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:beans="http://www.springframework.org/schema/beans"
-            targetNamespace="http://www.frameworkrpc.com/myrpc" >
+            targetNamespace="http://www.frameworkrpc.com/myrpc">
     <xsd:import namespace="http://www.springframework.org/schema/beans"/>
     <xsd:element name="service">
         <xsd:complexType>
@@ -10,11 +10,11 @@
                 <xsd:extension base="beans:identifiedType">
                     <xsd:attribute name="interface" type="xsd:string" use="required"/>
                     <xsd:attribute name="ref" type="xsd:string" use="required"/>
-                    <xsd:attribute name="version" type="xsd:string" use="optional"/>
-                    <xsd:attribute name="group" type="xsd:string" use="optional"/>
-                    <xsd:attribute name="loadbalance" type="xsd:string" use="optional"/>
-                    <xsd:attribute name="timeout" type="xsd:string" use="optional"/>
-                    <xsd:attribute name="retries" type="xsd:string" use="optional"/>
+                    <xsd:attribute name="version" type="xsd:string" use="optional" default="1.0.0"/>
+                    <xsd:attribute name="group" type="xsd:string" use="optional" default="group"/>
+                    <xsd:attribute name="loadbalance" type="xsd:string" use="optional" default="roundrobin"/>
+                    <xsd:attribute name="timeout" type="xsd:string" use="optional" default="5000"/>
+                    <xsd:attribute name="retries" type="xsd:string" use="optional" default="2"/>
                 </xsd:extension>
             </xsd:complexContent>
         </xsd:complexType>
@@ -25,8 +25,8 @@
                 <xsd:extension base="beans:identifiedType">
                     <xsd:attribute name="name" type="xsd:string" use="required"/>
                     <xsd:attribute name="address" type="xsd:string" use="required"/>
-                    <xsd:attribute name="timeout" type="xsd:string" use="optional"/>
-                    <xsd:attribute name="sessiontimeout" type="xsd:string" use="optional"/>
+                    <xsd:attribute name="timeout" type="xsd:string" use="optional" default="5000"/>
+                    <xsd:attribute name="sessiontimeout" type="xsd:string" use="optional" default="60000"/>
                 </xsd:extension>
             </xsd:complexContent>
         </xsd:complexType>
@@ -45,14 +45,14 @@
         <xsd:complexType>
             <xsd:complexContent>
                 <xsd:extension base="beans:identifiedType">
-                    <xsd:attribute name="protocol" type="xsd:string" use="optional"/>
+                    <xsd:attribute name="protocol" type="xsd:string" use="optional" default="myprc"/>
                     <xsd:attribute name="host" type="xsd:string" use="optional"/>
                     <xsd:attribute name="port" type="xsd:string" use="optional"/>
-                    <xsd:attribute name="transporter" type="xsd:string" use="optional"/>
-                    <xsd:attribute name="serialization" type="xsd:string" use="optional"/>
-                    <xsd:attribute name="heartbeat" type="xsd:string" use="optional"/>
-                    <xsd:attribute name="threadpool" type="xsd:string" use="optional"/>
-                    <xsd:attribute name="threads" type="xsd:string" use="optional"/>
+                    <xsd:attribute name="transporter" type="xsd:string" use="optional" default="netty"/>
+                    <xsd:attribute name="serialization" type="xsd:string" use="optional" default="hessian"/>
+                    <xsd:attribute name="heartbeat" type="xsd:string" use="optional" default="hessian"/>
+                    <xsd:attribute name="threadpool" type="xsd:string" use="optional" default="fixed"/>
+                    <xsd:attribute name="threads" type="xsd:string" use="optional" default="200"/>
                     <xsd:attribute name="iothreads" type="xsd:string" use="optional"/>
                 </xsd:extension>
             </xsd:complexContent>
@@ -63,12 +63,12 @@
             <xsd:complexContent>
                 <xsd:extension base="beans:identifiedType">
                     <xsd:attribute name="interface" type="xsd:string" use="required"/>
-                    <xsd:attribute name="version" type="xsd:string" use="optional"/>
-                    <xsd:attribute name="group" type="xsd:string" use="optional"/>
-                    <xsd:attribute name="loadbalance" type="xsd:string" use="optional"/>
-                    <xsd:attribute name="timeout" type="xsd:string" use="optional"/>
-                    <xsd:attribute name="connecttimeout" type="xsd:string" use="optional"/>
-                    <xsd:attribute name="retries" type="xsd:string" use="optional"/>
+                    <xsd:attribute name="version" type="xsd:string" use="optional" default="1.0.0"/>
+                    <xsd:attribute name="group" type="xsd:string" use="optional" default="group"/>
+                    <xsd:attribute name="loadbalance" type="xsd:string" use="optional" default="roundrobin"/>
+                    <xsd:attribute name="timeout" type="xsd:string" use="optional" default="5000"/>
+                    <xsd:attribute name="retries" type="xsd:string" use="optional" default="2"/>
+                    <xsd:attribute name="connecttimeout" type="xsd:string" use="optional" default="3000"/>
                 </xsd:extension>
             </xsd:complexContent>
         </xsd:complexType>

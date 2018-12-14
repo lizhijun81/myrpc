@@ -3,7 +3,6 @@ package com.frameworkrpc.config;
 import com.frameworkrpc.common.NetUtils;
 import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.common.StringUtils;
-import com.frameworkrpc.exporter.Exporter;
 import com.frameworkrpc.model.URL;
 
 import java.util.HashMap;
@@ -25,7 +24,6 @@ public class ExporterConfig<T> extends AbstractConfig {
 	protected int retries;
 	protected int connecttimeout;
 
-	protected Exporter exporter;
 
 	public String getInterface() {
 		return interfaceName;
@@ -47,6 +45,16 @@ public class ExporterConfig<T> extends AbstractConfig {
 	}
 
 	public Class<?> getInterfaceClass() {
+		if (interfaceClass != null) {
+			return interfaceClass;
+		}
+		try {
+			if (interfaceName != null && interfaceName.length() > 0) {
+				this.interfaceClass = (Class<T>) Class.forName(interfaceName, true, Thread.currentThread().getContextClassLoader());
+			}
+		} catch (ClassNotFoundException t) {
+			throw new IllegalStateException(t.getMessage(), t);
+		}
 		return interfaceClass;
 	}
 
@@ -71,8 +79,6 @@ public class ExporterConfig<T> extends AbstractConfig {
 	}
 
 	public ProtocolConfig getProtocol() {
-		if (this.protocol == null)
-			protocol = new ProtocolConfig();
 		return protocol;
 	}
 
@@ -188,6 +194,8 @@ public class ExporterConfig<T> extends AbstractConfig {
 	}
 
 	private void addProtocolParameters(Map<String, String> parameters) {
+		if (this.protocol == null)
+			this.protocol = new ProtocolConfig();
 		parameters.put("protocol", !StringUtils.isEmpty(getProtocol().getName()) ? getProtocol().getName() : RpcConstants.DEFAULT_PROTOCOL);
 		parameters.put("host", getProtocol().getHost());
 		parameters.put("port", String.valueOf(getProtocol().getPort()));

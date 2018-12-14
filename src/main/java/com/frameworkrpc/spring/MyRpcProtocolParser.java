@@ -2,10 +2,9 @@ package com.frameworkrpc.spring;
 
 import com.frameworkrpc.config.ProtocolConfig;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.w3c.dom.Element;
 
-public class MyRpcProtocolParser extends AbstractSingleBeanDefinitionParser {
+public class MyRpcProtocolParser extends MyRpcBeanDefinitionParser {
 
 	@Override
 	protected Class<?> getBeanClass(Element element) {
@@ -14,7 +13,6 @@ public class MyRpcProtocolParser extends AbstractSingleBeanDefinitionParser {
 
 	@Override
 	protected void doParse(Element element, BeanDefinitionBuilder builder) {
-		String id = element.getAttribute("id");
 		String name = element.getAttribute("name");
 		String host = element.getAttribute("host");
 		String port = element.getAttribute("port");
@@ -25,7 +23,6 @@ public class MyRpcProtocolParser extends AbstractSingleBeanDefinitionParser {
 		String threads = element.getAttribute("threads");
 		String iothreads = element.getAttribute("iothreads");
 
-		builder.setLazyInit(false);
 		builder.addPropertyValue("name",name);
 		builder.addPropertyValue("host",host);
 		builder.addPropertyValue("port",port);

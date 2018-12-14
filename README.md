@@ -1,7 +1,7 @@
 ## myrpc
 a simple, java based, rpc framework implement by netty, zookeeper ,spring
 ## Getting started
-### Define an interface:
+### Define an interface
 
 ```java
 package com.frameworkrpc.demo.api;
@@ -14,14 +14,6 @@ public interface DemoService {
 
 ### Implement service interface for the provider
 ```java
-package com.frameworkrpc.demo.provider;
-
-import com.frameworkrpc.demo.api.DemoService;
-import com.frameworkrpc.rpc.RpcContext;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class DemoServiceImpl implements DemoService {
 	@Override
 	public String sayHello(String name) {
@@ -31,14 +23,6 @@ public class DemoServiceImpl implements DemoService {
 ```
 ### Start service provider
 ```java
-package com.frameworkrpc.demo.provider;
-
-import com.frameworkrpc.config.ApplicationConfig;
-import com.frameworkrpc.config.ProtocolConfig;
-import com.frameworkrpc.config.RegistryConfig;
-import com.frameworkrpc.config.ServiceConfig;
-import com.frameworkrpc.demo.api.DemoService;
-
 public class Provider {
 	public static void main(String[] args) throws Exception {
 	
@@ -67,14 +51,6 @@ public class Provider {
 
 ### Call remote service in consumer
 ```java
-package com.frameworkrpc.demo.consumer;
-
-import com.frameworkrpc.config.ApplicationConfig;
-import com.frameworkrpc.config.ProtocolConfig;
-import com.frameworkrpc.config.ReferenceConfig;
-import com.frameworkrpc.config.RegistryConfig;
-import com.frameworkrpc.demo.api.DemoService;
-
 public class Consumer {
 	public static void main(String[] args) throws Exception {
 	
@@ -94,6 +70,81 @@ public class Consumer {
 		DemoService demoService = reference.get();
 		String hello = demoService.sayHello("world"); 
 		System.out.println(hello); // get result
+	}
+}
+```
+
+### Start service provider With Spring
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans" 
+	   xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:myrpc="http://www.frameworkrpc.com/myrpc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	   http://www.springframework.org/schema/beans/spring-beans-4.3.xsd 
+	   http://www.springframework.org/schema/context 
+	   http://www.springframework.org/schema/context/spring-context.xsd 
+	   http://www.frameworkrpc.com/myrpc http://www.frameworkrpc.com/myrpc/myrpc.xsd">
+
+    <context:property-placeholder location="classpath:rpc-config.properties"/>
+
+    <myrpc:application name="demo-provider"/>
+
+    <myrpc:registry name="${zookeeper.name}" address="${zookeeper.address}"/>
+
+    <bean id="demoService" class="com.frameworkrpc.demo.provider.DemoServiceImpl"/>
+
+    <myrpc:service interface="com.frameworkrpc.demo.api.DemoService" ref="demoService"/>
+</beans>
+```
+```java
+public class ProviderWithSpring {
+	public static void main(String[] args) throws Exception {
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"myrpc-demo-provider.xml"});
+		context.start();
+		System.in.read();
+	}
+}
+```
+ 
+### Call remote service in consumer With Spring
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans" 
+	   xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:myrpc="http://www.frameworkrpc.com/myrpc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	   http://www.springframework.org/schema/beans/spring-beans-4.3.xsd 
+	   http://www.springframework.org/schema/context 
+	   http://www.springframework.org/schema/context/spring-context.xsd 
+	   http://www.frameworkrpc.com/myrpc http://www.frameworkrpc.com/myrpc/myrpc.xsd">
+
+    <context:property-placeholder location="classpath:rpc-config.properties"/>
+
+    <myrpc:application name="demo-provider"/>
+
+    <myrpc:registry name="${zookeeper.name}" address="${zookeeper.address}"/>
+
+    <myrpc:reference id="demoService" interface="com.frameworkrpc.demo.api.DemoService"/>
+</beans>
+```
+```java
+public class ConsumerWithSpring {
+	public static void main(String[] args) throws Exception {
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"myrpc-demo-consumer.xml"});
+		context.start();
+		DemoService demoService = (DemoService) context.getBean("demoService"); // get remote service proxy
+		while (true) {
+			try {
+				Thread.sleep(1000);
+				String hello = demoService.sayHello("world"); // call remote method
+				System.out.println(hello); // get result
+			} catch (Throwable throwable) {
+				throwable.printStackTrace();
+			}
+		}
 	}
 }
 ```
