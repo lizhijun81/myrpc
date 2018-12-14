@@ -53,7 +53,7 @@ public class RpcConstants {
 	public final static int DEFAULT_CONNECTTIMEOUT = 3000;
 	public final static int DEFAULT_RRETRIES = 2;
 
-	public final static String DEFAULT_PROTOCOL = "defaultprotocol";
+	public final static String DEFAULT_PROTOCOL = "myrpc";
 	public final static String DEFAULT_TRANSPORTER = "netty";
 	public final static int DEFAULT_IOTHREADS = Math.max(2, Runtime.getRuntime().availableProcessors()) * 2;
 	public final static int DEFAULT_IOPORT = 2180;
