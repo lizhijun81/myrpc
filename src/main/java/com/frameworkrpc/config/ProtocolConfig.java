@@ -6,7 +6,6 @@ import com.frameworkrpc.common.StringUtils;
 public class ProtocolConfig extends AbstractConfig {
 
 	private static final long serialVersionUID = -8054840397576456746L;
-	private String id;
 	private String name;
 	private String host;
 	private int port;
@@ -17,13 +16,6 @@ public class ProtocolConfig extends AbstractConfig {
 	private int threads;
 	private int iothreads;
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public String getName() {
 		return name;

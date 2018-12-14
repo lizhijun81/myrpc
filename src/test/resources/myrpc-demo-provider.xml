@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:myrpc="http://www.frameworkrpc.com/myrpc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.frameworkrpc.com/myrpc http://www.frameworkrpc.com/myrpc/myrpc.xsd">
+
+    <context:property-placeholder location="classpath:rpc-server.properties"/>
+
+    <myrpc:application name="demo-provider"/>
+
+    <myrpc:registry name="zookeeper" address="127.0.0.1:2181"/>
+
+    <!--<bean id="demoService" class="com.frameworkrpc.demo.provider.DemoServiceImpl"/>-->
+
+    <!--<myrpc:service interface="org.apache.dubbo.demo.DemoService" ref="demoService"/>-->
+</beans>

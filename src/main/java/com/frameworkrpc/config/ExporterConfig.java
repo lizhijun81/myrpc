@@ -12,7 +12,6 @@ import java.util.Map;
 public class ExporterConfig<T> extends AbstractConfig {
 
 	private static final long serialVersionUID = 5369377538761488535L;
-	protected String id;
 	protected String interfaceName;
 	protected Class<T> interfaceClass;
 	protected T ref;
@@ -26,16 +25,7 @@ public class ExporterConfig<T> extends AbstractConfig {
 	protected int retries;
 	protected int connecttimeout;
 
-
 	protected Exporter exporter;
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getId() {
-		return this.id;
-	}
 
 	public String getInterface() {
 		return interfaceName;

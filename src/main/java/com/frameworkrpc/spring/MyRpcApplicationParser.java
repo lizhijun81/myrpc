@@ -1,5 +1,6 @@
 package com.frameworkrpc.spring;
 
+import com.frameworkrpc.common.StringUtils;
 import com.frameworkrpc.config.ApplicationConfig;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
@@ -14,10 +15,12 @@ public class MyRpcApplicationParser extends AbstractSingleBeanDefinitionParser {
 
 	@Override
 	protected void doParse(Element element, BeanDefinitionBuilder builder) {
+		String id = element.getAttribute("id");
 		String name = element.getAttribute("name");
 		String version = element.getAttribute("version");
 
-		builder.addPropertyValue("name",name);
-		builder.addPropertyValue("version",version);
+		builder.addPropertyValue("id", StringUtils.isEmpty(id) ? name : id);
+		builder.addPropertyValue("name", name);
+		builder.addPropertyValue("version", version);
 	}
 }
