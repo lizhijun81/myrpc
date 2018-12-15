@@ -2,7 +2,7 @@ package com.frameworkrpc.server;
 
 import com.frameworkrpc.model.URL;
 
-public class AbstractServer {
+public abstract class AbstractServer implements Server {
 
 	protected URL url;
 

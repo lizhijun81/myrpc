@@ -1,6 +1,6 @@
 package com.frameworkrpc.spring;
 
-import com.frameworkrpc.config.ProtocolConfig;
+import com.frameworkrpc.rpc.config.ProtocolConfig;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

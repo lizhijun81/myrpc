@@ -11,19 +11,20 @@ import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.collect.Sets.newConcurrentHashSet;
 
-public class AbstractRegistry {
+public abstract class AbstractRegistry implements Registry {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final ConcurrentMap<URL, Map<String, List<URL>>> notified = new ConcurrentHashMap<URL, Map<String, List<URL>>>();
 	private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>();
 	protected final Set<URL> registered = newConcurrentHashSet();
+	protected URL url;
 
-	protected void register(URL url) {
+	public void register(URL url) {
 		registered.add(url);
 		logger.info("notify {}", url.toFullStr());
 	}
 
-	protected void unregister(URL url) {
+	public void unregister(URL url) {
 		registered.remove(url);
 		logger.info("remove {}", url.toFullStr());
 	}

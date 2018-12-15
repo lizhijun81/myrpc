@@ -1,9 +1,9 @@
 package com.frameworkrpc.client.netty;
 
-import com.frameworkrpc.model.RpcRequester;
+import com.frameworkrpc.model.RpcRequest;
 import com.frameworkrpc.model.RpcResponse;
 import com.frameworkrpc.model.URL;
-import com.frameworkrpc.proxy.RPCFuture;
+import com.frameworkrpc.consumer.future.InvokeFuture;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -56,9 +56,9 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
 	@Override
 	protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcResponse response) throws Exception {
 		String requestId = response.getRequestId();
-		RPCFuture rpcFuture = RPCFuture.pendingRPC.get(requestId);
+		InvokeFuture rpcFuture = InvokeFuture.pendingRPC.get(requestId);
 		if (rpcFuture != null) {
-			RPCFuture.pendingRPC.remove(requestId);
+			InvokeFuture.pendingRPC.remove(requestId);
 			rpcFuture.done(response);
 		}
 	}
@@ -70,9 +70,9 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
 		ctx.close();
 	}
 
-	public RPCFuture sendRequest(RpcRequester request) {
-		RPCFuture rpcFuture = new RPCFuture(request);
-		RPCFuture.pendingRPC.put(request.getRequestId(), rpcFuture);
+	public InvokeFuture sendRequest(RpcRequest request) {
+		InvokeFuture rpcFuture = new InvokeFuture(request);
+		InvokeFuture.pendingRPC.put(request.getRequestId(), rpcFuture);
 		channel.writeAndFlush(request);
 		return rpcFuture;
 	}

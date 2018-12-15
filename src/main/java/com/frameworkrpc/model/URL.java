@@ -2,7 +2,7 @@ package com.frameworkrpc.model;
 
 import com.frameworkrpc.common.NetUtils;
 import com.frameworkrpc.common.RpcConstants;
-import com.frameworkrpc.exception.RpcException;
+import com.frameworkrpc.exception.MyRpcRpcException;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -25,9 +25,9 @@ public class URL implements Serializable {
 			uri = new URI(URLDecoder.decode(url, RpcConstants.CHARSET));
 			setParameters();
 		} catch (URISyntaxException e) {
-			throw new RpcException(e.getMessage(), e);
+			throw new MyRpcRpcException(e.getMessage(), e);
 		} catch (UnsupportedEncodingException e) {
-			throw new RpcException(e.getMessage(), e);
+			throw new MyRpcRpcException(e.getMessage(), e);
 		}
 	}
 
@@ -102,7 +102,7 @@ public class URL implements Serializable {
 		try {
 			this.uri = new URI(stringBuilder.toString());
 		} catch (URISyntaxException e) {
-			throw new RpcException(e.getMessage(), e);
+			throw new MyRpcRpcException(e.getMessage(), e);
 		}
 		return this;
 	}

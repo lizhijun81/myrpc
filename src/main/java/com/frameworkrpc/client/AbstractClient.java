@@ -5,7 +5,7 @@ import com.frameworkrpc.model.URL;
 
 import java.net.InetSocketAddress;
 
-public class AbstractClient {
+public abstract class AbstractClient implements Client {
 
 	protected volatile boolean isClosed;
 	protected URL url;

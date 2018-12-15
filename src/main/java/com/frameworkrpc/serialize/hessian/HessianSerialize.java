@@ -3,7 +3,7 @@ package com.frameworkrpc.serialize.hessian;
 import com.caucho.hessian.io.HessianInput;
 import com.caucho.hessian.io.HessianOutput;
 import com.frameworkrpc.extension.RpcComponent;
-import com.frameworkrpc.exception.SerializeException;
+import com.frameworkrpc.exception.MyRpcSerializeException;
 import com.frameworkrpc.serialize.Serialize;
 
 import java.io.ByteArrayInputStream;
@@ -20,7 +20,7 @@ public class HessianSerialize implements Serialize {
 		try {
 			ho.writeObject(object);
 		} catch (IOException e) {
-			throw new SerializeException(e.getMessage(), e);
+			throw new MyRpcSerializeException(e.getMessage(), e);
 		}
 		return os.toByteArray();
 	}
@@ -32,7 +32,7 @@ public class HessianSerialize implements Serialize {
 		try {
 			return (T) hi.readObject();
 		} catch (IOException e) {
-			throw new SerializeException(e.getMessage(), e);
+			throw new MyRpcSerializeException(e.getMessage(), e);
 		}
 	}
 }

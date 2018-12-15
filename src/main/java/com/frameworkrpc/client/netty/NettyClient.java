@@ -1,16 +1,15 @@
 package com.frameworkrpc.client.netty;
 
 import com.frameworkrpc.client.AbstractClient;
-import com.frameworkrpc.client.Client;
 import com.frameworkrpc.common.NetUtils;
 import com.frameworkrpc.common.RpcConstants;
-import com.frameworkrpc.exception.RemotingException;
+import com.frameworkrpc.exception.MyRpcRemotingException;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.extension.Scope;
-import com.frameworkrpc.model.RpcRequester;
+import com.frameworkrpc.consumer.future.InvokeFuture;
+import com.frameworkrpc.model.RpcRequest;
 import com.frameworkrpc.model.RpcResponse;
 import com.frameworkrpc.model.URL;
-import com.frameworkrpc.proxy.RPCFuture;
 import com.frameworkrpc.serialize.MessageDecoder;
 import com.frameworkrpc.serialize.MessageEncoder;
 import com.frameworkrpc.serialize.Serialize;
@@ -27,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
-public class NettyClient extends AbstractClient implements Client {
+public class NettyClient extends AbstractClient {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
 	private Bootstrap bootstrap;
@@ -77,7 +76,7 @@ public class NettyClient extends AbstractClient implements Client {
 			@Override
 			protected void initChannel(NioSocketChannel ch) throws Exception {
 				ch.pipeline().addLast("decoder", new MessageDecoder(serialize, RpcResponse.class))
-						.addLast("encoder", new MessageEncoder(serialize, RpcRequester.class)).addLast("handler", nettyClientHandler);
+						.addLast("encoder", new MessageEncoder(serialize, RpcRequest.class)).addLast("handler", nettyClientHandler);
 			}
 		});
 
@@ -113,11 +112,11 @@ public class NettyClient extends AbstractClient implements Client {
 					}
 				}
 			} else if (future.cause() != null) {
-				throw new RemotingException(
+				throw new MyRpcRemotingException(
 						"client(url: " + getUrl().toFullStr() + ") failed to connect to server " + getConnectAddress() + ", error message is:"
 								+ future.cause().getMessage(), future.cause());
 			} else {
-				throw new RemotingException(
+				throw new MyRpcRemotingException(
 						"client(url: " + getUrl().toFullStr() + ") failed to connect to server " + getConnectAddress() + " client-side timeout "
 								+ getConnectAddress() + "ms (elapsed: " + (System.currentTimeMillis() - start) + "ms) from netty client " + NetUtils
 								.getLocalHost() + " using  version " + getUrl().getParameter(RpcConstants.VERSION_KEY));
@@ -137,7 +136,7 @@ public class NettyClient extends AbstractClient implements Client {
 	}
 
 	@Override
-	public RPCFuture request(RpcRequester request) {
+	public InvokeFuture request(RpcRequest request) {
 		return nettyClientHandler.sendRequest(request);
 	}
 

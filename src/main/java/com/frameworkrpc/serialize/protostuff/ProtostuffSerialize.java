@@ -5,7 +5,7 @@ import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import com.frameworkrpc.extension.RpcComponent;
-import com.frameworkrpc.exception.SerializeException;
+import com.frameworkrpc.exception.MyRpcSerializeException;
 import com.frameworkrpc.serialize.Serialize;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
@@ -39,7 +39,7 @@ public class ProtostuffSerialize implements Serialize {
 			Schema<T> schema = getSchema(cls);
 			return ProtostuffIOUtil.toByteArray(object, schema, buffer);
 		} catch (Exception e) {
-			throw new SerializeException(e.getMessage(), e);
+			throw new MyRpcSerializeException(e.getMessage(), e);
 		} finally {
 			buffer.clear();
 		}
@@ -53,7 +53,7 @@ public class ProtostuffSerialize implements Serialize {
 			ProtostuffIOUtil.mergeFrom(data, message, schema);
 			return message;
 		} catch (Exception e) {
-			throw new SerializeException(e.getMessage(), e);
+			throw new MyRpcSerializeException(e.getMessage(), e);
 		}
 	}
 }

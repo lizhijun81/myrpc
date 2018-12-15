@@ -1,8 +1,8 @@
 package com.frameworkrpc.demo.consumer;
 
-import com.frameworkrpc.config.ApplicationConfig;
-import com.frameworkrpc.config.ReferenceConfig;
-import com.frameworkrpc.config.RegistryConfig;
+import com.frameworkrpc.rpc.config.ApplicationConfig;
+import com.frameworkrpc.rpc.config.ReferenceConfig;
+import com.frameworkrpc.rpc.config.RegistryConfig;
 import com.frameworkrpc.demo.api.DemoService;
 
 public class Consumer {

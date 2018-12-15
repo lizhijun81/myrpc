@@ -1,14 +1,14 @@
 package com.frameworkrpc.rpc;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
-import com.frameworkrpc.model.RpcRequester;
+import com.frameworkrpc.model.RpcRequest;
 import com.frameworkrpc.model.RpcResponse;
 
 public class RpcContext {
 
 	private static TransmittableThreadLocal<RpcContext> LOCAL_CONTEXT = new TransmittableThreadLocal<>();
 
-	private RpcRequester request;
+	private RpcRequest request;
 	private RpcResponse response;
 	private String clientRequesterId = null;
 
@@ -16,7 +16,7 @@ public class RpcContext {
 		return LOCAL_CONTEXT.get();
 	}
 
-	public static RpcContext init(RpcRequester request) {
+	public static RpcContext init(RpcRequest request) {
 		RpcContext context = new RpcContext();
 		if (request != null) {
 			context.setRequest(request);
@@ -43,11 +43,11 @@ public class RpcContext {
 		}
 	}
 
-	public RpcRequester getRequest() {
+	public RpcRequest getRequest() {
 		return request;
 	}
 
-	public void setRequest(RpcRequester request) {
+	public void setRequest(RpcRequest request) {
 		this.request = request;
 	}
 

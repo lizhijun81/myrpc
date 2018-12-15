@@ -1,8 +1,8 @@
 package com.frameworkrpc.demo.provider;
 
-import com.frameworkrpc.config.ApplicationConfig;
-import com.frameworkrpc.config.RegistryConfig;
-import com.frameworkrpc.config.ServiceConfig;
+import com.frameworkrpc.rpc.config.ApplicationConfig;
+import com.frameworkrpc.rpc.config.RegistryConfig;
+import com.frameworkrpc.rpc.config.ServiceConfig;
 import com.frameworkrpc.demo.api.DemoService;
 
 public class Provider {

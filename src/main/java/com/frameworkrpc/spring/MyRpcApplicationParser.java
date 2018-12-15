@@ -1,6 +1,6 @@
 package com.frameworkrpc.spring;
 
-import com.frameworkrpc.config.ApplicationConfig;
+import com.frameworkrpc.rpc.config.ApplicationConfig;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.w3c.dom.Element;
 

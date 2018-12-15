@@ -1,8 +1,8 @@
 package com.frameworkrpc.client;
 
-import com.frameworkrpc.model.RpcRequester;
+import com.frameworkrpc.model.RpcRequest;
 import com.frameworkrpc.model.URL;
-import com.frameworkrpc.proxy.RPCFuture;
+import com.frameworkrpc.consumer.future.InvokeFuture;
 
 public interface Client {
 
@@ -18,6 +18,6 @@ public interface Client {
 
 	void disConnect();
 
-	RPCFuture request(RpcRequester request);
+	InvokeFuture request(RpcRequest request);
 
 }

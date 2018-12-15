@@ -1,6 +1,7 @@
 package com.frameworkrpc.registry.zookeeper;
 
 import com.frameworkrpc.common.RpcConstants;
+import com.frameworkrpc.extension.RpcComponent;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.registry.AbstractRegistry;
 import com.frameworkrpc.registry.NotifyListener;
@@ -18,13 +19,21 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class ZookeeperRegistry extends AbstractRegistry implements Registry {
+@RpcComponent(name = "zookeeper")
+public class ZookeeperRegistry extends AbstractRegistry {
 
 	private static final Logger logger = LoggerFactory.getLogger(ZookeeperRegistry.class);
 	private ZkClient zkClient;
 	private final Map<URL, ConcurrentMap<NotifyListener, IZkChildListener>> zkListeners = new ConcurrentHashMap<>();
 
-	public ZookeeperRegistry(URL url) {
+	@Override
+	public Registry with(URL url) {
+		super.url = url;
+		return this;
+	}
+
+	@Override
+	public Registry init() {
 		zkClient = new ZkClient(url.getParameter(RpcConstants.ADDRESS_KEY), url.getIntParameter(RpcConstants.REGISTRY_SESSIONTIMEOUT_KEY),
 				url.getIntParameter(RpcConstants.REGISTRY_TIMEOUT_KEY));
 		IZkStateListener zkStateListener = new IZkStateListener() {
@@ -43,6 +52,7 @@ public class ZookeeperRegistry extends AbstractRegistry implements Registry {
 			}
 		};
 		zkClient.subscribeStateChanges(zkStateListener);
+		return this;
 	}
 
 	@Override

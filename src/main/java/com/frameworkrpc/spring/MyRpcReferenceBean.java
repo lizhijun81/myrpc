@@ -1,6 +1,9 @@
 package com.frameworkrpc.spring;
 
-import com.frameworkrpc.config.*;
+import com.frameworkrpc.rpc.config.ApplicationConfig;
+import com.frameworkrpc.rpc.config.ProtocolConfig;
+import com.frameworkrpc.rpc.config.ReferenceConfig;
+import com.frameworkrpc.rpc.config.RegistryConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.DisposableBean;

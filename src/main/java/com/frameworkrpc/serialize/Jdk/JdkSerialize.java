@@ -1,7 +1,7 @@
 package com.frameworkrpc.serialize.Jdk;
 
 import com.frameworkrpc.extension.RpcComponent;
-import com.frameworkrpc.exception.SerializeException;
+import com.frameworkrpc.exception.MyRpcSerializeException;
 import com.frameworkrpc.serialize.Serialize;
 
 import java.io.*;
@@ -17,7 +17,7 @@ public class JdkSerialize implements Serialize {
 			out = new ObjectOutputStream(os);
 			out.writeObject(object);
 		} catch (IOException e) {
-			throw new SerializeException(e.getMessage(), e);
+			throw new MyRpcSerializeException(e.getMessage(), e);
 		}
 		return os.toByteArray();
 	}
@@ -29,9 +29,9 @@ public class JdkSerialize implements Serialize {
 			ObjectInputStream in = new ObjectInputStream(is);
 			return (T) in.readObject();
 		} catch (ClassNotFoundException e) {
-			throw new SerializeException(e.getMessage(), e);
+			throw new MyRpcSerializeException(e.getMessage(), e);
 		} catch (IOException e) {
-			throw new SerializeException(e.getMessage(), e);
+			throw new MyRpcSerializeException(e.getMessage(), e);
 		}
 	}
 }

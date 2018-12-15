@@ -5,7 +5,7 @@ import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.concurrent.RpcThreadPool;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.extension.Scope;
-import com.frameworkrpc.model.RpcRequester;
+import com.frameworkrpc.model.RpcRequest;
 import com.frameworkrpc.model.RpcResponse;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.rpc.RpcInstanceFactory;
@@ -13,7 +13,6 @@ import com.frameworkrpc.serialize.MessageDecoder;
 import com.frameworkrpc.serialize.MessageEncoder;
 import com.frameworkrpc.serialize.Serialize;
 import com.frameworkrpc.server.AbstractServer;
-import com.frameworkrpc.server.Server;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutorService;
 
-public class NettyServer extends AbstractServer implements Server {
+public class NettyServer extends AbstractServer  {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
 	private ServerBootstrap bootstrap;
@@ -94,7 +93,7 @@ public class NettyServer extends AbstractServer implements Server {
 									super.userEventTriggered(ctx, evt);
 								}
 							}
-						}).addLast("decoder", new MessageDecoder(serialize, RpcRequester.class))
+						}).addLast("decoder", new MessageDecoder(serialize, RpcRequest.class))
 								.addLast("encoder", new MessageEncoder(serialize, RpcResponse.class))
 								.addLast("handler", new NettyServerHandler(url, rpcInstanceFactory, threadPoolExecutor));
 					}

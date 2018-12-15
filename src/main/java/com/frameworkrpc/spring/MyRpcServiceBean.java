@@ -1,9 +1,9 @@
 package com.frameworkrpc.spring;
 
-import com.frameworkrpc.config.ApplicationConfig;
-import com.frameworkrpc.config.ProtocolConfig;
-import com.frameworkrpc.config.RegistryConfig;
-import com.frameworkrpc.config.ServiceConfig;
+import com.frameworkrpc.rpc.config.ApplicationConfig;
+import com.frameworkrpc.rpc.config.ProtocolConfig;
+import com.frameworkrpc.rpc.config.RegistryConfig;
+import com.frameworkrpc.rpc.config.ServiceConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanNameAware;

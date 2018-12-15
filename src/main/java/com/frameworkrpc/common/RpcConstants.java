@@ -21,6 +21,7 @@ public class RpcConstants {
 	public final static String CLUSTER_KEY = "cluster";
 	public final static String TIMEOUT_KEY = "timeout";
 	public final static String CONNECTTIMEOUT_KEY = "connecttimeout";
+	public static final String PROXY_KEY = "proxy";
 	public final static String REGISTRY_TIMEOUT_KEY = "registry.timeout";
 	public final static String SESSIONTIMEOUT_KEY = "sessiontimeout";
 	public final static String REGISTRY_NAME_KEY = "registry.name";
@@ -52,6 +53,7 @@ public class RpcConstants {
 	public final static int DEFAULT_TMEOUT = 5000;
 	public final static int DEFAULT_CONNECTTIMEOUT = 3000;
 	public final static int DEFAULT_RRETRIES = 2;
+	public static final String DEFAULT_PROXY = "jdk";
 
 	public final static String DEFAULT_PROTOCOL = "myrpc";
 	public final static String DEFAULT_TRANSPORTER = "netty";

@@ -1,7 +1,7 @@
 package com.frameworkrpc.extension;
 
 import com.frameworkrpc.common.MyClassUtils;
-import com.frameworkrpc.exception.RpcException;
+import com.frameworkrpc.exception.MyRpcRpcException;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -47,7 +47,7 @@ public class ExtensionLoader<T> {
 				return clz.newInstance();
 			}
 		} catch (Exception e) {
-			throw new RpcException("Error when getExtension " + name, e);
+			throw new MyRpcRpcException("Error when getExtension " + name, e);
 		}
 	}
 
@@ -104,7 +104,7 @@ public class ExtensionLoader<T> {
 				}
 			}
 		} catch (ClassNotFoundException e) {
-			throw new RpcException(e.getMessage(), e);
+			throw new MyRpcRpcException(e.getMessage(), e);
 		}
 	}
 
@@ -135,11 +135,11 @@ public class ExtensionLoader<T> {
 
 	private static <T> void checkInterfaceType(Class<T> clz) {
 		if (clz == null) {
-			throw new RpcException("Error extension type is null");
+			throw new MyRpcRpcException("Error extension type is null");
 		}
 
 		if (!clz.isInterface()) {
-			throw new RpcException("Error extension type is not interface" + clz.getName());
+			throw new MyRpcRpcException("Error extension type is not interface" + clz.getName());
 		}
 	}
 

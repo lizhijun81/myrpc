@@ -1,7 +1,7 @@
 package com.frameworkrpc.rpc.netty;
 
 import com.frameworkrpc.extension.RpcComponent;
-import com.frameworkrpc.exception.RpcException;
+import com.frameworkrpc.exception.MyRpcRpcException;
 import com.frameworkrpc.rpc.RpcInstanceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class NettyRpcInstanceFatoryImpl implements RpcInstanceFactory {
 	}
 
 	@Override
-	public Object getRpcInstance(String infName) throws RpcException {
+	public Object getRpcInstance(String infName) throws MyRpcRpcException {
 		Object obj = instances.get(infName);
 		return obj;
 	}
@@ -53,9 +53,9 @@ public class NettyRpcInstanceFatoryImpl implements RpcInstanceFactory {
 					this.methodMap.put(infName, methodMap);
 					return map.get(methodName);
 				} catch (NoSuchMethodException e1) {
-					throw new RpcException(e1.getMessage(), e1);
+					throw new MyRpcRpcException(e1.getMessage(), e1);
 				} catch (ClassNotFoundException e) {
-					throw new RpcException(e.getMessage(), e);
+					throw new MyRpcRpcException(e.getMessage(), e);
 				}
 			}
 		}

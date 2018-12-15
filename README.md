@@ -1,11 +1,34 @@
 ## myrpc
-a simple, java based, rpc framework implement by netty, zookeeper ,spring
+a simple, java based, rpc framework implemented by netty, zookeeper ,spring
+
+#### Jupiter Architecture:
+
+           ═ ═ ═▷ init         ─ ─ ─ ▷ async       ──────▶ sync
+    ----------------------------------------------------------------------------------------
+
+                                ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─
+                                           ┌ ─ ─ ─ ┐ │
+               ─ ─ ─ ─ ─ ─ ─ ─ ─│ Registry  Monitor ───────────────────────────┐
+              │                            └ ─ ─ ─ ┘ │                         │
+                                └ ─ ─△─ ─ ─ ─ ─△─ ─ ─                          ▼
+              │                                                           ┌ ─ ─ ─ ─
+            Notify                   ║         ║                            Telnet │
+              │         ═ ═ ═ ═ ═ ═ ═           ═ ═ ═ ═ ═ ═ ═ ═ ═         └ ─ ─ ─ ─
+                       ║                                         ║             ▲
+              │    Subscribe                                  Register         │
+                       ║                                         ║             │
+              │  ┌ ─ ─ ─ ─ ─                          ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─    │
+                            │─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ▷           ┌ ─ ─ ─ ┐ │   │
+              └ ▷│ Consumer           Invoke          │ Provider  Monitor ─────┘
+                            │────────────────────────▶           └ ─ ─ ─ ┘ │
+                 └ ─ ─ ─ ─ ─                          └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─
+
+    ---------------------------------------------------------------------------------------
+
 ## Getting started
 ### Define an interface
 
 ```java
-package com.frameworkrpc.demo.api;
-
 public interface DemoService {
 
 	String sayHello(String name);
