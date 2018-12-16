@@ -3,7 +3,6 @@ package com.frameworkrpc.server.netty;
 import com.frameworkrpc.exception.MyRpcRpcException;
 import com.frameworkrpc.model.RpcRequest;
 import com.frameworkrpc.model.RpcResponse;
-import com.frameworkrpc.model.URL;
 import com.frameworkrpc.rpc.RpcContext;
 import com.frameworkrpc.rpc.RpcInstanceFactory;
 import io.netty.channel.ChannelHandler;
@@ -24,29 +23,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
-
-	private URL url;
 	private RpcInstanceFactory nettyRpcInstanceFactory;
 	private ExecutorService threadPoolExecutor;
 
-	public URL getUrl() {
-		return url;
-	}
-
-	public RpcInstanceFactory getNettyRpcInstanceFactory() {
-		return nettyRpcInstanceFactory;
-	}
-
-	public ExecutorService getThreadPoolExecutor() {
-		return threadPoolExecutor;
-	}
-
-	public NettyServerHandler(URL url, RpcInstanceFactory nettyRpcInstanceFactory, ExecutorService threadPoolExecutor) {
-		this.url = url;
+	public NettyServerHandler(RpcInstanceFactory nettyRpcInstanceFactory, ExecutorService threadPoolExecutor) {
 		this.nettyRpcInstanceFactory = nettyRpcInstanceFactory;
 		this.threadPoolExecutor = threadPoolExecutor;
 	}
-
 
 	@Override
 	public void channelRead0(final ChannelHandlerContext ctx, final RpcRequest request) throws Exception {

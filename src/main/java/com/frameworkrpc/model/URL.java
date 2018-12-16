@@ -21,9 +21,21 @@ public class URL implements Serializable {
 	private URI uri;
 
 	public URL(String url) {
+		this.uri = toUrl(url);
+	}
+
+	public URL(String protocol, String host, String port, String path, Map<String, String> parameters) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(String.format("%s://%s:%s/%s?", protocol, host, port, path));
+		stringBuilder.append(NetUtils.getUrlParamsByMap(parameters));
+		this.uri = toUrl(stringBuilder.toString());
+	}
+
+	private URI toUrl(String url) {
 		try {
 			uri = new URI(URLDecoder.decode(url, RpcConstants.CHARSET));
 			setParameters();
+			return uri;
 		} catch (URISyntaxException e) {
 			throw new MyRpcRpcException(e.getMessage(), e);
 		} catch (UnsupportedEncodingException e) {

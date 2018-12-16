@@ -1,6 +1,5 @@
 package com.frameworkrpc.config;
 
-import com.frameworkrpc.common.NetUtils;
 import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.extension.Scope;
@@ -22,6 +21,7 @@ public class ServiceConfig<T> extends ProviderConfig<T> {
 
 	public synchronized void export() {
 		checkRef();
+
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("id", getId());
 		addServiceParameters(parameters);
@@ -29,17 +29,15 @@ public class ServiceConfig<T> extends ProviderConfig<T> {
 		addProtocolParameters(parameters);
 		addRegistryParameters(parameters);
 		String protocol = RpcConstants.PROVIDER;
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder
-				.append(String.format("%s://%s:%s/%s?", protocol, getProtocol().getHost(), String.valueOf(getProtocol().getPort()), getInterface()));
-		stringBuilder.append(NetUtils.getUrlParamsByMap(parameters));
 
-		URL url = new URL(stringBuilder.toString());
+		URL url = new URL(protocol, getProtocol().getHost(), String.valueOf(getProtocol().getPort()), getInterface(), parameters);
+
+
+		exporters.add(new Exporter().with(url).init().start().publish());
 
 		RpcInstanceFactory rpcInstanceFactory = ExtensionLoader.getExtensionLoader(RpcInstanceFactory.class)
 				.getExtension(url.getParameter(RpcConstants.TRANSPORTER_KEY), Scope.SINGLETON);
 		rpcInstanceFactory.setRpcInstance(getInterface(), getRef());
-		exporters.add(new Exporter().with(url).init().start().publish());
 	}
 
 

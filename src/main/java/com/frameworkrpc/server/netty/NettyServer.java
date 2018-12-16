@@ -99,7 +99,7 @@ public class NettyServer extends AbstractServer {
 										})
 								.addLast("decoder", new MessageDecoder(serialize, RpcRequest.class))
 								.addLast("encoder", new MessageEncoder(serialize, RpcResponse.class))
-								.addLast("handler", new NettyServerHandler(url, rpcInstanceFactory, threadPoolExecutor));
+								.addLast("handler", new NettyServerHandler(rpcInstanceFactory, threadPoolExecutor));
 					}
 				});
 		ChannelFuture channelFuture = bootstrap.bind(url.getIntParameter(RpcConstants.PORT_KEY));

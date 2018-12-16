@@ -1,6 +1,5 @@
 package com.frameworkrpc.config;
 
-import com.frameworkrpc.common.NetUtils;
 import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.consumer.proxy.ClassProxy;
 import com.frameworkrpc.extension.ExtensionLoader;
@@ -31,17 +30,12 @@ public class ReferenceConfig<T> extends ConsumerConfig<T> {
 		addProtocolParameters(parameters);
 		addRegistryParameters(parameters);
 		String protocol = RpcConstants.CONSUMER;
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder
-				.append(String.format("%s://%s:%s/%s?", protocol, getProtocol().getHost(), String.valueOf(getProtocol().getPort()), getInterface()));
-		stringBuilder.append(NetUtils.getUrlParamsByMap(parameters));
 
-		URL url = new URL(stringBuilder.toString());
+		URL url = new URL(protocol, getProtocol().getHost(), String.valueOf(getProtocol().getPort()), getInterface(), parameters);
 
 		classProxy = ExtensionLoader.getExtensionLoader(ClassProxy.class).getExtension(url.getParameter(RpcConstants.PROXY_KEY)).with(url).init();
 		ref = classProxy.getInstance(interfaceClass);
 	}
-
 
 
 }

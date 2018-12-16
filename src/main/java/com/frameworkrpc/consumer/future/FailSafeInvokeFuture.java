@@ -1,8 +1,11 @@
 package com.frameworkrpc.consumer.future;
 
+import com.frameworkrpc.common.ReflectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.TimeUnit;
+
 import static com.frameworkrpc.common.StackTraceUtils.stackTrace;
 
 public class FailSafeInvokeFuture<V> extends AbstractFuture<V> {
@@ -15,7 +18,6 @@ public class FailSafeInvokeFuture<V> extends AbstractFuture<V> {
 		return new FailSafeInvokeFuture<>(future);
 	}
 
-
 	private FailSafeInvokeFuture(InvokeFuture<V> future) {
 		this.future = future;
 	}
@@ -26,18 +28,8 @@ public class FailSafeInvokeFuture<V> extends AbstractFuture<V> {
 	}
 
 	@Override
-	public boolean cancel(boolean mayInterruptIfRunning) {
-		return false;
-	}
-
-	@Override
-	public boolean isCancelled() {
-		return false;
-	}
-
-	@Override
 	public boolean isDone() {
-		return false;
+		return future.isDone();
 	}
 
 	@Override
@@ -49,9 +41,9 @@ public class FailSafeInvokeFuture<V> extends AbstractFuture<V> {
 				logger.warn("Ignored exception on [Fail-safe]: {}.", stackTrace(t));
 			}
 		}
-		//return (V) Reflects.getTypeDefaultValue(returnType());
-		return null;
+		return (V) ReflectUtils.getTypeDefaultValue(returnType());
 	}
+
 
 	@Override
 	public V get(long timeout, TimeUnit unit) {
@@ -62,24 +54,15 @@ public class FailSafeInvokeFuture<V> extends AbstractFuture<V> {
 				logger.warn("Ignored exception on [Fail-safe]: {}.", stackTrace(t));
 			}
 		}
-		//return (V) Reflects.getTypeDefaultValue(returnType());
-		return null;
-	}
-
-	@Override
-	public InvokeFuture<V> addListener(Listener<V> listener) {
-		future.addListener(listener);
-		return this;
+		return (V) ReflectUtils.getTypeDefaultValue(returnType());
 	}
 
 	@Override
 	protected void notifyListener0(Listener<V> listener, int state, Object x) {
-
 	}
 
 	@Override
 	protected void done(int state, Object x) {
-
 	}
 
 	public InvokeFuture<V> future() {
