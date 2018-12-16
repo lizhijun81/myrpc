@@ -14,22 +14,24 @@ public class RpcConstants {
 
 	public final static String APPLICATION_KEY = "application";
 	public final static String APPLICATION_VERSION_KEY = "application.version";
+
 	public final static String VERSION_KEY = "version";
 	public final static String GROUP_KEY = "group";
 	public final static String INTERFACE_KEY = "interface";
+	public final static String SESSIONTIMEOUT_KEY = "sessiontimeout";
+
 	public final static String LOADBALANCE_KEY = "loadbalance";
 	public final static String CLUSTER_KEY = "cluster";
 	public final static String TIMEOUT_KEY = "timeout";
 	public final static String CONNECTTIMEOUT_KEY = "connecttimeout";
 	public static final String PROXY_KEY = "proxy";
-	public final static String REGISTRY_TIMEOUT_KEY = "registry.timeout";
-	public final static String SESSIONTIMEOUT_KEY = "sessiontimeout";
+	public final static String RETRIES_KEY = "retries";
+	public static final String CATEGORY_KEY = "category";
+
 	public final static String REGISTRY_NAME_KEY = "registry.name";
 	public final static String REGISTRY_SESSIONTIMEOUT_KEY = "registry.sessiontimeout";
-	public final static String ADDRESS_KEY = "address";
-	public final static String RETRIES_KEY = "retries";
-	public static final String SIDE_KEY = "side";
-	public static final String CATEGORY_KEY = "category";
+	public final static String REGISTRY_TIMEOUT_KEY = "registry.timeout";
+	public final static String REGISTRY_ADDRESS_KEY = "registry.address";
 
 	public static final String PROTOCOL_KEY = "protocol";
 	public final static String SERIALIZATION_KEY = "serialization";
@@ -43,7 +45,6 @@ public class RpcConstants {
 
 	public final static String PROVIDER = "provider";
 	public final static String CONSUMER = "consumer";
-	;
 
 	public final static String DEFAULT_VERSION = "0.0.1";
 	public final static String DEFAULT_GROUP = "default";

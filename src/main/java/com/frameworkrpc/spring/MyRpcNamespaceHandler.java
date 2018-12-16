@@ -6,10 +6,10 @@ public class MyRpcNamespaceHandler extends NamespaceHandlerSupport {
 
 	@Override
 	public void init() {
-		registerBeanDefinitionParser("application", new MyRpcApplicationParser());
-		registerBeanDefinitionParser("registry", new MyRpcRegisteryParser());
-		registerBeanDefinitionParser("protocol", new MyRpcProtocolParser());
-		registerBeanDefinitionParser("service", new MyRpcServiceParser());
-		registerBeanDefinitionParser("reference", new MyRpcReferenceParser());
+		registerBeanDefinitionParser("application", new ApplicationParser());
+		registerBeanDefinitionParser("registry", new RegisteryParser());
+		registerBeanDefinitionParser("protocol", new ProtocolParser());
+		registerBeanDefinitionParser("service", new ServiceParser());
+		registerBeanDefinitionParser("reference", new ReferenceParser());
 	}
 }

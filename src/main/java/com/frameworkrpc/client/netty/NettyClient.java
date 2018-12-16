@@ -6,7 +6,6 @@ import com.frameworkrpc.common.RpcConstants;
 import com.frameworkrpc.exception.MyRpcRemotingException;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.extension.Scope;
-import com.frameworkrpc.consumer.future.InvokeFuture;
 import com.frameworkrpc.model.RpcRequest;
 import com.frameworkrpc.model.RpcResponse;
 import com.frameworkrpc.model.URL;
@@ -14,6 +13,7 @@ import com.frameworkrpc.serialize.MessageDecoder;
 import com.frameworkrpc.serialize.MessageEncoder;
 import com.frameworkrpc.serialize.Serialize;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -29,15 +29,19 @@ import java.util.concurrent.TimeUnit;
 public class NettyClient extends AbstractClient {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
-	private Bootstrap bootstrap;
 	private static final NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup(RpcConstants.DEFAULT_IOTHREADS,
 			new DefaultThreadFactory("NettyClientBoss", true));
 
+	private Bootstrap bootstrap;
 	private volatile Channel channel;
-	private volatile NettyClientHandler nettyClientHandler;
+	private final Serialize serialize;
+	private final NettyClientHandler nettyClientHandler;
 
 	public NettyClient(URL url) {
 		super(url);
+		serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
+				.getExtension(url.getParameter(RpcConstants.SERIALIZATION_KEY), Scope.SINGLETON);
+		nettyClientHandler = new NettyClientHandler();
 	}
 
 	@Override
@@ -65,16 +69,14 @@ public class NettyClient extends AbstractClient {
 		if (isConnected()) {
 			return;
 		}
-		nettyClientHandler = new NettyClientHandler(url);
-		Serialize serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
-				.getExtension(url.getParameter(RpcConstants.SERIALIZATION_KEY), Scope.SINGLETON);
 		bootstrap = new Bootstrap();
 		bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, url.getIntParameter(RpcConstants.CONNECTTIMEOUT_KEY));
-		bootstrap.option(ChannelOption.TCP_NODELAY, true);
 		bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
+		bootstrap.option(ChannelOption.TCP_NODELAY, true);
+		bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
 		bootstrap.group(nioEventLoopGroup).channel(NioSocketChannel.class).handler(new ChannelInitializer<NioSocketChannel>() {
 			@Override
-			protected void initChannel(NioSocketChannel ch) throws Exception {
+			protected void initChannel(NioSocketChannel ch) {
 				ch.pipeline().addLast("decoder", new MessageDecoder(serialize, RpcResponse.class))
 						.addLast("encoder", new MessageEncoder(serialize, RpcRequest.class)).addLast("handler", nettyClientHandler);
 			}
@@ -136,8 +138,8 @@ public class NettyClient extends AbstractClient {
 	}
 
 	@Override
-	public InvokeFuture request(RpcRequest request) {
-		return nettyClientHandler.sendRequest(request);
+	public void request(RpcRequest request) {
+		nettyClientHandler.sendRequest(request);
 	}
 
 }

@@ -12,9 +12,7 @@
                     <xsd:attribute name="ref" type="xsd:string" use="required"/>
                     <xsd:attribute name="version" type="xsd:string" use="optional" default="1.0.0"/>
                     <xsd:attribute name="group" type="xsd:string" use="optional" default="group"/>
-                    <xsd:attribute name="loadbalance" type="xsd:string" use="optional" default="roundrobin"/>
                     <xsd:attribute name="timeout" type="xsd:string" use="optional" default="5000"/>
-                    <xsd:attribute name="retries" type="xsd:string" use="optional" default="2"/>
                 </xsd:extension>
             </xsd:complexContent>
         </xsd:complexType>
@@ -69,6 +67,8 @@
                     <xsd:attribute name="timeout" type="xsd:string" use="optional" default="5000"/>
                     <xsd:attribute name="retries" type="xsd:string" use="optional" default="2"/>
                     <xsd:attribute name="connecttimeout" type="xsd:string" use="optional" default="3000"/>
+                    <xsd:attribute name="proxy" type="xsd:string" use="optional" default="jdk"/>
+                    <xsd:attribute name="cluster" type="xsd:string" use="optional" default="failover"/>
                 </xsd:extension>
             </xsd:complexContent>
         </xsd:complexType>

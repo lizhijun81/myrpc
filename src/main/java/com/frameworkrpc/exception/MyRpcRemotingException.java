@@ -1,6 +1,6 @@
 package com.frameworkrpc.exception;
 
-public class MyRpcRemotingException extends  RuntimeException {
+public class MyRpcRemotingException extends RuntimeException {
 
 	public MyRpcRemotingException() {
 		super();

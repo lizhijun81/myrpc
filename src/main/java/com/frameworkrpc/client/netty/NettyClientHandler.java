@@ -1,44 +1,24 @@
 package com.frameworkrpc.client.netty;
 
+import com.frameworkrpc.consumer.future.DefaultInvokeFuture;
 import com.frameworkrpc.model.RpcRequest;
 import com.frameworkrpc.model.RpcResponse;
-import com.frameworkrpc.model.URL;
-import com.frameworkrpc.consumer.future.InvokeFuture;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.SocketAddress;
-
+@io.netty.channel.ChannelHandler.Sharable
 public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyClientHandler.class);
-	private URL url;
 	private Channel channel;
-	private SocketAddress remotePeer;
-
-	public URL getUrl() {
-		return url;
-	}
-
-	public Channel getChannel() {
-		return channel;
-	}
-
-	public SocketAddress getRemotePeer() {
-		return remotePeer;
-	}
-
-	public NettyClientHandler(URL url) {
-		this.url = url;
-	}
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		super.channelActive(ctx);
-		this.remotePeer = this.channel.remoteAddress();
+		this.channel = ctx.channel();
 	}
 
 	@Override
@@ -47,33 +27,20 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
 		this.channel = ctx.channel();
 	}
 
+
 	@Override
-	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		super.channelInactive(ctx);
-		this.remotePeer = this.channel.remoteAddress();
+	protected void channelRead0(ChannelHandlerContext ctx, RpcResponse response) {
+		DefaultInvokeFuture.received(response);
 	}
 
 	@Override
-	protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcResponse response) throws Exception {
-		String requestId = response.getRequestId();
-		InvokeFuture rpcFuture = InvokeFuture.pendingRPC.get(requestId);
-		if (rpcFuture != null) {
-			InvokeFuture.pendingRPC.remove(requestId);
-			rpcFuture.done(response);
-		}
-	}
-
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		logger.error("Client exceptionCaught: remote={} local={} event={}", ctx.channel().remoteAddress(), ctx.channel().localAddress(),
 				cause.getMessage(), cause);
 		ctx.close();
 	}
 
-	public InvokeFuture sendRequest(RpcRequest request) {
-		InvokeFuture rpcFuture = new InvokeFuture(request);
-		InvokeFuture.pendingRPC.put(request.getRequestId(), rpcFuture);
+	public void sendRequest(RpcRequest request) {
 		channel.writeAndFlush(request);
-		return rpcFuture;
 	}
 }

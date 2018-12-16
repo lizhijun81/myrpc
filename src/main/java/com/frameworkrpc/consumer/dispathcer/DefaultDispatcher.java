@@ -12,6 +12,6 @@ public class DefaultDispatcher extends AbstractDispatcher {
 
 	@Override
 	public <T> InvokeFuture<T> dispatch(RpcRequest request, Class<T> returnType) {
-		return getServerClient(url).request(request);
+		return write(null, request, returnType);
 	}
 }

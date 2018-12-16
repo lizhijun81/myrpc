@@ -1,32 +1,23 @@
 package com.frameworkrpc.spring;
 
-import com.frameworkrpc.rpc.config.ApplicationConfig;
-import com.frameworkrpc.rpc.config.ProtocolConfig;
-import com.frameworkrpc.rpc.config.RegistryConfig;
-import com.frameworkrpc.rpc.config.ServiceConfig;
+import com.frameworkrpc.config.ApplicationConfig;
+import com.frameworkrpc.config.ProtocolConfig;
+import com.frameworkrpc.config.ReferenceConfig;
+import com.frameworkrpc.config.RegistryConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.util.Map;
 
-public class MyRpcServiceBean<T> extends ServiceConfig<T>
-		implements InitializingBean, DisposableBean, ApplicationContextAware, ApplicationListener<ContextRefreshedEvent>, BeanNameAware {
+public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean, ApplicationContextAware, InitializingBean, DisposableBean {
 
 	private static final long serialVersionUID = 4186914879813709242L;
 	private transient ApplicationContext applicationContext;
-	private transient String beanName;
-
-	@Override
-	public void setBeanName(String beanName) {
-		this.beanName = beanName;
-	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -73,21 +64,31 @@ public class MyRpcServiceBean<T> extends ServiceConfig<T>
 				}
 			}
 		}
-		export();
 	}
 
 	@Override
 	public void destroy() throws Exception {
+
 	}
+
+	@Override
+	public Object getObject() {
+		return get();
+	}
+
+	@Override
+	public Class<?> getObjectType() {
+		return getInterfaceClass();
+	}
+
+	@Override
+	public boolean isSingleton() {
+		return true;
+	}
+
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
-
-	@Override
-	public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-
-	}
-
 }

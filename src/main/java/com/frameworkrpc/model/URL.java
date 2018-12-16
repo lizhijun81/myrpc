@@ -202,4 +202,9 @@ public class URL implements Serializable {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
+
+	@Override
+	public String toString() {
+		return toFullStr();
+	}
 }

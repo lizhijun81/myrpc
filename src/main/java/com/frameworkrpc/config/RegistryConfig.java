@@ -1,4 +1,4 @@
-package com.frameworkrpc.rpc.config;
+package com.frameworkrpc.config;
 
 public class RegistryConfig extends AbstractConfig {
 

@@ -1,10 +1,10 @@
 package com.frameworkrpc.spring;
 
-import com.frameworkrpc.rpc.config.ApplicationConfig;
+import com.frameworkrpc.config.ApplicationConfig;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.w3c.dom.Element;
 
-public class MyRpcApplicationParser extends MyRpcBeanDefinitionParser {
+public class ApplicationParser extends MyRpcBeanDefinitionParser {
 
 	@Override
 	protected Class<?> getBeanClass(Element element) {

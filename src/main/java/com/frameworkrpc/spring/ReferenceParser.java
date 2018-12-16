@@ -1,35 +1,35 @@
 package com.frameworkrpc.spring;
 
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
-public class MyRpcServiceParser extends MyRpcBeanDefinitionParser {
+public class ReferenceParser extends MyRpcBeanDefinitionParser {
 
 	@Override
 	protected Class<?> getBeanClass(Element element) {
-		return MyRpcServiceBean.class;
+		return ReferenceBean.class;
 	}
 
 	@Override
-	protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
+	protected void doParse(Element element, BeanDefinitionBuilder builder) {
 		String interfaceName = element.getAttribute("interface");
-		String ref = element.getAttribute("ref");
 		String version = element.getAttribute("version");
 		String group = element.getAttribute("group");
 		String loadbalance = element.getAttribute("loadbalance");
 		String timeout = element.getAttribute("timeout");
 		String retries = element.getAttribute("retries");
-
-		BeanDefinition refBean = parserContext.getRegistry().getBeanDefinition(ref);
+		String connecttimeout = element.getAttribute("connecttimeout");
+		String proxy = element.getAttribute("proxy");
+		String cluster = element.getAttribute("cluster");
 
 		builder.addPropertyValue("interface", interfaceName);
-		builder.addPropertyValue("ref", refBean);
 		builder.addPropertyValue("version", version);
 		builder.addPropertyValue("group", group);
 		builder.addPropertyValue("loadbalance", loadbalance);
 		builder.addPropertyValue("timeout", timeout);
 		builder.addPropertyValue("retries", retries);
+		builder.addPropertyValue("connecttimeout", connecttimeout);
+		builder.addPropertyValue("proxy", proxy);
+		builder.addPropertyValue("cluster", cluster);
 	}
 }

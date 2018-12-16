@@ -20,4 +20,6 @@ public interface Registry {
 
 	Set<URL> getRegisteredUrls();
 
+	void close();
+
 }

@@ -1,4 +1,4 @@
-package com.frameworkrpc.rpc.config;
+package com.frameworkrpc.config;
 
 import com.frameworkrpc.common.NetUtils;
 import com.frameworkrpc.common.StringUtils;

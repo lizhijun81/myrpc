@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RpcComponent(name = "netty")
-public class NettyRpcInstanceFatoryImpl implements RpcInstanceFactory {
+public class NettyRpcInstanceFatory implements RpcInstanceFactory {
 
-	private final static Logger logger = LoggerFactory.getLogger(NettyRpcInstanceFatoryImpl.class);
+	private final static Logger logger = LoggerFactory.getLogger(NettyRpcInstanceFatory.class);
 
 	private Map<String, Object> instances = new HashMap<String, Object>();
 

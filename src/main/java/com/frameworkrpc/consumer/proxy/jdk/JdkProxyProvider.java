@@ -1,10 +1,8 @@
 package com.frameworkrpc.consumer.proxy.jdk;
 
 import com.frameworkrpc.consumer.proxy.AbstractProxy;
-import com.frameworkrpc.consumer.proxy.ClassProxy;
 import com.frameworkrpc.extension.RpcComponent;
 import com.frameworkrpc.model.RpcRequest;
-import com.frameworkrpc.model.URL;
 import com.google.common.reflect.AbstractInvocationHandler;
 import com.google.common.reflect.Reflection;
 import org.slf4j.Logger;
@@ -17,17 +15,6 @@ import java.util.UUID;
 public class JdkProxyProvider extends AbstractProxy {
 
 	private static final Logger logger = LoggerFactory.getLogger(JdkProxyProvider.class);
-
-	@Override
-	public ClassProxy with(URL url) {
-		super.url = url;
-		return this;
-	}
-
-	@Override
-	public ClassProxy init() {
-		return super.init();
-	}
 
 	@Override
 	public <T> T getInstance(Class<T> inf) {

@@ -34,7 +34,7 @@ public class ZookeeperRegistry extends AbstractRegistry {
 
 	@Override
 	public Registry init() {
-		zkClient = new ZkClient(url.getParameter(RpcConstants.ADDRESS_KEY), url.getIntParameter(RpcConstants.REGISTRY_SESSIONTIMEOUT_KEY),
+		zkClient = new ZkClient(url.getParameter(RpcConstants.REGISTRY_ADDRESS_KEY), url.getIntParameter(RpcConstants.REGISTRY_SESSIONTIMEOUT_KEY),
 				url.getIntParameter(RpcConstants.REGISTRY_TIMEOUT_KEY));
 		IZkStateListener zkStateListener = new IZkStateListener() {
 			@Override
@@ -72,9 +72,9 @@ public class ZookeeperRegistry extends AbstractRegistry {
 		if (!zkClient.exists(nodeTypePath)) {
 			zkClient.createPersistent(nodeTypePath, true);
 		}
-		String nodePrth = ZkUtils.toNodePath(url);
-		if (!zkClient.exists(nodePrth)) {
-			zkClient.createEphemeral(nodePrth);
+		String nodePath = ZkUtils.toNodePath(url);
+		if (!zkClient.exists(nodePath)) {
+			zkClient.createEphemeral(nodePath);
 		}
 	}
 
@@ -111,8 +111,8 @@ public class ZookeeperRegistry extends AbstractRegistry {
 			if (zkListener == null) {
 				listeners.putIfAbsent(listener, new IZkChildListener() {
 					@Override
-					public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-						ZookeeperRegistry.this.notify(url, listener, toUrls(currentChilds));
+					public void handleChildChange(String parentPath, List<String> currentChild) throws Exception {
+						ZookeeperRegistry.this.notify(url, listener, toUrls(currentChild));
 					}
 
 				});
@@ -139,8 +139,13 @@ public class ZookeeperRegistry extends AbstractRegistry {
 		}
 	}
 
+	@Override
+	public void close() {
+		this.zkClient.close();
+	}
+
 	private List<URL> toUrls(List<String> providers) {
-		List<URL> urls = new ArrayList<URL>();
+		List<URL> urls = new ArrayList<>();
 		if (providers != null && !providers.isEmpty()) {
 			for (String provider : providers) {
 				provider = URL.decode(provider);

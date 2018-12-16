@@ -1,30 +1,6 @@
 ## myrpc
 a simple, java based, rpc framework implemented by netty, zookeeper ,spring
 
-###  Architecture:
-
-           ═ ═ ═▷ init         ─ ─ ─ ▷ async       ──────▶ sync
-    ----------------------------------------------------------------------
-
-                                ┌ ─ ─ ─ ─ ─ ─ 
-                                             │
-               ─ ─ ─ ─ ─ ─ ─ ─ ─│  Registry  
-              │                              │                         
-                                └ ─ ─△─ ─△─ ─                          
-              │                                                           
-            Notify                   ║   ║                           
-              │         ═ ═ ═ ═ ═ ═ ═    ═ ═ ═ ═ ═ ═ ═ ═ ═ ═        
-                       ║                                   ║             
-              │    Subscribe                            Register         
-                       ║                                   ║             
-              │  ┌ ─ ─ ─ ─ ─                          ┌ ─ ─ ─ ─ ─    
-                            │─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ▷           │   
-              └ ▷│ Consumer           Invoke          │ Provider   
-                            │────────────────────────▶           │
-                 └ ─ ─ ─ ─ ─                          └ ─ ─ ─ ─ ─ 
-
-    ----------------------------------------------------------------------
-
 ## Getting started
 ### Define an interface
 

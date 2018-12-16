@@ -3,13 +3,17 @@ package com.frameworkrpc.consumer.dispathcer;
 import com.frameworkrpc.client.Client;
 import com.frameworkrpc.client.ClientFactory;
 import com.frameworkrpc.common.RpcConstants;
+import com.frameworkrpc.consumer.future.DefaultInvokeFuture;
+import com.frameworkrpc.consumer.future.InvokeFuture;
 import com.frameworkrpc.consumer.loadbalance.LoadBalance;
 import com.frameworkrpc.exception.MyRpcInvokeException;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.extension.Scope;
+import com.frameworkrpc.model.RpcRequest;
 import com.frameworkrpc.model.URL;
 import com.frameworkrpc.registry.Registry;
 import com.frameworkrpc.registry.RegistryListener;
+import com.frameworkrpc.rpc.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +97,12 @@ abstract class AbstractDispatcher implements Dispatcher {
 		if (!client.isConnected())
 			client.doConnect();
 		return client;
+	}
+
+	protected <T> InvokeFuture<T> write(final Channel channel, final RpcRequest request, final Class<T> returnType) {
+		final InvokeFuture<T> future = new DefaultInvokeFuture<T>(request).with(returnType);
+		getServerClient(url).request(request);
+		return future;
 	}
 
 }

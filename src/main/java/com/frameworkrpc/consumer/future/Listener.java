@@ -1,9 +1,8 @@
 package com.frameworkrpc.consumer.future;
 
-public interface FutureListener<V> {
+public interface Listener<V> {
 
 	void complete(V result);
-
 
 	void failure(Throwable cause);
 }

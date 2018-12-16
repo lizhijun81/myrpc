@@ -5,5 +5,5 @@ import com.frameworkrpc.model.RpcRequest;
 
 public interface Dispatcher {
 
-	<T> InvokeFuture<T> dispatch(RpcRequest request, Class<T> returnType);
+	<T> InvokeFuture dispatch(RpcRequest request, Class<T> returnType);
 }

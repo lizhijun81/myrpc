@@ -2,8 +2,8 @@ package com.frameworkrpc.consumer.cluster;
 
 import com.frameworkrpc.consumer.dispathcer.DefaultDispatcher;
 import com.frameworkrpc.consumer.dispathcer.Dispatcher;
-import com.frameworkrpc.extension.RpcComponent;
 import com.frameworkrpc.consumer.future.InvokeFuture;
+import com.frameworkrpc.extension.RpcComponent;
 import com.frameworkrpc.model.RpcRequest;
 import com.frameworkrpc.model.URL;
 
