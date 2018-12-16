@@ -2,7 +2,7 @@ package com.frameworkrpc.server.netty;
 
 import com.frameworkrpc.common.NetUtils;
 import com.frameworkrpc.common.RpcConstants;
-import com.frameworkrpc.concurrent.RpcThreadPool;
+import com.frameworkrpc.concurrent.SimpleThreadExecutor;
 import com.frameworkrpc.extension.ExtensionLoader;
 import com.frameworkrpc.extension.Scope;
 import com.frameworkrpc.model.RpcRequest;
@@ -26,12 +26,10 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutorService;
-
 public class NettyServer extends AbstractServer {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
-	private volatile static  ExecutorService threadPoolExecutor;
+	private static SimpleThreadExecutor threadPoolExecutor;
 	private ServerBootstrap bootstrap;
 	private EventLoopGroup bossGroup;
 	private EventLoopGroup workerGroup;
@@ -42,12 +40,14 @@ public class NettyServer extends AbstractServer {
 	public NettyServer(URL url, RpcInstanceFactory rpcInstanceFactory) {
 		super(url);
 		this.rpcInstanceFactory = rpcInstanceFactory;
+
 		this.serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
 				.getExtension(url.getParameter(RpcConstants.SERIALIZATION_KEY), Scope.SINGLETON);
+
 		if (threadPoolExecutor == null) {
 			synchronized (NettyServer.class) {
 				if (threadPoolExecutor == null) {
-					threadPoolExecutor = RpcThreadPool.getExecutor(url);
+					threadPoolExecutor = new SimpleThreadExecutor(url);
 				}
 			}
 		}
@@ -73,31 +73,26 @@ public class NettyServer extends AbstractServer {
 
 		int readerIdleTimeSeconds = url.getIntParameter(RpcConstants.HEARTBEAT_KEY);
 
-		bootstrap.group(bossGroup, workerGroup)
-				.channel(NioServerSocketChannel.class)
-				.childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-				.childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
-				.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+		bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+				.childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE).childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
 				.childHandler(new ChannelInitializer<NioSocketChannel>() {
 					@Override
 					protected void initChannel(NioSocketChannel ch) {
-						ch.pipeline()
-								.addLast("idlestate", new IdleStateHandler(readerIdleTimeSeconds, 0, 0) {
-											@Override
-											public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-												if (evt instanceof IdleStateEvent) {
-													IdleStateEvent e = (IdleStateEvent) evt;
-													if (e.state() == IdleState.READER_IDLE) {
-														ctx.close();
-													} else if (e.state() == IdleState.WRITER_IDLE) {
-														//ctx.writeAndFlush(new PingMessage());
-													}
-												} else {
-													super.userEventTriggered(ctx, evt);
-												}
-											}
-										})
-								.addLast("decoder", new MessageDecoder(serialize, RpcRequest.class))
+						ch.pipeline().addLast("idlestate", new IdleStateHandler(readerIdleTimeSeconds, 0, 0) {
+							@Override
+							public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+								if (evt instanceof IdleStateEvent) {
+									IdleStateEvent e = (IdleStateEvent) evt;
+									if (e.state() == IdleState.READER_IDLE) {
+										ctx.close();
+									} else if (e.state() == IdleState.WRITER_IDLE) {
+										//ctx.writeAndFlush(new PingMessage());
+									}
+								} else {
+									super.userEventTriggered(ctx, evt);
+								}
+							}
+						}).addLast("decoder", new MessageDecoder(serialize, RpcRequest.class))
 								.addLast("encoder", new MessageEncoder(serialize, RpcResponse.class))
 								.addLast("handler", new NettyServerHandler(rpcInstanceFactory, threadPoolExecutor));
 					}

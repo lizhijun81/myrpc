@@ -74,12 +74,17 @@ public class NettyClient extends AbstractClient {
 		bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
 		bootstrap.option(ChannelOption.TCP_NODELAY, true);
 		bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
-		bootstrap.group(nioEventLoopGroup).channel(NioSocketChannel.class).handler(new ChannelInitializer<NioSocketChannel>() {
-			@Override
-			protected void initChannel(NioSocketChannel ch) {
-				ch.pipeline().addLast("decoder", new MessageDecoder(serialize, RpcResponse.class))
-						.addLast("encoder", new MessageEncoder(serialize, RpcRequest.class)).addLast("handler", nettyClientHandler);
-			}
+		bootstrap
+				.group(nioEventLoopGroup)
+				.channel(NioSocketChannel.class)
+				.handler(new ChannelInitializer<NioSocketChannel>() {
+						@Override
+						protected void initChannel(NioSocketChannel ch) {
+							ch.pipeline()
+									.addLast("decoder", new MessageDecoder(serialize, RpcResponse.class))
+									.addLast("encoder", new MessageEncoder(serialize, RpcRequest.class))
+									.addLast("handler", nettyClientHandler);
+						}
 		});
 
 		long start = System.currentTimeMillis();
@@ -139,7 +144,8 @@ public class NettyClient extends AbstractClient {
 
 	@Override
 	public void request(RpcRequest request) {
-		nettyClientHandler.sendRequest(request);
+		//nettyClientHandler.sendRequest(request);
+		channel.writeAndFlush(request);
 	}
 
 }

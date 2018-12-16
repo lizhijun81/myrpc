@@ -1,6 +1,7 @@
 package com.frameworkrpc.server.netty;
 
-import com.frameworkrpc.exception.MyRpcRpcException;
+import com.frameworkrpc.concurrent.SimpleThreadExecutor;
+import com.frameworkrpc.exception.MyServerRpcException;
 import com.frameworkrpc.model.RpcRequest;
 import com.frameworkrpc.model.RpcResponse;
 import com.frameworkrpc.rpc.RpcContext;
@@ -15,18 +16,16 @@ import net.sf.cglib.reflect.FastMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadPoolExecutor;
 
 @ChannelHandler.Sharable
 public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
 	private RpcInstanceFactory nettyRpcInstanceFactory;
-	private ExecutorService threadPoolExecutor;
+	private SimpleThreadExecutor threadPoolExecutor;
 
-	public NettyServerHandler(RpcInstanceFactory nettyRpcInstanceFactory, ExecutorService threadPoolExecutor) {
+	public NettyServerHandler(RpcInstanceFactory nettyRpcInstanceFactory, SimpleThreadExecutor threadPoolExecutor) {
 		this.nettyRpcInstanceFactory = nettyRpcInstanceFactory;
 		this.threadPoolExecutor = threadPoolExecutor;
 	}
@@ -46,7 +45,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
 						Object result = handle(request);
 						response.setResult(result);
 					} catch (Exception e) {
-						response.setError(new MyRpcRpcException("RPC Server handle request error request:" + NettyServerHandler.toString(request), e));
+						response.setError(
+								new MyServerRpcException("RPC Server handle request error request:" + NettyServerHandler.toString(request), e));
+
 						logger.error("RPC Server handle request error request:" + NettyServerHandler.toString(request), e);
 					}
 					response.setProcessTime(System.currentTimeMillis() - processStartTime);
@@ -56,14 +57,16 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
 		} catch (RejectedExecutionException rejectException) {
 			logger.warn(
 					"process thread pool is full, run in io thread, active={} poolSize={} corePoolSize={} maxPoolSize={} taskCount={} requestId={}",
-					((ThreadPoolExecutor) threadPoolExecutor).getActiveCount(), ((ThreadPoolExecutor) threadPoolExecutor).getPoolSize(),
-					((ThreadPoolExecutor) threadPoolExecutor).getCorePoolSize(), ((ThreadPoolExecutor) threadPoolExecutor).getMaximumPoolSize(),
-					((ThreadPoolExecutor) threadPoolExecutor).getTaskCount(), request.getRequestId());
+					threadPoolExecutor.getActiveCount(), threadPoolExecutor.getPoolSize(), threadPoolExecutor.getCorePoolSize(),
+					threadPoolExecutor.getMaximumPoolSize(), threadPoolExecutor.getTaskCount(), request.getRequestId());
+
 			RpcResponse response = new RpcResponse();
 			response.setRequestId(request.getRequestId());
-			response.setError(new MyRpcRpcException("process thread pool is full, reject by server: " + ctx.channel().localAddress(), rejectException));
+			response.setError(
+					new MyServerRpcException("process thread pool is full, reject by server: " + ctx.channel().localAddress(), rejectException));
+
 			sendResponse(ctx, response);
-		}finally {
+		} finally {
 			RpcContext.destroy();
 		}
 	}
@@ -114,7 +117,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		logger.error("Server exceptionCaught: remote={} local={} event={}", ctx.channel().remoteAddress(), ctx.channel().localAddress(), cause.getMessage(), cause);
+		logger.error("Server exceptionCaught: remote={} local={} event={}", ctx.channel().remoteAddress(), ctx.channel().localAddress(),
+				cause.getMessage(), cause);
 		ctx.channel().close();
 	}
 }
