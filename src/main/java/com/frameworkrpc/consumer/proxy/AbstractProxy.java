@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public abstract class AbstractProxy implements ClassProxy {
 
@@ -31,14 +33,15 @@ public abstract class AbstractProxy implements ClassProxy {
 
 	protected Object invoke(RpcRequest request, Class<?> returnType) {
 		try {
-			//return clusterInvoker.invoke(request, returnType).get(url.getIntParameter(RpcConstants.TIMEOUT_KEY), TimeUnit.MILLISECONDS);
-			return clusterInvoker.invoke(request, returnType).get();
+			return clusterInvoker.invoke(request, returnType).get(url.getIntParameter(RpcConstants.TIMEOUT_KEY), TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			logger.error("invoke failed", e);
 		} catch (ExecutionException e) {
-			e.printStackTrace();
+			logger.error("invoke failed", e);
+		} catch (TimeoutException e) {
+			logger.error("invoke failed", e);
 		}
-		return  null;
+		return null;
 	}
 
 }

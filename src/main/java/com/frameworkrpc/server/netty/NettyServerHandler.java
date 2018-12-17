@@ -1,7 +1,7 @@
 package com.frameworkrpc.server.netty;
 
 import com.frameworkrpc.concurrent.SimpleThreadExecutor;
-import com.frameworkrpc.exception.MyServerRpcException;
+import com.frameworkrpc.exception.MyRpcServerRpcException;
 import com.frameworkrpc.model.RpcRequest;
 import com.frameworkrpc.model.RpcResponse;
 import com.frameworkrpc.rpc.RpcContext;
@@ -46,7 +46,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
 						response.setResult(result);
 					} catch (Exception e) {
 						response.setError(
-								new MyServerRpcException("RPC Server handle request error request:" + NettyServerHandler.toString(request), e));
+								new MyRpcServerRpcException("RPC Server handle request error request:" + NettyServerHandler.toString(request), e));
 
 						logger.error("RPC Server handle request error request:" + NettyServerHandler.toString(request), e);
 					}
@@ -63,7 +63,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
 			RpcResponse response = new RpcResponse();
 			response.setRequestId(request.getRequestId());
 			response.setError(
-					new MyServerRpcException("process thread pool is full, reject by server: " + ctx.channel().localAddress(), rejectException));
+					new MyRpcServerRpcException("process thread pool is full, reject by server: " + ctx.channel().localAddress(), rejectException));
 
 			sendResponse(ctx, response);
 		} finally {

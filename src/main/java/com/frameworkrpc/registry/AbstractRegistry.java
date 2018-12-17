@@ -19,16 +19,19 @@ public abstract class AbstractRegistry implements Registry {
 	protected final Set<URL> registered = newConcurrentHashSet();
 	protected URL url;
 
+	@Override
 	public void register(URL url) {
 		registered.add(url);
 		logger.info("notify {}", url.toFullStr());
 	}
 
+	@Override
 	public void unregister(URL url) {
 		registered.remove(url);
 		logger.info("remove {}", url.toFullStr());
 	}
 
+	@Override
 	public void subscribe(URL url, NotifyListener listener) {
 		if (url == null) {
 			throw new IllegalArgumentException("subscribe url == null");
@@ -47,6 +50,7 @@ public abstract class AbstractRegistry implements Registry {
 		listeners.add(listener);
 	}
 
+	@Override
 	public void unsubscribe(URL url, NotifyListener listener) {
 		if (url == null) {
 			throw new IllegalArgumentException("unsubscribe url == null");
@@ -63,6 +67,7 @@ public abstract class AbstractRegistry implements Registry {
 		}
 	}
 
+	@Override
 	public Set<URL> getRegisteredUrls() {
 		return this.registered;
 	}
