@@ -1,7 +1,7 @@
 package com.myrpc.registry.zookeeper;
 
 import com.myrpc.common.RpcConstants;
-import com.myrpc.model.URL;
+import com.myrpc.config.URL;
 
 public class ZkUtils {
 

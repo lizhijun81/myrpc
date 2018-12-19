@@ -3,7 +3,6 @@ package com.myrpc.config;
 import com.myrpc.common.RpcConstants;
 import com.myrpc.consumer.proxy.ClassProxy;
 import com.myrpc.extension.ExtensionLoader;
-import com.myrpc.model.URL;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +21,14 @@ public class ReferenceConfig<T> extends ConsumerConfig<T> {
 	}
 
 	protected synchronized void init() {
+
+		classProxy = ExtensionLoader.getExtensionLoader(ClassProxy.class).getExtension(url().getParameter(RpcConstants.PROXY_KEY)).with(url()).init();
+		ref = classProxy.newInstance(interfaceClass);
+	}
+
+	@Override
+	public URL url() {
+
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("id", getId());
 		addServiceParameters(parameters);
@@ -31,11 +38,7 @@ public class ReferenceConfig<T> extends ConsumerConfig<T> {
 		addRegistryParameters(parameters);
 		String protocol = RpcConstants.CONSUMER;
 
-		URL url = new URL(protocol, getProtocol().getHost(), String.valueOf(getProtocol().getPort()), getInterface(), parameters);
+		return new URL(protocol, getProtocol().getHost(), String.valueOf(getProtocol().getPort()), getInterface(), parameters);
 
-		classProxy = ExtensionLoader.getExtensionLoader(ClassProxy.class).getExtension(url.getParameter(RpcConstants.PROXY_KEY)).with(url).init();
-		ref = classProxy.getInstance(interfaceClass);
 	}
-
-
 }

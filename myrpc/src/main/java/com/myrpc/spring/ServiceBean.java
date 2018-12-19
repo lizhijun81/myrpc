@@ -4,6 +4,8 @@ import com.myrpc.config.ApplicationConfig;
 import com.myrpc.config.ProtocolConfig;
 import com.myrpc.config.RegistryConfig;
 import com.myrpc.config.ServiceConfig;
+import com.myrpc.rpc.DefaultServer;
+import com.myrpc.rpc.Server;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanNameAware;
@@ -15,6 +17,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ServiceBean<T> extends ServiceConfig<T>
 		implements InitializingBean, DisposableBean, ApplicationContextAware, ApplicationListener<ContextRefreshedEvent>, BeanNameAware {
@@ -22,6 +25,8 @@ public class ServiceBean<T> extends ServiceConfig<T>
 	private static final long serialVersionUID = 4186914879813709242L;
 	private transient ApplicationContext applicationContext;
 	private transient String beanName;
+	private static Server server;
+	private static final ReentrantLock lock = new ReentrantLock();
 
 	@Override
 	public void setBeanName(String beanName) {
@@ -29,7 +34,8 @@ public class ServiceBean<T> extends ServiceConfig<T>
 	}
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
+
 		if (getApplication() == null) {
 			Map<String, ApplicationConfig> applicationConfigMap = applicationContext == null ?
 					null :
@@ -73,7 +79,17 @@ public class ServiceBean<T> extends ServiceConfig<T>
 				}
 			}
 		}
-		export();
+
+		if (server == null) {
+			try {
+				lock.lock();
+				server = new DefaultServer().with(this).init();
+				server.start();
+			} finally {
+				lock.unlock();
+			}
+		}
+		server.publish(this);
 	}
 
 	@Override

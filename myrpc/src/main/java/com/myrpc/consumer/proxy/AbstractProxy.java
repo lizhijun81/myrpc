@@ -4,7 +4,7 @@ import com.myrpc.common.RpcConstants;
 import com.myrpc.consumer.cluster.ClusterInvoker;
 import com.myrpc.extension.ExtensionLoader;
 import com.myrpc.model.RpcRequest;
-import com.myrpc.model.URL;
+import com.myrpc.config.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

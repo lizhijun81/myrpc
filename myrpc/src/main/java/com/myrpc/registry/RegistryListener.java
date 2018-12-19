@@ -2,7 +2,7 @@ package com.myrpc.registry;
 
 import com.myrpc.common.NetUtils;
 import com.myrpc.common.RpcConstants;
-import com.myrpc.model.URL;
+import com.myrpc.config.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

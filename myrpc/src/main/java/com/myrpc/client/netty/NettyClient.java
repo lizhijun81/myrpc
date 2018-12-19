@@ -8,7 +8,7 @@ import com.myrpc.extension.ExtensionLoader;
 import com.myrpc.extension.Scope;
 import com.myrpc.model.RpcRequest;
 import com.myrpc.model.RpcResponse;
-import com.myrpc.model.URL;
+import com.myrpc.config.URL;
 import com.myrpc.serialize.MessageDecoder;
 import com.myrpc.serialize.MessageEncoder;
 import com.myrpc.serialize.Serialize;

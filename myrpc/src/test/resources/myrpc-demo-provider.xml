@@ -13,4 +13,5 @@
     <bean id="demoService" class="com.myrpc.demo.provider.DemoServiceImpl"/>
 
     <myrpc:service interface="com.myrpc.demo.api.DemoService" ref="demoService"/>
+
 </beans>

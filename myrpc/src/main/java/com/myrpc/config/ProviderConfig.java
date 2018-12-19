@@ -5,7 +5,7 @@ import com.myrpc.common.StringUtils;
 
 import java.util.Map;
 
-public class ProviderConfig<T> extends AbstractConfig {
+public abstract class ProviderConfig<T> extends AbstractConfig {
 
 	private static final long serialVersionUID = 5369377538761488535L;
 	protected String interfaceName;
@@ -110,6 +110,8 @@ public class ProviderConfig<T> extends AbstractConfig {
 	public void setTimeout(int timeout) {
 		this.timeout = timeout;
 	}
+
+	public abstract URL url();
 
 
 	protected void addServiceParameters(Map<String, String> parameters) {

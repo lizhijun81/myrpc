@@ -17,7 +17,7 @@ public class JdkProxyProvider extends AbstractProxy {
 	private static final Logger logger = LoggerFactory.getLogger(JdkProxyProvider.class);
 
 	@Override
-	public <T> T getInstance(Class<T> inf) {
+	public <T> T newInstance(Class<T> inf) {
 		return (T) Reflection.newProxy(inf, new AbstractInvocationHandler() {
 			@Override
 			protected Object handleInvocation(Object proxy, Method method, Object[] args) {

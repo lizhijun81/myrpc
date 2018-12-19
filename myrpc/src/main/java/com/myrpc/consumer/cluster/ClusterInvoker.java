@@ -2,7 +2,7 @@ package com.myrpc.consumer.cluster;
 
 import com.myrpc.consumer.future.InvokeFuture;
 import com.myrpc.model.RpcRequest;
-import com.myrpc.model.URL;
+import com.myrpc.config.URL;
 
 public interface ClusterInvoker {
 

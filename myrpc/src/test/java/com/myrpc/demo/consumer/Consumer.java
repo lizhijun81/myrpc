@@ -19,7 +19,6 @@ public class Consumer {
 		reference.setApplication(application);
 		reference.setRegistry(registry);
 		reference.setInterface(DemoService.class);
-		reference.setVersion("1.0.0");
 
 		DemoService demoService = reference.get();
 		while (true) {

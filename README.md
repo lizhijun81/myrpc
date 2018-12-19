@@ -41,7 +41,11 @@ public class Provider {
 		service.setRef(demoService);
 		service.setVersion("1.0.0");
 
-		service.export();
+		Server server = new DefaultServer().with(service).init();
+
+		server.publish(service);
+
+		server.start();
 
 		System.in.read();
 	}

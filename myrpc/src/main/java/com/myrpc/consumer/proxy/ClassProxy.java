@@ -1,6 +1,6 @@
 package com.myrpc.consumer.proxy;
 
-import com.myrpc.model.URL;
+import com.myrpc.config.URL;
 
 public interface ClassProxy {
 
@@ -8,6 +8,6 @@ public interface ClassProxy {
 
 	ClassProxy init();
 
-	<T> T getInstance(final Class<T> inf);
+	<T> T newInstance(final Class<T> inf);
 
 }

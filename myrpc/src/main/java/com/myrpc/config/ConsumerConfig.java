@@ -4,7 +4,7 @@ import com.myrpc.common.RpcConstants;
 
 import java.util.Map;
 
-public class ConsumerConfig<T> extends ProviderConfig<T> {
+public abstract class ConsumerConfig<T> extends ProviderConfig<T> {
 
 	private static final long serialVersionUID = 5369377538761488535L;
 	protected int retries;

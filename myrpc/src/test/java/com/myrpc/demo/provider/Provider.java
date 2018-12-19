@@ -4,6 +4,8 @@ import com.myrpc.config.ApplicationConfig;
 import com.myrpc.config.RegistryConfig;
 import com.myrpc.config.ServiceConfig;
 import com.myrpc.demo.api.DemoService;
+import com.myrpc.rpc.DefaultServer;
+import com.myrpc.rpc.Server;
 
 public class Provider {
 	public static void main(String[] args) throws Exception {
@@ -22,9 +24,12 @@ public class Provider {
 		service.setRegistry(registry);
 		service.setInterface(DemoService.class);
 		service.setRef(demoService);
-		service.setVersion("1.0.0");
 
-		service.export();
+		Server server = new DefaultServer().with(service).init();
+
+		server.publish(service);
+
+		server.start();
 
 		System.in.read();
 	}

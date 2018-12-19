@@ -10,7 +10,7 @@ import com.myrpc.exception.MyRpcInvokeException;
 import com.myrpc.extension.ExtensionLoader;
 import com.myrpc.extension.Scope;
 import com.myrpc.model.RpcRequest;
-import com.myrpc.model.URL;
+import com.myrpc.config.URL;
 import com.myrpc.registry.Registry;
 import com.myrpc.registry.RegistryListener;
 import org.slf4j.Logger;

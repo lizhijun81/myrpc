@@ -20,7 +20,7 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
 	private transient ApplicationContext applicationContext;
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 		if (getApplication() == null) {
 			Map<String, ApplicationConfig> applicationConfigMap = applicationContext == null ?
 					null :
