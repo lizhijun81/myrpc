@@ -45,6 +45,10 @@ public class RpcConstants {
 
 	public final static String PROVIDER = "provider";
 	public final static String CONSUMER = "consumer";
+	public final static String APPLICATION = "application";
+	public final static String REGISTRY = "registry";
+	public final static String PROTOCOL = "protocol";
+
 
 	public final static String DEFAULT_VERSION = "0.0.1";
 	public final static String DEFAULT_GROUP = "default";
