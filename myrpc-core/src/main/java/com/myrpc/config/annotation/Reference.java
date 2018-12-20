@@ -1,12 +1,11 @@
-package com.myrpc.boot.config.annotation;
+package com.myrpc.config.annotation;
 
 import java.lang.annotation.*;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-@Inherited
-public @interface Service {
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+public @interface Reference {
 
 	Class<?> interfaceClass() default void.class;
 
@@ -23,4 +22,14 @@ public @interface Service {
 	String group() default "";
 
 	int timeout() default 0;
+
+	int retries() default 0;
+
+	int connecttimeout() default 0;
+
+	String proxy() default "";
+
+	String cluster() default "";
+
+	String loadbalance() default "";
 }

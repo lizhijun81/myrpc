@@ -2,7 +2,7 @@ package com.myrpc.consumer.dispathcer;
 
 
 import com.myrpc.common.RpcConstants;
-import com.myrpc.boot.config.URL;
+import com.myrpc.config.URL;
 import com.myrpc.consumer.future.DefaultInvokeFuture;
 import com.myrpc.consumer.future.InvokeFuture;
 import com.myrpc.consumer.loadbalance.LoadBalance;

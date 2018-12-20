@@ -8,7 +8,7 @@ import com.myrpc.consumer.future.Listener;
 import com.myrpc.consumer.future.InvokeFuture;
 import com.myrpc.extension.RpcComponent;
 import com.myrpc.model.RpcRequest;
-import com.myrpc.boot.config.URL;
+import com.myrpc.config.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

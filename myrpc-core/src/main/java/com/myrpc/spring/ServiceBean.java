@@ -1,9 +1,9 @@
 package com.myrpc.spring;
 
-import com.myrpc.boot.config.ApplicationConfig;
-import com.myrpc.boot.config.ProtocolConfig;
-import com.myrpc.boot.config.RegistryConfig;
-import com.myrpc.boot.config.ServiceConfig;
+import com.myrpc.config.ApplicationConfig;
+import com.myrpc.config.ProtocolConfig;
+import com.myrpc.config.RegistryConfig;
+import com.myrpc.config.ServiceConfig;
 import com.myrpc.rpc.DefaultServer;
 import com.myrpc.rpc.Server;
 import org.springframework.beans.BeansException;

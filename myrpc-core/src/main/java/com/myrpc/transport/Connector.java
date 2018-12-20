@@ -1,6 +1,6 @@
 package com.myrpc.transport;
 
-import com.myrpc.boot.config.URL;
+import com.myrpc.config.URL;
 import com.myrpc.model.RpcRequest;
 
 import java.net.InetSocketAddress;

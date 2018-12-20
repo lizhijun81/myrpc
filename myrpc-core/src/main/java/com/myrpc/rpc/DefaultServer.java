@@ -1,8 +1,8 @@
 package com.myrpc.rpc;
 
 import com.myrpc.common.RpcConstants;
-import com.myrpc.boot.config.ServiceConfig;
-import com.myrpc.boot.config.URL;
+import com.myrpc.config.ServiceConfig;
+import com.myrpc.config.URL;
 import com.myrpc.extension.ExtensionLoader;
 import com.myrpc.extension.Scope;
 import com.myrpc.registry.Registry;

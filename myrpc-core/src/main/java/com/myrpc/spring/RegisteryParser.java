@@ -1,6 +1,6 @@
 package com.myrpc.spring;
 
-import com.myrpc.boot.config.RegistryConfig;
+import com.myrpc.config.RegistryConfig;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.w3c.dom.Element;
 

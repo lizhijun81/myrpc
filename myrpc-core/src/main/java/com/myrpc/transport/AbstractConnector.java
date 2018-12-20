@@ -1,7 +1,7 @@
 package com.myrpc.transport;
 
 import com.myrpc.common.RpcConstants;
-import com.myrpc.boot.config.URL;
+import com.myrpc.config.URL;
 
 import java.net.InetSocketAddress;
 

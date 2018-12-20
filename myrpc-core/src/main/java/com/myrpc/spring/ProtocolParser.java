@@ -1,6 +1,6 @@
 package com.myrpc.spring;
 
-import com.myrpc.boot.config.ProtocolConfig;
+import com.myrpc.config.ProtocolConfig;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.w3c.dom.Element;
 

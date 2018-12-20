@@ -1,7 +1,7 @@
 package com.myrpc.rpc;
 
-import com.myrpc.boot.config.ServiceConfig;
-import com.myrpc.boot.config.URL;
+import com.myrpc.config.ServiceConfig;
+import com.myrpc.config.URL;
 import com.myrpc.registry.Registry;
 import com.myrpc.transport.Acceptor;
 

@@ -2,7 +2,7 @@ package com.myrpc.consumer.dispathcer;
 
 import com.myrpc.consumer.future.InvokeFuture;
 import com.myrpc.model.RpcRequest;
-import com.myrpc.boot.config.URL;
+import com.myrpc.config.URL;
 
 public class DefaultDispatcher extends AbstractDispatcher {
 

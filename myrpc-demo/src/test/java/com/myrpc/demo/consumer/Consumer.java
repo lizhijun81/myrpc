@@ -1,8 +1,8 @@
 package com.myrpc.demo.consumer;
 
-import com.myrpc.boot.config.ApplicationConfig;
-import com.myrpc.boot.config.ReferenceConfig;
-import com.myrpc.boot.config.RegistryConfig;
+import com.myrpc.config.ApplicationConfig;
+import com.myrpc.config.ReferenceConfig;
+import com.myrpc.config.RegistryConfig;
 import com.myrpc.demo.api.DemoService;
 
 public class Consumer {

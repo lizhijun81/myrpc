@@ -1,6 +1,6 @@
 package com.myrpc.consumer.proxy;
 
-import com.myrpc.boot.config.URL;
+import com.myrpc.config.URL;
 
 public interface ClassProxy {
 

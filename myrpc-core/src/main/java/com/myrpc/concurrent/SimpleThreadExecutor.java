@@ -1,7 +1,7 @@
 package com.myrpc.concurrent;
 
 import com.myrpc.common.RpcConstants;
-import com.myrpc.boot.config.URL;
+import com.myrpc.config.URL;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

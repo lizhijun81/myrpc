@@ -1,6 +1,6 @@
 package com.myrpc.registry;
 
-import com.myrpc.boot.config.URL;
+import com.myrpc.config.URL;
 
 import java.util.List;
 

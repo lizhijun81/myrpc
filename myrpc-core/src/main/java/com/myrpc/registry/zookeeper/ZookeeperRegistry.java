@@ -2,7 +2,7 @@ package com.myrpc.registry.zookeeper;
 
 import com.myrpc.common.RpcConstants;
 import com.myrpc.extension.RpcComponent;
-import com.myrpc.boot.config.URL;
+import com.myrpc.config.URL;
 import com.myrpc.registry.AbstractRegistry;
 import com.myrpc.registry.NotifyListener;
 import com.myrpc.registry.Registry;

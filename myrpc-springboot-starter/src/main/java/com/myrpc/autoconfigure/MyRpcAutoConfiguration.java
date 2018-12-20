@@ -1,11 +1,9 @@
 package com.myrpc.autoconfigure;
 
-import com.myrpc.boot.config.ApplicationBootConfig;
-import com.myrpc.boot.config.ProtocolBootConfig;
-import com.myrpc.boot.config.RegistryBootConfig;
-import com.myrpc.boot.config.ApplicationConfig;
-import com.myrpc.boot.config.ProtocolConfig;
-import com.myrpc.boot.config.RegistryConfig;
+import com.myrpc.config.ApplicationConfig;
+import com.myrpc.config.ProtocolConfig;
+import com.myrpc.config.RegistryConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,17 +11,18 @@ import org.springframework.context.annotation.Configuration;
 public class MyRpcAutoConfiguration {
 
 	@Bean
-	ApplicationConfig applicationConfig() {
-		return new ApplicationBootConfig();
+	ApplicationConfig applicationConfig(@Autowired ApplicationBootConfig applicationBootConfig) {
+		return applicationBootConfig;
 	}
 
 	@Bean
-	ProtocolConfig protocolConfig() {
-		return new ProtocolBootConfig();
+	ProtocolConfig protocolConfig(@Autowired ProtocolBootConfig protocolBootConfig) {
+		return protocolBootConfig;
 	}
 
 	@Bean
-	RegistryConfig registryConfig() {
-		return new RegistryBootConfig();
+	RegistryConfig registryConfig(@Autowired RegistryBootConfig registryBootConfig) {
+		return registryBootConfig;
 	}
+
 }

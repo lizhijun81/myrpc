@@ -1,7 +1,7 @@
 package com.myrpc.consumer.proxy;
 
 import com.myrpc.common.RpcConstants;
-import com.myrpc.boot.config.URL;
+import com.myrpc.config.URL;
 import com.myrpc.consumer.cluster.ClusterInvoker;
 import com.myrpc.extension.ExtensionLoader;
 import com.myrpc.model.RpcRequest;

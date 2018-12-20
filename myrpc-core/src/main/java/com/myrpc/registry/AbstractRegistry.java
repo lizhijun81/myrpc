@@ -1,7 +1,7 @@
 package com.myrpc.registry;
 
 import com.myrpc.common.RpcConstants;
-import com.myrpc.boot.config.URL;
+import com.myrpc.config.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

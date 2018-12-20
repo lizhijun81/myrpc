@@ -6,7 +6,7 @@ import com.myrpc.consumer.future.FailSafeInvokeFuture;
 import com.myrpc.consumer.future.InvokeFuture;
 import com.myrpc.extension.RpcComponent;
 import com.myrpc.model.RpcRequest;
-import com.myrpc.boot.config.URL;
+import com.myrpc.config.URL;
 
 @RpcComponent(name = "failsafe")
 public class FailSafeClusterInvoker implements ClusterInvoker {
