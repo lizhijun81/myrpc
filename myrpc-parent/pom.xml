@@ -19,7 +19,6 @@
         <module>../myrpc</module>
         <module>../myrpc-iotest</module>
         <module>../myrpc-springboot-starter</module>
-        <module>../myrpc-springboot-demo</module>
     </modules>
 
     <properties>

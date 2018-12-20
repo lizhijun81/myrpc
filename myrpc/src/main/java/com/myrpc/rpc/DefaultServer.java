@@ -40,14 +40,11 @@ public class DefaultServer implements Server {
 	@Override
 	public Server init() {
 
-		this.acceptor = ExtensionLoader.getExtensionLoader(Acceptor.class).getExtension(url.getParameter(RpcConstants.TRANSPORTER_KEY)).with(url)
-				.init();
+		this.acceptor = ExtensionLoader.getExtension(Acceptor.class, url.getParameter(RpcConstants.TRANSPORTER_KEY)).with(url).init();
 
-		this.registry = ExtensionLoader.getExtensionLoader(Registry.class).getExtension(url.getParameter(RpcConstants.REGISTRY_NAME_KEY)).with(url)
-				.init();
+		this.registry = ExtensionLoader.getExtension(Registry.class, url.getParameter(RpcConstants.REGISTRY_NAME_KEY)).with(url).init();
 
-		this.instanceFactory = ExtensionLoader.getExtensionLoader(InstanceFactory.class)
-				.getExtension(url.getParameter(RpcConstants.TRANSPORTER_KEY), Scope.SINGLETON);
+		this.instanceFactory = ExtensionLoader.getExtension(InstanceFactory.class, url.getParameter(RpcConstants.TRANSPORTER_KEY), Scope.SINGLETON);
 
 		return this;
 	}

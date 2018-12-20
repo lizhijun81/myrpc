@@ -42,12 +42,10 @@ public class NettyAcceptor extends AbstractAcceptor {
 
 	@Override
 	public Acceptor init() {
-		this.instanceFactory = ExtensionLoader.getExtensionLoader(InstanceFactory.class)
-				.getExtension(url.getParameter(RpcConstants.TRANSPORTER_KEY), Scope.SINGLETON);
 
+		this.instanceFactory = ExtensionLoader.getExtension(InstanceFactory.class, url.getParameter(RpcConstants.TRANSPORTER_KEY), Scope.SINGLETON);
 
-		this.serialize = ExtensionLoader.getExtensionLoader(Serialize.class)
-				.getExtension(url.getParameter(RpcConstants.SERIALIZATION_KEY), Scope.SINGLETON);
+		this.serialize = ExtensionLoader.getExtension(Serialize.class, url.getParameter(RpcConstants.SERIALIZATION_KEY), Scope.SINGLETON);
 
 		if (threadPoolExecutor == null) {
 			synchronized (NettyAcceptor.class) {
@@ -101,7 +99,7 @@ public class NettyAcceptor extends AbstractAcceptor {
 							}
 						}).addLast("decoder", new MessageDecoder(serialize, RpcRequest.class))
 								.addLast("encoder", new MessageEncoder(serialize, RpcResponse.class))
-								.addLast("handler", new NettyServerHandler(instanceFactory, threadPoolExecutor));
+								.addLast("handler", new NettyAcceptorHandler(instanceFactory, threadPoolExecutor));
 					}
 				});
 		ChannelFuture channelFuture = bootstrap.bind(url.getIntParameter(RpcConstants.PORT_KEY));

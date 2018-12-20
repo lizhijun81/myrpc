@@ -5,14 +5,15 @@ import com.myrpc.exception.MyRpcRpcException;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class ExtensionLoader<T> {
 
-	private static ConcurrentMap<Class<?>, ExtensionLoader<?>> extensionLoaders = new ConcurrentHashMap<Class<?>, ExtensionLoader<?>>();
-	private ConcurrentMap<String, T> singletonInstances = new ConcurrentHashMap<>();
-	protected ConcurrentMap<String, Class<T>> extensionClasses = new ConcurrentHashMap<>();
+	private static Map<Class<?>, ExtensionLoader<?>> extensionLoaders = new ConcurrentHashMap<>();
+	private Map<String, T> singletonInstances = new ConcurrentHashMap<>();
+	protected Map<String, Class<T>> extensionClasses = new ConcurrentHashMap<>();
 
 	private ClassLoader classLoader;
 	private Class<T> type;
@@ -143,4 +144,12 @@ public class ExtensionLoader<T> {
 		}
 	}
 
+
+	public static <T> T getExtension(Class<T> clazz, String name) {
+		return ExtensionLoader.getExtensionLoader(clazz).getExtension(name);
+	}
+
+	public static <T> T getExtension(Class<T> clazz, String name, Scope scope) {
+		return ExtensionLoader.getExtensionLoader(clazz).getExtension(name, scope);
+	}
 }

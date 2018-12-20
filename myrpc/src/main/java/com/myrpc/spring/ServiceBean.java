@@ -83,8 +83,12 @@ public class ServiceBean<T> extends ServiceConfig<T>
 		if (server == null) {
 			try {
 				lock.lock();
-				server = new DefaultServer().with(this).init();
-				server.start();
+				if (server == null) {
+					server = new DefaultServer().with(this).init();
+
+					server.start();
+				}
+
 			} finally {
 				lock.unlock();
 			}

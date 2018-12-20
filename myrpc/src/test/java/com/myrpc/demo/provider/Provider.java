@@ -27,9 +27,9 @@ public class Provider {
 
 		Server server = new DefaultServer().with(service).init();
 
-		server.publish(service);
-
 		server.start();
+
+		server.publish(service);
 
 		System.in.read();
 	}

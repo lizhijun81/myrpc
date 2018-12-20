@@ -1,10 +1,10 @@
 package com.myrpc.consumer.proxy;
 
 import com.myrpc.common.RpcConstants;
+import com.myrpc.config.URL;
 import com.myrpc.consumer.cluster.ClusterInvoker;
 import com.myrpc.extension.ExtensionLoader;
 import com.myrpc.model.RpcRequest;
-import com.myrpc.config.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +26,9 @@ public abstract class AbstractProxy implements ClassProxy {
 
 	@Override
 	public ClassProxy init() {
-		this.clusterInvoker = ExtensionLoader.getExtensionLoader(ClusterInvoker.class).getExtension(url.getParameter(RpcConstants.CLUSTER_KEY));
-		this.clusterInvoker.with(url).init();
+
+		this.clusterInvoker = ExtensionLoader.getExtension(ClusterInvoker.class, url.getParameter(RpcConstants.CLUSTER_KEY)).with(url).init();
+
 		return this;
 	}
 

@@ -22,7 +22,7 @@ public class ReferenceConfig<T> extends ConsumerConfig<T> {
 
 	protected synchronized void init() {
 
-		classProxy = ExtensionLoader.getExtensionLoader(ClassProxy.class).getExtension(url().getParameter(RpcConstants.PROXY_KEY)).with(url()).init();
+		classProxy = ExtensionLoader.getExtension(ClassProxy.class, url().getParameter(RpcConstants.PROXY_KEY)).with(url()).init();
 		ref = classProxy.newInstance(interfaceClass);
 	}
 

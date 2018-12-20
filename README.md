@@ -42,10 +42,10 @@ public class Provider {
 		service.setVersion("1.0.0");
 
 		Server server = new DefaultServer().with(service).init();
+		
+		server.start();
 
 		server.publish(service);
-
-		server.start();
 
 		System.in.read();
 	}
@@ -81,14 +81,9 @@ public class Consumer {
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns="http://www.springframework.org/schema/beans" 
-	   xmlns:context="http://www.springframework.org/schema/context"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
        xmlns:myrpc="http://www.frameworkrpc.com/myrpc"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
-	   http://www.springframework.org/schema/beans/spring-beans-4.3.xsd 
-	   http://www.springframework.org/schema/context 
-	   http://www.springframework.org/schema/context/spring-context.xsd 
-	   http://www.frameworkrpc.com/myrpc http://www.frameworkrpc.com/myrpc/myrpc.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.frameworkrpc.com/myrpc http://www.frameworkrpc.com/myrpc/myrpc.xsd">
 
     <context:property-placeholder location="classpath:rpc-config.properties"/>
 
@@ -96,10 +91,9 @@ public class Consumer {
 
     <myrpc:registry name="${zookeeper.name}" address="${zookeeper.address}"/>
 
-    <bean id="demoService" class="com.frameworkrpc.demo.provider.DemoServiceImpl"/>
-
-    <myrpc:service interface="com.frameworkrpc.demo.api.DemoService" ref="demoService"/>
+    <myrpc:reference id="demoService" interface="com.myrpc.demo.api.DemoService"/>
 </beans>
+
 ```
 ```java
 public class ProviderWithSpring {
@@ -115,14 +109,9 @@ public class ProviderWithSpring {
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns="http://www.springframework.org/schema/beans" 
-	   xmlns:context="http://www.springframework.org/schema/context"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
        xmlns:myrpc="http://www.frameworkrpc.com/myrpc"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
-	   http://www.springframework.org/schema/beans/spring-beans-4.3.xsd 
-	   http://www.springframework.org/schema/context 
-	   http://www.springframework.org/schema/context/spring-context.xsd 
-	   http://www.frameworkrpc.com/myrpc http://www.frameworkrpc.com/myrpc/myrpc.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.frameworkrpc.com/myrpc http://www.frameworkrpc.com/myrpc/myrpc.xsd">
 
     <context:property-placeholder location="classpath:rpc-config.properties"/>
 
@@ -130,7 +119,10 @@ public class ProviderWithSpring {
 
     <myrpc:registry name="${zookeeper.name}" address="${zookeeper.address}"/>
 
-    <myrpc:reference id="demoService" interface="com.frameworkrpc.demo.api.DemoService"/>
+    <bean id="demoService" class="com.myrpc.demo.provider.DemoServiceImpl"/>
+
+    <myrpc:service interface="com.myrpc.demo.api.DemoService" ref="demoService"/>
+
 </beans>
 ```
 ```java
@@ -138,7 +130,7 @@ public class ConsumerWithSpring {
 	public static void main(String[] args) throws Exception {
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"myrpc-demo-consumer.xml"});
 		context.start();
-		DemoService demoService = (DemoService) context.getBean("demoService"); // get remote service proxy
+		DemoService demoService = (DemoService) context.getBean("demoService"); 
 		String hello = demoService.sayHello("world"); 
 		System.out.println(hello); 
 	}
