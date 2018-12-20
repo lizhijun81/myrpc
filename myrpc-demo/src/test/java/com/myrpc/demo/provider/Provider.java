@@ -1,8 +1,8 @@
 package com.myrpc.demo.provider;
 
-import com.myrpc.config.ApplicationConfig;
-import com.myrpc.config.RegistryConfig;
-import com.myrpc.config.ServiceConfig;
+import com.myrpc.boot.config.ApplicationConfig;
+import com.myrpc.boot.config.RegistryConfig;
+import com.myrpc.boot.config.ServiceConfig;
 import com.myrpc.demo.api.DemoService;
 import com.myrpc.rpc.DefaultServer;
 import com.myrpc.rpc.Server;
