@@ -8,6 +8,8 @@ public class RpcConstants {
 
 	public final static String PATH_SEPARATOR = "/";
 	public static final Pattern COMMA_SPLIT_PATTERN = Pattern.compile("\\s*[,]+\\s*");
+	public static final Pattern REGISTRY_SPLIT_PATTERN = Pattern
+			.compile("\\s*[|;]+\\s*");
 	public static final String ANY_VALUE = "*";
 
 	public final static String CHARSET = "utf-8";
@@ -75,4 +77,5 @@ public class RpcConstants {
 	public static final String CONSUMERS_CATEGORY = "consumers";
 	public static final String DEFAULT_CATEGORY = PROVIDERS_CATEGORY;
 
+;
 }

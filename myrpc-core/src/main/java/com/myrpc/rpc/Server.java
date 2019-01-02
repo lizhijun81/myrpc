@@ -13,8 +13,6 @@ public interface Server {
 
 	Server with(ServiceConfig serviceConfig);
 
-	Server with(URL url);
-
 	Server init();
 
 	Acceptor acceptor();

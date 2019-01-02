@@ -1,7 +1,10 @@
 package com.myrpc.config;
 
 import com.myrpc.common.NetUtils;
+import com.myrpc.common.RpcConstants;
 import com.myrpc.common.StringUtils;
+
+import java.util.Map;
 
 public class ProtocolConfig extends AbstractConfig {
 
@@ -95,4 +98,16 @@ public class ProtocolConfig extends AbstractConfig {
 		this.iothreads = iothreads;
 	}
 
+
+	protected void addProtocolParameters(Map<String, String> parameters) {
+		parameters.put(RpcConstants.PROTOCOL_KEY, getVal(getName(), RpcConstants.DEFAULT_PROTOCOL));
+		parameters.put(RpcConstants.HOST_KEY, getHost());
+		parameters.put(RpcConstants.PORT_KEY, String.valueOf(getPort()));
+		parameters.put(RpcConstants.TRANSPORTER_KEY, getVal(getTransporter(), RpcConstants.DEFAULT_TRANSPORTER));
+		parameters.put(RpcConstants.SERIALIZATION_KEY, getVal(getSerialization(), RpcConstants.DEFAULT_SERIALIZATION));
+		parameters.put(RpcConstants.HEARTBEAT_KEY, getVal(getHeartbeat(), RpcConstants.DEFAULT_HEARTBEAT));
+		parameters.put(RpcConstants.THREADPOOL_KEY, getVal(getThreadpool(), RpcConstants.DEFAULT_THREADPOOL));
+		parameters.put(RpcConstants.THREADS_KEY, getVal(getThreads(), RpcConstants.DEFAULT_THREADS));
+		parameters.put(RpcConstants.IOTHREADS_KEY, getVal(getIothreads(), RpcConstants.DEFAULT_IOTHREADS));
+	}
 }

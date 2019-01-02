@@ -9,16 +9,17 @@ import com.myrpc.registry.Registry;
 import com.myrpc.transport.Acceptor;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
+
+import static com.google.common.collect.Sets.newConcurrentHashSet;
 
 public class DefaultServer implements Server {
 
-	private static final Map<String, ServiceConfig> currentSerives = new ConcurrentHashMap<>();
-	private URL url;
+	protected final Set<ServiceConfig> currentServiceConfigs = newConcurrentHashSet();
 	private Acceptor acceptor;
 	private Registry registry;
 	private InstanceFactory instanceFactory;
+	private URL url;
 
 	@Override
 	public URL url() {
@@ -32,19 +33,15 @@ public class DefaultServer implements Server {
 	}
 
 	@Override
-	public Server with(URL url) {
-		this.url = url;
-		return this;
-	}
-
-	@Override
 	public Server init() {
 
 		this.acceptor = ExtensionLoader.getExtension(Acceptor.class, url.getParameter(RpcConstants.TRANSPORTER_KEY)).with(url).init();
 
-		this.registry = ExtensionLoader.getExtension(Registry.class, url.getParameter(RpcConstants.REGISTRY_NAME_KEY)).with(url).init();
+		this.registry = ExtensionLoader.getExtension(Registry.class, url.getParameter(RpcConstants.REGISTRY_NAME_KEY)).with(url)
+				.init();
 
-		this.instanceFactory = ExtensionLoader.getExtension(InstanceFactory.class, url.getParameter(RpcConstants.TRANSPORTER_KEY), Scope.SINGLETON);
+		this.instanceFactory = ExtensionLoader
+				.getExtension(InstanceFactory.class, url.getParameter(RpcConstants.TRANSPORTER_KEY), Scope.SINGLETON);
 
 		return this;
 	}
@@ -61,10 +58,10 @@ public class DefaultServer implements Server {
 
 	@Override
 	public void publish(ServiceConfig serviceConfig) {
-		if (!currentSerives.containsKey(serviceConfig.url().toFullStr())) {
+		if (!currentServiceConfigs.contains(serviceConfig)) {
 			registry.register(serviceConfig.url());
 			instanceFactory.setInstance(serviceConfig.getInterface(), serviceConfig.getRef());
-			currentSerives.put(serviceConfig.url().toFullStr(), serviceConfig);
+			currentServiceConfigs.add(serviceConfig);
 		}
 	}
 
@@ -78,16 +75,16 @@ public class DefaultServer implements Server {
 
 	@Override
 	public void publishAll() {
-		for (ServiceConfig serviceConfig : currentSerives.values()) {
+		for (ServiceConfig serviceConfig : currentServiceConfigs) {
 			publish(serviceConfig);
 		}
 	}
 
 	@Override
 	public void unpublish(ServiceConfig serviceConfig) {
-		if (currentSerives.containsKey(serviceConfig.url().toFullStr())) {
+		if (currentServiceConfigs.contains(serviceConfig)) {
 			registry.unregister(serviceConfig.url());
-			currentSerives.remove(serviceConfig.url().toFullStr());
+			currentServiceConfigs.remove(serviceConfig);
 		}
 	}
 
@@ -100,7 +97,7 @@ public class DefaultServer implements Server {
 
 	@Override
 	public void unpublishAll() {
-		for (ServiceConfig serviceConfig : currentSerives.values()) {
+		for (ServiceConfig serviceConfig : currentServiceConfigs) {
 			unpublish(serviceConfig);
 		}
 	}

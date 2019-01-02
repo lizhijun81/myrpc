@@ -7,6 +7,8 @@ import com.myrpc.exception.MyRpcRpcException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -214,6 +216,17 @@ public class URL implements Serializable {
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
+	}
+
+	public static List<String> parseAddress(String address) {
+		if (address == null || address.length() == 0) {
+			return null;
+		}
+		String[] addresses = RpcConstants.REGISTRY_SPLIT_PATTERN.split(address);
+		if (addresses == null || addresses.length == 0) {
+			return null; //here won't be empty
+		}
+		return Arrays.asList(addresses);
 	}
 
 	@Override

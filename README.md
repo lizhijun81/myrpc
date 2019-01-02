@@ -91,9 +91,10 @@ public class Consumer {
 
     <myrpc:registry name="${zookeeper.name}" address="${zookeeper.address}"/>
 
-    <myrpc:reference id="demoService" interface="com.myrpc.demo.api.DemoService"/>
-</beans>
+    <bean id="demoService" class="com.myrpc.demo.provider.DemoServiceImpl"/>
 
+    <myrpc:service interface="com.myrpc.demo.api.DemoService" ref="demoService"/>
+</beans>
 ```
 ```java
 public class ProviderWithSpring {
@@ -115,14 +116,11 @@ public class ProviderWithSpring {
 
     <context:property-placeholder location="classpath:rpc-config.properties"/>
 
-    <myrpc:application name="demo-provider"/>
+    <myrpc:application name="demo-consumer"/>
 
     <myrpc:registry name="${zookeeper.name}" address="${zookeeper.address}"/>
 
-    <bean id="demoService" class="com.myrpc.demo.provider.DemoServiceImpl"/>
-
-    <myrpc:service interface="com.myrpc.demo.api.DemoService" ref="demoService"/>
-
+    <myrpc:reference id="demoService" interface="com.myrpc.demo.api.DemoService"/>
 </beans>
 ```
 ```java

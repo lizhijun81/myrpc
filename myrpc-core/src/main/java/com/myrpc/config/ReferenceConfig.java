@@ -31,7 +31,7 @@ public class ReferenceConfig<T> extends ConsumerConfig<T> {
 
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("id", getId());
-		addServiceParameters(parameters);
+		addProviderParameters(parameters);
 		addConsumerParameters(parameters);
 		addAppliactionParameters(parameters);
 		addProtocolParameters(parameters);

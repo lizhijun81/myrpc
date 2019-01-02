@@ -25,8 +25,7 @@ public class ServiceConfig<T> extends ProviderConfig<T> {
 		checkRef();
 
 		Map<String, String> parameters = new HashMap<>();
-		parameters.put("id", getId());
-		addServiceParameters(parameters);
+		addProviderParameters(parameters);
 		addAppliactionParameters(parameters);
 		addProtocolParameters(parameters);
 		addRegistryParameters(parameters);

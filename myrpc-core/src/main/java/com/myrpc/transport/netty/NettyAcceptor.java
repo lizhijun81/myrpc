@@ -78,26 +78,31 @@ public class NettyAcceptor extends AbstractAcceptor {
 
 		int readerIdleTimeSeconds = url.getIntParameter(RpcConstants.HEARTBEAT_KEY);
 
-		bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-				.childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE).childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+		bootstrap.group(bossGroup, workerGroup)
+				.channel(NioServerSocketChannel.class)
+				.childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+				.childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
+				.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
 				.childHandler(new ChannelInitializer<NioSocketChannel>() {
 					@Override
 					protected void initChannel(NioSocketChannel ch) {
-						ch.pipeline().addLast("idlestate", new IdleStateHandler(readerIdleTimeSeconds, 0, 0) {
-							@Override
-							public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-								if (evt instanceof IdleStateEvent) {
-									IdleStateEvent e = (IdleStateEvent) evt;
-									if (e.state() == IdleState.READER_IDLE) {
-										ctx.close();
-									} else if (e.state() == IdleState.WRITER_IDLE) {
-										//ctx.writeAndFlush(new PingMessage());
-									}
-								} else {
-									super.userEventTriggered(ctx, evt);
-								}
-							}
-						}).addLast("decoder", new MessageDecoder(serialize, RpcRequest.class))
+						ch.pipeline()
+								.addLast("idlestate", new IdleStateHandler(readerIdleTimeSeconds, 0, 0) {
+										@Override
+										public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+											if (evt instanceof IdleStateEvent) {
+												IdleStateEvent e = (IdleStateEvent) evt;
+												if (e.state() == IdleState.READER_IDLE) {
+													ctx.close();
+												} else if (e.state() == IdleState.WRITER_IDLE) {
+													//ctx.writeAndFlush(new PingMessage());
+												}
+											} else {
+												super.userEventTriggered(ctx, evt);
+											}
+										}
+									})
+								.addLast("decoder", new MessageDecoder(serialize, RpcRequest.class))
 								.addLast("encoder", new MessageEncoder(serialize, RpcResponse.class))
 								.addLast("handler", new NettyAcceptorHandler(instanceFactory, threadPoolExecutor));
 					}

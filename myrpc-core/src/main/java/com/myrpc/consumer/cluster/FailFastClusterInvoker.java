@@ -1,17 +1,19 @@
 package com.myrpc.consumer.cluster;
 
+import com.myrpc.config.ConsumerConfig;
+import com.myrpc.config.URL;
 import com.myrpc.consumer.dispathcer.DefaultDispatcher;
 import com.myrpc.consumer.dispathcer.Dispatcher;
 import com.myrpc.consumer.future.InvokeFuture;
 import com.myrpc.extension.RpcComponent;
 import com.myrpc.model.RpcRequest;
-import com.myrpc.config.URL;
 
 @RpcComponent(name = "failfast")
 public class FailFastClusterInvoker implements ClusterInvoker {
 
 	private Dispatcher dispatcher;
 	private URL url;
+
 
 	@Override
 	public ClusterInvoker with(URL url) {
