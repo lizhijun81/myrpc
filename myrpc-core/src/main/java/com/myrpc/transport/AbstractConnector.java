@@ -3,8 +3,6 @@ package com.myrpc.transport;
 import com.myrpc.common.RpcConstants;
 import com.myrpc.config.URL;
 
-import java.net.InetSocketAddress;
-
 public abstract class AbstractConnector implements Connector {
 
 	protected URL url;
@@ -20,10 +18,6 @@ public abstract class AbstractConnector implements Connector {
 		return this;
 	}
 
-	@Override
-	public InetSocketAddress getConnectAddress() {
-		return new InetSocketAddress(url.getHost(), url.getPort());
-	}
 
 	@Override
 	public int getConnectTimeout() {

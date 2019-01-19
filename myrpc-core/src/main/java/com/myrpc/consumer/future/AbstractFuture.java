@@ -150,10 +150,21 @@ abstract class AbstractFuture<V> implements InvokeFuture<V> {
 		if (invokeFuture == null) {
 			return;
 		}
-		if (invokeFuture != null) {
-			pendingFutures.remove(response.getRequestId());
-			invokeFuture.done(response);
+
+		pendingFutures.remove(response.getRequestId());
+		invokeFuture.done(response);
+
+	}
+
+	public static void fakeReceived(RpcResponse response) {
+
+		InvokeFuture invokeFuture = pendingFutures.remove(response.getRequestId());
+
+		if (invokeFuture == null) {
+			return;
 		}
+
+		invokeFuture.done(response);
 	}
 
 

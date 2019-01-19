@@ -1,9 +1,7 @@
 package com.myrpc.transport;
 
 import com.myrpc.config.URL;
-import com.myrpc.model.RpcRequest;
-
-import java.net.InetSocketAddress;
+import com.myrpc.rpc.Channel;
 
 public interface Connector {
 
@@ -13,19 +11,10 @@ public interface Connector {
 
 	Connector init();
 
-	InetSocketAddress getConnectAddress();
-
 	int getConnectTimeout();
-
-	boolean isClosed();
-
-	boolean isConnected();
 
 	void close();
 
-	void connect();
+	Channel connect(URL url);
 
-	void disConnect();
-
-	void request(RpcRequest request);
 }
