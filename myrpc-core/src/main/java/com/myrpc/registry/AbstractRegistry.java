@@ -19,6 +19,11 @@ public abstract class AbstractRegistry implements Registry {
 	protected final Set<URL> registered = newConcurrentHashSet();
 	protected URL url;
 
+	public AbstractRegistry (URL url) {
+		this.url = url;
+
+	}
+
 	@Override
 	public void register(URL url) {
 		registered.add(url);

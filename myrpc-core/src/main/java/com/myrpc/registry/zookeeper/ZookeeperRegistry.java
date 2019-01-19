@@ -1,11 +1,9 @@
 package com.myrpc.registry.zookeeper;
 
 import com.myrpc.common.RpcConstants;
-import com.myrpc.extension.RpcComponent;
 import com.myrpc.config.URL;
 import com.myrpc.registry.AbstractRegistry;
 import com.myrpc.registry.NotifyListener;
-import com.myrpc.registry.Registry;
 import org.I0Itec.zkclient.IZkChildListener;
 import org.I0Itec.zkclient.IZkStateListener;
 import org.I0Itec.zkclient.ZkClient;
@@ -19,21 +17,17 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-@RpcComponent(name = "zookeeper")
 public class ZookeeperRegistry extends AbstractRegistry {
 
 	private static final Logger logger = LoggerFactory.getLogger(ZookeeperRegistry.class);
 	private ZkClient zkClient;
 	private final Map<URL, ConcurrentMap<NotifyListener, IZkChildListener>> zkListeners = new ConcurrentHashMap<>();
 
-	@Override
-	public Registry with(URL url) {
-		super.url = url;
-		return this;
-	}
 
-	@Override
-	public Registry init() {
+	public ZookeeperRegistry (URL url) {
+
+		super(url);
+
 		zkClient = new ZkClient(url.getParameter(RpcConstants.REGISTRY_ADDRESS_KEY), url.getIntParameter(RpcConstants.REGISTRY_SESSIONTIMEOUT_KEY),
 				url.getIntParameter(RpcConstants.REGISTRY_TIMEOUT_KEY));
 		IZkStateListener zkStateListener = new IZkStateListener() {
@@ -52,7 +46,7 @@ public class ZookeeperRegistry extends AbstractRegistry {
 			}
 		};
 		zkClient.subscribeStateChanges(zkStateListener);
-		return this;
+
 	}
 
 	@Override

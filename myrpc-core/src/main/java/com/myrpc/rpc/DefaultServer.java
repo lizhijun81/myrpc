@@ -6,6 +6,7 @@ import com.myrpc.config.URL;
 import com.myrpc.extension.ExtensionLoader;
 import com.myrpc.extension.Scope;
 import com.myrpc.registry.Registry;
+import com.myrpc.registry.RegistryFactory;
 import com.myrpc.transport.Acceptor;
 
 import java.util.List;
@@ -37,11 +38,9 @@ public class DefaultServer implements Server {
 
 		this.acceptor = ExtensionLoader.getExtension(Acceptor.class, url.getParameter(RpcConstants.TRANSPORTER_KEY)).with(url).init();
 
-		this.registry = ExtensionLoader.getExtension(Registry.class, url.getParameter(RpcConstants.REGISTRY_NAME_KEY)).with(url)
-				.init();
+		this.registry = ExtensionLoader.getExtension(RegistryFactory.class, url.getParameter(RpcConstants.REGISTRY_NAME_KEY)).getRegistry(url);
 
-		this.instanceFactory = ExtensionLoader
-				.getExtension(InstanceFactory.class, url.getParameter(RpcConstants.TRANSPORTER_KEY), Scope.SINGLETON);
+		this.instanceFactory = ExtensionLoader.getExtension(InstanceFactory.class, url.getParameter(RpcConstants.TRANSPORTER_KEY), Scope.SINGLETON);
 
 		return this;
 	}
